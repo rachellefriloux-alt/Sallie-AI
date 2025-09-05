@@ -1,5 +1,6 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /*
  * Sallie 1.0 Module
  * Persona: Tough love meets soul care.
@@ -703,6 +704,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
