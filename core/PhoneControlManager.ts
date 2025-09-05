@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 /*
  * Salle 1.0 Module
  * Persona: Tough love meets soul care.
@@ -276,3 +277,5 @@ class PhoneControlManager {
 
 export default PhoneControlManager;
 export type { PhoneControlConfig, DeviceState };
+=======
+>>>>>>> Stashed changes

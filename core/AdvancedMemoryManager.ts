@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 /*
  * Salle 1.0 Module
  * Persona: Tough love meets soul care.
@@ -353,3 +354,5 @@ class AdvancedMemoryManager {
 
 export default AdvancedMemoryManager;
 export type { MemoryConfig, MemoryStats, CacheEntry };
+=======
+>>>>>>> Stashed changes
