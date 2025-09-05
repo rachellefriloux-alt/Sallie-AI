@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /*
  * Salle 1.0 Module
  * Persona: Tough love meets soul care.
@@ -458,5 +459,7 @@ class CrossDeviceSyncManager {
 
 export default CrossDeviceSyncManager;
 export type { SyncConfig, DeviceInfo, SyncData, SyncState };
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
