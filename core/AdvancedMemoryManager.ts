@@ -42,6 +42,7 @@ class AdvancedMemoryManager {
   private cache: Map<string, CacheEntry> = new Map();
   private memoryStats: MemoryStats;
   private cleanupTimer: NodeJS.Timeout | null = null;
+  private memoryMonitorTimer: NodeJS.Timeout | null = null;
   private mmkv: MMKV;
 
   constructor(config: Partial<MemoryConfig> = {}) {
@@ -108,7 +109,7 @@ class AdvancedMemoryManager {
 
   private monitorMemoryUsage() {
     // Monitor memory usage (this would be enhanced with native module)
-    setInterval(() => {
+    this.memoryMonitorTimer = setInterval(() => {
       this.updateMemoryStats();
     }, 30000); // Every 30 seconds
   }
@@ -211,7 +212,8 @@ class AdvancedMemoryManager {
 
   async deleteByTag(tag: string): Promise<number> {
     let deletedCount = 0;
-    for (const [key, entry] of this.cache.entries()) {
+    const entries = Array.from(this.cache.entries());
+    for (const [key, entry] of entries) {
       if (entry.tags?.includes(tag)) {
         await this.delete(key);
         deletedCount++;
@@ -260,7 +262,8 @@ class AdvancedMemoryManager {
     let cleanedEntries = 0;
 
     // Remove expired entries
-    for (const [key, entry] of this.cache.entries()) {
+    const entries = Array.from(this.cache.entries());
+    for (const [key, entry] of entries) {
       if (this.isExpired(entry)) {
         await this.delete(key);
         cleanedEntries++;
@@ -269,10 +272,10 @@ class AdvancedMemoryManager {
 
     // Remove least recently used entries if still over limit
     if (this.memoryStats.cacheSize > this.config.maxCacheSize * 1024 * 1024 * 0.8) {
-      const entries = Array.from(this.cache.values())
+      const sortedEntries = Array.from(this.cache.values())
         .sort((a, b) => a.timestamp - b.timestamp);
 
-      for (const entry of entries) {
+      for (const entry of sortedEntries) {
         if (this.memoryStats.cacheSize <= this.config.maxCacheSize * 1024 * 1024 * 0.8) break;
         await this.delete(entry.key);
         cleanedEntries++;
@@ -309,7 +312,8 @@ class AdvancedMemoryManager {
 
   private getTagStats() {
     const tagCounts: { [tag: string]: number } = {};
-    for (const entry of this.cache.values()) {
+    const entries = Array.from(this.cache.values());
+    for (const entry of entries) {
       if (entry.tags) {
         entry.tags.forEach(tag => {
           tagCounts[tag] = (tagCounts[tag] || 0) + 1;
@@ -337,6 +341,11 @@ class AdvancedMemoryManager {
   destroy() {
     if (this.cleanupTimer) {
       clearInterval(this.cleanupTimer);
+      this.cleanupTimer = null;
+    }
+    if (this.memoryMonitorTimer) {
+      clearInterval(this.memoryMonitorTimer);
+      this.memoryMonitorTimer = null;
     }
     this.persistCache();
   }

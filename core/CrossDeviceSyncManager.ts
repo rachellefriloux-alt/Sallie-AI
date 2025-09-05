@@ -94,10 +94,10 @@ class CrossDeviceSyncManager {
   private async checkNetworkStatus() {
     try {
       const networkState = await Network.getNetworkStateAsync();
-      this.isOnline = networkState.isConnected || false;
+      this.isOnline = networkState?.isConnected || false;
 
       if (this.config.syncOnWifiOnly) {
-        this.isOnline = this.isOnline && networkState.type === Network.NetworkStateType.WIFI;
+        this.isOnline = this.isOnline && networkState?.type === Network.NetworkStateType.WIFI;
       }
     } catch (error) {
       console.warn('Failed to check network status:', error);
@@ -109,10 +109,10 @@ class CrossDeviceSyncManager {
     // Monitor network changes
     const subscription = Network.addNetworkStateListener((state) => {
       const wasOnline = this.isOnline;
-      this.isOnline = state.isConnected || false;
+      this.isOnline = state?.isConnected || false;
 
       if (this.config.syncOnWifiOnly) {
-        this.isOnline = this.isOnline && state.type === Network.NetworkStateType.WIFI;
+        this.isOnline = this.isOnline && state?.type === Network.NetworkStateType.WIFI;
       }
 
       // Trigger sync if we just came online
@@ -449,6 +449,7 @@ class CrossDeviceSyncManager {
   destroy() {
     if (this.syncTimer) {
       clearInterval(this.syncTimer);
+      this.syncTimer = null;
     }
     this.saveSyncState();
   }
