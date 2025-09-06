@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e090c3dc-9d4d-4fee-80f2-503d805795dd" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../__tests__/FormDataSerializer.test.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../__tests__/RoutineNavigation.test.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/screens/RoutineProgressScreen.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/PluginInjectingGradleBuild.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/PluginInjectionExtensions.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/kotlin/PluginInjectingGradleBuildTest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/kotlin/PluginInjectionExtensionsTest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../docs/FormDataSerializer.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../examples/FormDataSerializerIntegration.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../utils/FormDataSerializer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.expo/types/router.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../.expo/types/router.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../app/_layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.2/executionHistory/executionHistory.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.2/executionHistory/executionHistory.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.9/executionHistory/executionHistory.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.9/executionHistory/executionHistory.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/SalleVerificationTasks.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/SalleVerificationTasks.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../core/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/../core/.idea/.name" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../core/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../core/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../core/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../core/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../core/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../core/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../docs/PluginInjectionSystem.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/PluginInjectionSystem.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../docs/Salle_1.0_Guide.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/Salle_1.0_Guide.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../features/feature/device/DeviceControlDemoActivity.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../features/feature/device/DeviceControlDemoActivity.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tsconfig.tsbuildinfo" beforeDir="false" afterPath="$PROJECT_DIR$/../tsconfig.tsbuildinfo" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "rachellefriloux-alt"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/rachellefriloux-alt/Sallie-AI.git",
+    "accountId": "cd66dcc4-dda9-4c02-b1e1-4736bdeb5046"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 7
+}]]></component>
+  <component name="ProjectId" id="32LUjOUdbjPVU81OhAWOXEk6kP5" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "android.gradle.sync.needed": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "Merging copilot/fix-476e9242-b19f-4229-934c-a095d1ec2d13"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e090c3dc-9d4d-4fee-80f2-503d805795dd" name="Changes" comment="" />
+      <created>1757199483356</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1757199483356</updated>
+    </task>
+    <servers />
+  </component>
+</project>
