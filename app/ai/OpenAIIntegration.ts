@@ -282,6 +282,92 @@ export class OpenAIIntegration {
     }
   }
 
+  // File upload with configurable form data formatting
+  async uploadFile(
+    file: File | Blob,
+    purpose: string = 'assistants',
+    formatStyle: 'rails' | 'dot' | 'underscore' | 'comma' = 'rails'
+  ): Promise<any> {
+    try {
+      // Import the configurable form data utility
+      const { createFormWithPreset, hasUploadableValue } = await import('../../utils/configurableFormData');
+      
+      const uploadData = {
+        file: file,
+        purpose: purpose,
+      };
+
+      // Check if we need multipart form data
+      if (!hasUploadableValue(uploadData)) {
+        throw new Error('No uploadable content found');
+      }
+
+      // Create form data with the specified format style
+      const formData = await createFormWithPreset(uploadData, formatStyle);
+
+      const response = await fetch(`${this.baseURL}/files`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          // Note: Don't set Content-Type for FormData, let browser set it with boundary
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI file upload error: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('File upload error:', error);
+      throw error;
+    }
+  }
+
+  // Upload with custom configuration
+  async uploadFileWithCustomFormat(
+    file: File | Blob,
+    purpose: string = 'assistants',
+    customConfig?: any
+  ): Promise<any> {
+    try {
+      // Import the configurable form data utility
+      const { createConfigurableForm, hasUploadableValue, DEFAULT_FORMAT_CONFIG } = await import('../../utils/configurableFormData');
+      
+      const uploadData = {
+        file: file,
+        purpose: purpose,
+      };
+
+      // Check if we need multipart form data
+      if (!hasUploadableValue(uploadData)) {
+        throw new Error('No uploadable content found');
+      }
+
+      // Create form data with custom configuration
+      const config = customConfig || DEFAULT_FORMAT_CONFIG;
+      const formData = await createConfigurableForm(uploadData, config);
+
+      const response = await fetch(`${this.baseURL}/files`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI file upload error: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('File upload error:', error);
+      throw error;
+    }
+  }
+
   // Memory and learning integration
   async processMemoryForInsights(memories: any[]): Promise<string[]> {
     if (memories.length === 0) return [];
