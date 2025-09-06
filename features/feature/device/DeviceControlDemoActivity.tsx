@@ -22,7 +22,7 @@ import * as Haptics from 'expo-haptics';
 import * as Brightness from 'expo-brightness';
 import * as Battery from 'expo-battery';
 import * as Device from 'expo-device';
-import { router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import DeviceVoiceController from './DeviceVoiceController';
 import { godModeManager } from '../../../core/GodModeManager';
 
@@ -38,6 +38,7 @@ interface DeviceState {
 }
 
 const DeviceControlDemo: React.FC = () => {
+  const navigation = useNavigation();
   const [deviceState, setDeviceState] = useState<DeviceState>({
     brightness: 0.5,
     batteryLevel: 0,
@@ -196,11 +197,9 @@ const DeviceControlDemo: React.FC = () => {
         }
         Alert.alert('Routine Triggered', `Starting ${routineName} routine`, [
           {
-              // TODO: Implement navigation to routine progress
-              // TASK: Track this TODO in your project management tool or implement navigation here.
+            text: 'View Progress',
             onPress: () => {
-              console.log('Navigate to routine progress screen');
-              // TODO: Implement navigation to routine progress
+              navigation.navigate('RoutineProgress' as any);
             }
           },
           { text: 'OK' }

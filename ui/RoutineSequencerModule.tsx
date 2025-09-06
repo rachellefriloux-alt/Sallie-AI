@@ -30,9 +30,12 @@ export interface Routine {
 export interface RoutineExecution {
   routineId: string;
   startTime: Date;
+  endTime?: Date;
   currentStep: number;
   completedSteps: string[];
   status: 'running' | 'paused' | 'completed' | 'cancelled';
+  duration?: number; // in milliseconds
+  completionRate?: number; // percentage of steps completed
 }
 
 class RoutineManager {
@@ -322,12 +325,26 @@ class RoutineManager {
       }
 
       execution.status = 'completed';
+      execution.endTime = new Date();
+      execution.duration = execution.endTime.getTime() - execution.startTime.getTime();
+      execution.completionRate = 100;
+      
+      // Store completed execution in history
+      this.addToExecutionHistory(userId, execution);
+      
       console.log(`Routine ${routineId} completed successfully`);
       return true;
 
     } catch (error) {
       console.error(`Error executing routine ${routineId}:`, error);
       execution.status = 'cancelled';
+      execution.endTime = new Date();
+      execution.duration = execution.endTime.getTime() - execution.startTime.getTime();
+      execution.completionRate = Math.round((execution.completedSteps.length / routine.steps.length) * 100);
+      
+      // Store cancelled execution in history too
+      this.addToExecutionHistory(userId, execution);
+      
       return false;
     }
   }
@@ -409,13 +426,102 @@ class RoutineManager {
     }
 
     // Check previous routine completion for motivation
-    // TODO: Implement execution history tracking
-    motivation = 'Every step forward counts. Let\'s build something beautiful today.';
+    const recentStats = this.getExecutionStats(userName);
+    if (recentStats.totalExecutions > 0) {
+      if (recentStats.successRate >= 80) {
+        motivation = `You've completed ${recentStats.totalExecutions} routines with ${recentStats.successRate}% success! You're crushing it. Let's keep that momentum going.`;
+      } else if (recentStats.totalExecutions >= 3) {
+        motivation = `${recentStats.totalExecutions} routines under your belt. Progress over perfection, love. Every step counts.`;
+      } else {
+        motivation = 'Building new habits takes courage. You\'re already showing up - that\'s what matters most.';
+      }
+    } else {
+      motivation = 'Every step forward counts. Let\'s build something beautiful today.';
+    }
 
     // Combine greeting components
     const greeting = `${timeGreeting}! I'm Sallie, your tough love companion. ${dayContext || motivation} Let's get you started right with some soul care that actually works.`;
 
     return greeting;
+  }
+
+  /**
+   * Add completed execution to user's history
+   */
+  private addToExecutionHistory(userId: string, execution: RoutineExecution): void {
+    const userHistory = this.executionHistory.get(userId) || [];
+    userHistory.push({ ...execution }); // Create a copy to avoid mutation
+    
+    // Keep only the last 50 executions to avoid memory bloat
+    if (userHistory.length > 50) {
+      userHistory.splice(0, userHistory.length - 50);
+    }
+    
+    this.executionHistory.set(userId, userHistory);
+  }
+
+  /**
+   * Get execution history for a user
+   */
+  getExecutionHistory(userId: string, routineId?: string): RoutineExecution[] {
+    const userHistory = this.executionHistory.get(userId) || [];
+    
+    if (routineId) {
+      return userHistory.filter(exec => exec.routineId === routineId);
+    }
+    
+    return userHistory.slice(); // Return a copy
+  }
+
+  /**
+   * Get execution statistics for a user
+   */
+  getExecutionStats(userId: string, routineId?: string): {
+    totalExecutions: number;
+    completedExecutions: number;
+    successRate: number;
+    averageDuration: number;
+    lastExecutionDate?: Date;
+    streak: number;
+  } {
+    const history = this.getExecutionHistory(userId, routineId);
+    
+    const completedExecutions = history.filter(exec => exec.status === 'completed').length;
+    const totalExecutions = history.length;
+    const successRate = totalExecutions > 0 ? Math.round((completedExecutions / totalExecutions) * 100) : 0;
+    
+    const durations = history
+      .filter(exec => exec.duration !== undefined)
+      .map(exec => exec.duration!);
+    const averageDuration = durations.length > 0 
+      ? Math.round(durations.reduce((sum, duration) => sum + duration, 0) / durations.length)
+      : 0;
+    
+    const lastExecutionDate = history.length > 0 
+      ? new Date(Math.max(...history.map(exec => exec.endTime?.getTime() || exec.startTime.getTime())))
+      : undefined;
+    
+    // Calculate streak of completed routines (from most recent backwards)
+    let streak = 0;
+    const sortedHistory = history
+      .sort((a, b) => (b.endTime?.getTime() || b.startTime.getTime()) - (a.endTime?.getTime() || a.startTime.getTime()));
+    
+    for (const execution of sortedHistory) {
+      if (execution.status === 'completed') {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    
+    return {
+      totalExecutions,
+      completedExecutions,
+      successRate,
+      averageDuration,
+      lastExecutionDate,
+      streak
+    };
   }
 
   private getRecentExecution(userId: string): RoutineExecution | undefined {
@@ -446,6 +552,8 @@ export const RoutineSequencerModule: React.FC<RoutineSequencerProps> = ({
   const [currentRoutine, setCurrentRoutine] = useState<Routine | null>(null);
   const [execution, setExecution] = useState<RoutineExecution | null>(null);
   const [availableRoutines] = useState<Routine[]>(() => routineManager.getAllRoutines());
+  const [showHistory, setShowHistory] = useState(false);
+  const [executionStats, setExecutionStats] = useState(() => routineManager.getExecutionStats(userId));
 
   const executeRoutine = useCallback(async (routineId: string) => {
     const routine = routineManager.getRoutine(routineId);
@@ -454,6 +562,10 @@ export const RoutineSequencerModule: React.FC<RoutineSequencerProps> = ({
     setCurrentRoutine(routine);
 
     const success = await routineManager.executeRoutine(routineId, userId);
+    
+    // Refresh execution stats after completion
+    setExecutionStats(routineManager.getExecutionStats(userId));
+    
     if (success && onRoutineComplete) {
       onRoutineComplete(routineId);
     }
@@ -502,6 +614,59 @@ export const RoutineSequencerModule: React.FC<RoutineSequencerProps> = ({
 
       {!currentRoutine ? (
         <ScrollView style={styles.routineList}>
+          {/* Execution History Stats */}
+          {executionStats.totalExecutions > 0 && (
+            <View style={styles.statsContainer}>
+              <TouchableOpacity 
+                style={styles.statsHeader}
+                onPress={() => setShowHistory(!showHistory)}
+              >
+                <Text style={styles.statsTitle}>Your Progress</Text>
+                <Text style={styles.statsToggle}>{showHistory ? '▼' : '▶'}</Text>
+              </TouchableOpacity>
+              
+              <View style={styles.statsGrid}>
+                <View style={styles.statItem}>
+                  <Text style={styles.statNumber}>{executionStats.totalExecutions}</Text>
+                  <Text style={styles.statLabel}>Total</Text>
+                </View>
+                <View style={styles.statItem}>
+                  <Text style={styles.statNumber}>{executionStats.successRate}%</Text>
+                  <Text style={styles.statLabel}>Success</Text>
+                </View>
+                <View style={styles.statItem}>
+                  <Text style={styles.statNumber}>{executionStats.streak}</Text>
+                  <Text style={styles.statLabel}>Streak</Text>
+                </View>
+                <View style={styles.statItem}>
+                  <Text style={styles.statNumber}>
+                    {Math.round(executionStats.averageDuration / 60000)}m
+                  </Text>
+                  <Text style={styles.statLabel}>Avg Time</Text>
+                </View>
+              </View>
+
+              {showHistory && (
+                <View style={styles.historyContainer}>
+                  <Text style={styles.historyTitle}>Recent Activity</Text>
+                  {routineManager.getExecutionHistory(userId).slice(-5).reverse().map((exec, index) => (
+                    <View key={`${exec.routineId}-${exec.startTime.getTime()}`} style={styles.historyItem}>
+                      <Text style={styles.historyRoutine}>
+                        {availableRoutines.find(r => r.id === exec.routineId)?.name || exec.routineId}
+                      </Text>
+                      <Text style={styles.historyStatus}>
+                        {exec.status === 'completed' ? '✅' : exec.status === 'cancelled' ? '❌' : '⏸️'}
+                      </Text>
+                      <Text style={styles.historyTime}>
+                        {exec.endTime?.toLocaleDateString() || exec.startTime.toLocaleDateString()}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </View>
+          )}
+
           <Text style={styles.sectionTitle}>Available Routines</Text>
           {availableRoutines.map((routine) => (
             <TouchableOpacity
@@ -651,6 +816,84 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  statsContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  statsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  statsTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1e293b',
+  },
+  statsToggle: {
+    fontSize: 16,
+    color: '#6366f1',
+    fontWeight: 'bold',
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#6366f1',
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#64748b',
+    marginTop: 4,
+  },
+  historyContainer: {
+    marginTop: 15,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#e2e8f0',
+  },
+  historyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 10,
+  },
+  historyItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  historyRoutine: {
+    fontSize: 14,
+    color: '#1e293b',
+    flex: 1,
+  },
+  historyStatus: {
+    fontSize: 16,
+    marginHorizontal: 10,
+  },
+  historyTime: {
+    fontSize: 12,
+    color: '#64748b',
   },
 });
 

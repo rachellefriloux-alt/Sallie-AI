@@ -78,7 +78,13 @@
     "uuid": "^11.0.3",
     "zod": "^3.23.8",
     "zustand": "^5.0.0",
+<<<<<<< HEAD
     "expo-constants": "~17.0.8"
+=======
+    "@expo/metro-runtime": "~4.0.1"
+    "zustand": "^5.0.0",
+    "react-native-safe-area-context": "4.12.0"
+>>>>>>> 3288210441f70056e849a459540b12d38c3a134d
   },
   "devDependencies": {
     "@types/jest": "^29.5.13",
