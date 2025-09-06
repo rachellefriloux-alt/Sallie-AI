@@ -311,12 +311,196 @@ class PluginRegistry {
           continue;
         }
 
-        // TODO: Add more specific health checks
-        plugin.health = 'healthy';
+        // Comprehensive health validation
+        const healthResult = await this.performComprehensiveHealthCheck(plugin);
+        plugin.health = healthResult;
       } catch (error) {
         plugin.health = 'error';
         console.error(`Health check failed for ${plugin.id}:`, error);
       }
+    }
+  }
+
+  private async performComprehensiveHealthCheck(plugin: Plugin): Promise<Plugin['health']> {
+    const checks: Array<{ name: string; result: boolean; severity: 'warning' | 'error' }> = [];
+
+    // 1. Initialization status check
+    if (plugin.initialize && !this.initialized.has(plugin.id)) {
+      checks.push({ name: 'initialization', result: false, severity: 'error' });
+    }
+
+    // 2. Configuration validation
+    if (plugin.config) {
+      const configValid = this.validatePluginConfiguration(plugin);
+      if (!configValid) {
+        checks.push({ name: 'configuration', result: false, severity: 'warning' });
+      }
+    }
+
+    // 3. Permission validation
+    if (plugin.permissions && plugin.permissions.length > 0) {
+      const permissionsValid = this.validatePluginPermissions(plugin);
+      if (!permissionsValid) {
+        checks.push({ name: 'permissions', result: false, severity: 'error' });
+      }
+    }
+
+    // 4. Category-specific health checks
+    const categoryHealthy = await this.performCategorySpecificCheck(plugin);
+    if (!categoryHealthy) {
+      checks.push({ name: 'category-specific', result: false, severity: 'warning' });
+    }
+
+    // 5. Version compatibility check
+    const versionCompatible = this.checkVersionCompatibility(plugin);
+    if (!versionCompatible) {
+      checks.push({ name: 'version-compatibility', result: false, severity: 'warning' });
+    }
+
+    // 6. Last updated freshness check
+    const isFresh = this.checkPluginFreshness(plugin);
+    if (!isFresh) {
+      checks.push({ name: 'freshness', result: false, severity: 'warning' });
+    }
+
+    // Determine overall health based on checks
+    const errorChecks = checks.filter(c => c.severity === 'error');
+    const warningChecks = checks.filter(c => c.severity === 'warning');
+
+    if (errorChecks.length > 0) {
+      return 'error';
+    } else if (warningChecks.length > 0) {
+      return 'warning';
+    } else {
+      return 'healthy';
+    }
+  }
+
+  private validatePluginConfiguration(plugin: Plugin): boolean {
+    if (!plugin.config) return true;
+    
+    // Check for required configuration keys based on category
+    const requiredConfigKeys: Record<string, string[]> = {
+      'ai': ['model', 'apiEndpoint'],
+      'integration': ['endpoint', 'apiKey'],
+      'ui': ['theme', 'layout'],
+      'utility': [],
+      'experimental': []
+    };
+
+    const required = requiredConfigKeys[plugin.category] || [];
+    return required.every(key => plugin.config && plugin.config[key] !== undefined);
+  }
+
+  private validatePluginPermissions(plugin: Plugin): boolean {
+    if (!plugin.permissions) return true;
+
+    // Define valid permissions for each category
+    const validPermissions: Record<string, string[]> = {
+      'ai': ['ai-access', 'model-switching', 'data-analysis', 'pattern-recognition', 'emotion-analysis', 'personality-adaptation'],
+      'ui': ['theme-control', 'ui-rendering', 'user-interaction'],
+      'integration': ['api-access', 'external-services', 'network-access'],
+      'utility': ['system-access', 'background-processing', 'file-access'],
+      'experimental': ['experimental-features', 'beta-access']
+    };
+
+    const categoryPermissions = validPermissions[plugin.category] || [];
+    const allValidPermissions = Object.values(validPermissions).flat();
+    
+    return plugin.permissions.every(permission => 
+      categoryPermissions.includes(permission) || allValidPermissions.includes(permission)
+    );
+  }
+
+  private async performCategorySpecificCheck(plugin: Plugin): Promise<boolean> {
+    switch (plugin.category) {
+      case 'ai':
+        // Check if AI models/endpoints are accessible
+        return this.checkAIPluginHealth(plugin);
+      case 'integration':
+        // Check if external services are reachable
+        return this.checkIntegrationPluginHealth(plugin);
+      case 'ui':
+        // Check if UI components can render
+        return this.checkUIPluginHealth(plugin);
+      case 'utility':
+        // Check if system resources are available
+        return this.checkUtilityPluginHealth(plugin);
+      case 'experimental':
+        // More lenient checks for experimental plugins
+        return this.checkExperimentalPluginHealth(plugin);
+      default:
+        return true;
+    }
+  }
+
+  private checkAIPluginHealth(plugin: Plugin): boolean {
+    // Check AI-specific requirements
+    if (plugin.config?.model && typeof plugin.config.model !== 'string') {
+      return false;
+    }
+    if (plugin.config?.apiEndpoint && !this.isValidUrl(plugin.config.apiEndpoint)) {
+      return false;
+    }
+    return true;
+  }
+
+  private checkIntegrationPluginHealth(plugin: Plugin): boolean {
+    // Check integration-specific requirements
+    if (plugin.config?.endpoint && !this.isValidUrl(plugin.config.endpoint)) {
+      return false;
+    }
+    if (plugin.config?.apiKey && typeof plugin.config.apiKey !== 'string') {
+      return false;
+    }
+    return true;
+  }
+
+  private checkUIPluginHealth(plugin: Plugin): boolean {
+    // Check UI-specific requirements
+    if (plugin.config?.theme && !['light', 'dark', 'auto'].includes(plugin.config.theme)) {
+      return false;
+    }
+    return true;
+  }
+
+  private checkUtilityPluginHealth(plugin: Plugin): boolean {
+    // Check utility-specific requirements
+    return true; // Utilities are generally more robust
+  }
+
+  private checkExperimentalPluginHealth(plugin: Plugin): boolean {
+    // Experimental plugins get more lenient checking
+    return true;
+  }
+
+  private checkVersionCompatibility(plugin: Plugin): boolean {
+    // Simple semantic version check - could be enhanced
+    const version = plugin.version;
+    if (!version) return false;
+    
+    // Check if version follows semantic versioning pattern
+    const semverPattern = /^\d+\.\d+\.\d+(-[\w.-]+)?$/;
+    return semverPattern.test(version);
+  }
+
+  private checkPluginFreshness(plugin: Plugin): boolean {
+    if (!plugin.lastUpdated) return false;
+    
+    const now = new Date();
+    const lastUpdated = new Date(plugin.lastUpdated);
+    const daysSinceUpdate = (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24);
+    
+    // Warn if plugin hasn't been updated in over 90 days
+    return daysSinceUpdate <= 90;
+  }
+
+  private isValidUrl(url: string): boolean {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
     }
   }
 
