@@ -289,6 +289,202 @@ export class OpenAIIntegration {
     }
   }
 
+  // File upload with configurable form data formatting
+  async uploadFile(
+    file: File | Blob,
+    purpose: string = 'assistants',
+    formatStyle: 'rails' | 'dot' | 'underscore' | 'comma' = 'rails'
+  ): Promise<any> {
+    try {
+      // Import the configurable form data utility
+      const { createFormWithPreset, hasUploadableValue } = await import('../../utils/configurableFormData');
+      
+      const uploadData = {
+        file: file,
+        purpose: purpose,
+      };
+
+      // Check if we need multipart form data
+      if (!hasUploadableValue(uploadData)) {
+        throw new Error('No uploadable content found');
+      }
+
+      // Create form data with the specified format style
+      const formData = await createFormWithPreset(uploadData, formatStyle);
+
+      const response = await fetch(`${this.baseURL}/files`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          // Note: Don't set Content-Type for FormData, let browser set it with boundary
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI file upload error: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('File upload error:', error);
+      throw error;
+    }
+  }
+
+  // Upload with custom configuration
+  async uploadFileWithCustomFormat(
+    file: File | Blob,
+    purpose: string = 'assistants',
+    customConfig?: any
+  ): Promise<any> {
+    try {
+      // Import the configurable form data utility
+      const { createConfigurableForm, hasUploadableValue, DEFAULT_FORMAT_CONFIG } = await import('../../utils/configurableFormData');
+      
+      const uploadData = {
+        file: file,
+        purpose: purpose,
+      };
+
+      // Check if we need multipart form data
+      if (!hasUploadableValue(uploadData)) {
+        throw new Error('No uploadable content found');
+      }
+
+      // Create form data with custom configuration
+      const config = customConfig || DEFAULT_FORMAT_CONFIG;
+      const formData = await createConfigurableForm(uploadData, config);
+
+      const response = await fetch(`${this.baseURL}/files`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI file upload error: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('File upload error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Upload file with configurable FormData formatting
+   */
+  async uploadFile(file: File | Blob, metadata?: Record<string, any>): Promise<any> {
+    if (!this.config.apiKey) {
+      throw new Error('OpenAI API key not available');
+    }
+
+    try {
+      // Create FormData with configured nested formatting
+      const formDataConfig = this.config.uploadFormatConfig || PRESET_CONFIGS.OPENAI;
+      const configurableFormData = new ConfigurableFormData(formDataConfig);
+      
+      const uploadData: Record<string, any> = {
+        file,
+        purpose: 'assistants' // Default purpose for Sallie AI
+      };
+
+      // Add metadata if provided
+      if (metadata) {
+        uploadData.metadata = metadata;
+      }
+
+      const formData = await configurableFormData.createForm(uploadData);
+
+      const response = await fetch(`${this.baseURL}/files`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`File upload error: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('File upload error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Upload multiple files with configurable formatting
+   */
+  async uploadFiles(files: (File | Blob)[], metadata?: Record<string, any>[]): Promise<any[]> {
+    const uploadPromises = files.map((file, index) => 
+      this.uploadFile(file, metadata?.[index])
+    );
+    
+    return Promise.all(uploadPromises);
+  }
+
+  /**
+   * Upload file with configurable FormData formatting
+   */
+  async uploadFile(file: File | Blob, metadata?: Record<string, any>): Promise<any> {
+    if (!this.config.apiKey) {
+      throw new Error('OpenAI API key not available');
+    }
+
+    try {
+      // Create FormData with configured nested formatting
+      const formDataConfig = this.config.uploadFormatConfig || PRESET_CONFIGS.OPENAI;
+      const configurableFormData = new ConfigurableFormData(formDataConfig);
+      
+      const uploadData: Record<string, any> = {
+        file,
+        purpose: 'assistants' // Default purpose for Sallie AI
+      };
+
+      // Add metadata if provided
+      if (metadata) {
+        uploadData.metadata = metadata;
+      }
+
+      const formData = await configurableFormData.createForm(uploadData);
+
+      const response = await fetch(`${this.baseURL}/files`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`File upload error: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('File upload error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Upload multiple files with configurable formatting
+   */
+  async uploadFiles(files: (File | Blob)[], metadata?: Record<string, any>[]): Promise<any[]> {
+    const uploadPromises = files.map((file, index) => 
+      this.uploadFile(file, metadata?.[index])
+    );
+    
+    return Promise.all(uploadPromises);
+  }
+
   /**
    * Upload file with configurable FormData formatting
    */

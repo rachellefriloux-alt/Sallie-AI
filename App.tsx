@@ -13,6 +13,7 @@ import SalliePanelScreen from './app/screens/SalliePanelScreen';
 import SettingsScreen from './app/screens/SettingsScreen';
 import MemoriesScreen from './app/screens/MemoriesScreen';
 import DebugConsoleScreen from './app/screens/DebugConsoleScreen';
+import RoutineProgressScreen from './app/screens/RoutineProgressScreen';
 
 // Import components
 import EnhancedSallieOverlay from './app/components/EnhancedSallieOverlay';
@@ -119,6 +120,13 @@ export default function App() {
               component={DebugConsoleScreen}
               options={{
                 animation: 'fade',
+              }}
+            />
+            <Stack.Screen 
+              name="RoutineProgress" 
+              component={RoutineProgressScreen}
+              options={{
+                animation: 'slide_from_right',
               }}
             />
           </Stack.Navigator>
