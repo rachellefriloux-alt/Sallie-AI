@@ -13,6 +13,7 @@ import { DeviceEventEmitter } from 'react-native';
 import { routineManager } from '../../../ui/RoutineSequencerModule';
 import { themeManager } from '../../../ui/ThemeComposerUI';
 import { godModeManager } from '../../../core/GodModeManager';
+import { useUserStore } from '../../../app/store/user';
 import GodModeManagementScreen from './GodModeManagementScreen';
 
 interface VoiceCommand {
@@ -40,6 +41,9 @@ const DeviceVoiceController: React.FC<DeviceVoiceControllerProps> = ({
   const [godModeActive, setGodModeActive] = useState(false);
   const [showGodModeManagement, setShowGodModeManagement] = useState(false);
   const recognitionRef = useRef<any>(null);
+  
+  // Get user ID from store
+  const userId = useUserStore((state) => state.userId);
 
   // Voice commands registry
   const voiceCommands: VoiceCommand[] = [
@@ -266,7 +270,6 @@ const DeviceVoiceController: React.FC<DeviceVoiceControllerProps> = ({
     console.log('Native routine trigger:', event);
     try {
       const routineName = event.routineName || 'morning';
-      const userId = 'default_user'; // TODO: Get from user context/store
 
       // Map routine names to actual routine IDs
       const routineIdMap: { [key: string]: string } = {
@@ -295,7 +298,6 @@ const DeviceVoiceController: React.FC<DeviceVoiceControllerProps> = ({
     console.log('Native theme trigger:', event);
     try {
       const themeName = event.themeName || 'default';
-      const userId = 'default_user'; // TODO: Get from user context/store
 
       // Map theme names to actual theme IDs
       const themeIdMap: { [key: string]: string } = {
@@ -323,7 +325,6 @@ const DeviceVoiceController: React.FC<DeviceVoiceControllerProps> = ({
   const handleNativeGodModeTrigger = async (event: any) => {
     console.log('Native God-Mode trigger:', event);
     try {
-      const userId = 'default_user'; // TODO: Get from user context/store
       const reason = event.trigger === 'voice' ? 'Voice command activation' : 'System activation';
 
       const success = await godModeManager.activateGodMode(userId, reason);

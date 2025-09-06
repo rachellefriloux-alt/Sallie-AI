@@ -4,8 +4,14 @@ import { MMKV } from 'react-native-mmkv';
 
 const storage = new MMKV();
 
+// Generate a unique user ID if not present
+const generateUserId = (): string => {
+  return `user_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+};
+
 export interface UserState {
   // User profile
+  userId: string; // Unique identifier for the user
   name: string;
   email?: string;
   avatar?: string;
@@ -27,6 +33,7 @@ export const useUserStore = create<UserState>()(
   persist(
     (set, get) => ({
       // Initial state
+      userId: '', // Will be initialized in the persist hydration
       name: '',
       email: '',
       avatar: '',
@@ -63,6 +70,12 @@ export const useUserStore = create<UserState>()(
           storage.delete(name);
         },
       })),
+      onRehydrateStorage: () => (state) => {
+        // Initialize userId if not present
+        if (state && !state.userId) {
+          state.userId = generateUserId();
+        }
+      },
     }
   )
 );
