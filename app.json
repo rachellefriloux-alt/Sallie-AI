@@ -24,7 +24,64 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [],
+    "plugins": [
+      [
+        "@sallie/plugin-injection",
+        {
+          "buildConfigurations": {
+            "development": {
+              "android": {
+                "plugins": ["core-ai-orchestrator", "voice-visualization", "advanced-theming"],
+                "parameters": {
+                  "DEBUG_MODE": true,
+                  "PLUGIN_INJECTION_ENABLED": true
+                }
+              },
+              "ios": {
+                "plugins": ["core-ai-orchestrator", "emotional-intelligence", "advanced-theming"],
+                "parameters": {
+                  "DEBUG_MODE": true,
+                  "PLUGIN_INJECTION_ENABLED": true
+                }
+              },
+              "web": {
+                "plugins": ["core-ai-orchestrator", "advanced-theming"],
+                "parameters": {
+                  "DEBUG_MODE": true,
+                  "WEB_OPTIMIZATION": false
+                }
+              }
+            },
+            "production": {
+              "android": {
+                "plugins": ["core-ai-orchestrator", "emotional-intelligence", "real-time-processing"],
+                "parameters": {
+                  "DEBUG_MODE": false,
+                  "OPTIMIZATION_LEVEL": "aggressive",
+                  "PLUGIN_INJECTION_ENABLED": true
+                }
+              },
+              "ios": {
+                "plugins": ["core-ai-orchestrator", "emotional-intelligence", "real-time-processing"],
+                "parameters": {
+                  "DEBUG_MODE": false,
+                  "OPTIMIZATION_LEVEL": "aggressive",
+                  "PLUGIN_INJECTION_ENABLED": true
+                }
+              },
+              "web": {
+                "plugins": ["core-ai-orchestrator", "advanced-theming"],
+                "parameters": {
+                  "DEBUG_MODE": false,
+                  "WEB_OPTIMIZATION": true,
+                  "BUNDLE_ANALYZER": false
+                }
+              }
+            }
+          }
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     }
