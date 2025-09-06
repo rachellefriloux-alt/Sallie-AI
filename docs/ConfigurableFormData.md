@@ -2,6 +2,8 @@
 
 This module implements the solution for the TODO: "make nested formats configurable" found in `packages/package/package_uploads.js.3.diff.txt`.
 
+# Configurable FormData Utilities
+
 ## Overview
 
 This module implements configurable nested formats for FormData handling, addressing the TODO: "make nested formats configurable" from the OpenAI uploads library. It provides flexible FormData serialization that can adapt to different API requirements.
