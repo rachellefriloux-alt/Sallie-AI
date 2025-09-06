@@ -485,6 +485,61 @@ export class OpenAIIntegration {
     return Promise.all(uploadPromises);
   }
 
+  /**
+   * Upload file with configurable FormData formatting
+   */
+  async uploadFile(file: File | Blob, metadata?: Record<string, any>): Promise<any> {
+    if (!this.config.apiKey) {
+      throw new Error('OpenAI API key not available');
+    }
+
+    try {
+      // Create FormData with configured nested formatting
+      const formDataConfig = this.config.uploadFormatConfig || PRESET_CONFIGS.OPENAI;
+      const configurableFormData = new ConfigurableFormData(formDataConfig);
+      
+      const uploadData: Record<string, any> = {
+        file,
+        purpose: 'assistants' // Default purpose for Sallie AI
+      };
+
+      // Add metadata if provided
+      if (metadata) {
+        uploadData.metadata = metadata;
+      }
+
+      const formData = await configurableFormData.createForm(uploadData);
+
+      const response = await fetch(`${this.baseURL}/files`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`File upload error: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('File upload error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Upload multiple files with configurable formatting
+   */
+  async uploadFiles(files: (File | Blob)[], metadata?: Record<string, any>[]): Promise<any[]> {
+    const uploadPromises = files.map((file, index) => 
+      this.uploadFile(file, metadata?.[index])
+    );
+    
+    return Promise.all(uploadPromises);
+  }
+
   // Memory and learning integration
   async processMemoryForInsights(memories: any[]): Promise<string[]> {
     if (memories.length === 0) return [];

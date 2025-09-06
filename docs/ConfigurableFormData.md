@@ -142,7 +142,7 @@ const openai = new OpenAIIntegration({
   uploadFormatConfig: {
     arrayFormat: 'brackets',
     objectFormat: 'brackets'
-// Replace the hardcoded addFormValue function
+  // Replace the hardcoded addFormValue function
 async function createMultipartForm(body: any, formatConfig?: NestedFormatConfig) {
   if (!hasUploadableValue(body)) {
     return { body }; // Not multipart
