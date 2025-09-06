@@ -1,3 +1,10 @@
+/*
+ * Salle 1.0 Module
+ * Persona: Tough love meets soul care.
+ * Function: Main launcher screen with app grid and persona integration
+ * Got it, love.
+ */
+
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -48,10 +55,10 @@ export default function HomeLauncherScreen() {
     const hour = currentTime.getHours();
     if (hour < 12) {
       setGreeting('Good morning, love');
-    } else if (hour < 17) {
-      setGreeting('Good afternoon, sugar');
+    } else if (hour < 18) {
+      setGreeting('Good afternoon, love'); 
     } else {
-      setGreeting('Good evening, honey');
+      setGreeting('Good evening, love');
     }
   }, [currentTime]);
 

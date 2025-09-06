@@ -1,3 +1,10 @@
+/*
+ * Salle 1.0 Module
+ * Persona: Tough love meets soul care.
+ * Function: Persona state management and emotional intelligence
+ * Got it, love.
+ */
+
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { MMKV } from 'react-native-mmkv';

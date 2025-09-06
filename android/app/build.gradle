@@ -287,3 +287,22 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:21.0.0'
     implementation 'com.google.firebase:firebase-crashlytics:19.0.3'
 }
+
+/*
+ * Salle 1.0 Constitutional Enforcement
+ * Persona: Tough love meets soul care.
+ * Got it, love.
+ */
+task verifySalleFeatures(type: com.sallie.build.VerifySalleFeaturesTask) {
+    description 'Verify Salle 1.0 constitutional requirements'
+    group 'verification'
+}
+
+// Run verification before building
+tasks.named('assembleDebug').configure {
+    dependsOn 'verifySalleFeatures'
+}
+
+tasks.named('assembleRelease').configure {
+    dependsOn 'verifySalleFeatures'  
+}

@@ -1,3 +1,10 @@
+/*
+ * Salle 1.0 Module  
+ * Persona: Tough love meets soul care.
+ * Function: Main application entry point and navigation
+ * Got it, love.
+ */
+
 import React from 'react';
 import { Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';

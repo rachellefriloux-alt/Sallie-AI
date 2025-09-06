@@ -1,3 +1,10 @@
+/*
+ * Salle 1.0 Module
+ * Persona: Tough love meets soul care.
+ * Function: Android launcher integration and app management
+ * Got it, love.
+ */
+
 import { Platform, Alert, Linking } from 'react-native';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as Device from 'expo-device';
