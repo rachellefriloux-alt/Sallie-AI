@@ -24,6 +24,7 @@ import * as Battery from 'expo-battery';
 import * as Device from 'expo-device';
 import DeviceVoiceController from './DeviceVoiceController';
 import { godModeManager } from '../../../core/GodModeManager';
+import { useUserStore } from '../../../app/store/user';
 
 const { width } = Dimensions.get('window');
 
@@ -48,6 +49,9 @@ const DeviceControlDemo: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [voiceCommands, setVoiceCommands] = useState<string[]>([]);
+
+  // Get user ID from store
+  const userId = useUserStore((state) => state.userId);
 
   useEffect(() => {
     initializeDeviceState();
@@ -223,7 +227,6 @@ const DeviceControlDemo: React.FC = () => {
         break;
       case 'native_godmode':
         try {
-          const userId = 'default_user'; // TODO: Get from user context/store
           const godModeSuccess = await godModeManager.activateGodMode(userId, 'Demo activation');
 
           if (godModeSuccess) {
