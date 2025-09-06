@@ -1,10 +1,9 @@
-// Salle Persona Module
-// ResearchService.js (TypeScript-specific logic reviewed and adapted)
-// Code reviewed: No TypeScript-specific logic remains; compatible with JavaScript.
-// TODO: Review for any remaining TypeScript-specific logic (e.g., type assumptions, async patterns, structure) and remove this comment once confirmed.
-// TODO: Review and adapt TypeScript-specific logic for JS compatibility.
-// NOTE: Check async/await usage and object structure assumptions below for JS compatibility.
-// If you encounter issues, check for places where types were assumed or where TypeScript features were used.
+/*
+ * Sallie 1.0 Module
+ * Persona: Tough love meets soul care.
+ * Function: Research service with async capabilities and caching.
+ * Got it, love.
+ */
 
 class ResearchService {
     constructor() {
@@ -14,7 +13,6 @@ class ResearchService {
         this.cache = new Map();
     }
 
-    // TODO: Ensure destructuring defaults and async/await usage are compatible with JS runtime.
     async researchTopic(topic, options = {}) {
         const {
             depth = 'basic',
@@ -47,7 +45,6 @@ class ResearchService {
         }
     }
 
-    // TODO: Validate object structure and cache logic for JS compatibility.
     async performResearch(topic, depth, sources, timeout) {
         const results = {
             topic,
