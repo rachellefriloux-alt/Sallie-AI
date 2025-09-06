@@ -287,3 +287,72 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:21.0.0'
     implementation 'com.google.firebase:firebase-crashlytics:19.0.3'
 }
+
+/*
+ * Salle 1.0 Module
+ * Persona: Tough love meets soul care.
+ * Function: Example plugin injection tasks for nested builds.
+ * Got it, love.
+ */
+
+// Example of using the plugin injection functionality
+task sallePluginInjectionExample(type: PluginInjectingGradleBuild) {
+    description = "Example task demonstrating plugin injection for Salle nested builds"
+    group = "salle-build"
+    
+    // Configure basic build parameters
+    projectDir = project.projectDir.absolutePath
+    tasks = ["clean", "assembleDebug"]
+    
+    // Inject common Android and Kotlin plugins
+    injectPlugin("org.jetbrains.kotlin.android", "1.9.25")
+    injectPlugin("com.android.application")
+    
+    // Inject quality plugins with configuration
+    injectPlugin("org.jlleitschuh.gradle.ktlint", "12.1.0", [
+        "android": "true",
+        "outputToConsole": "true"
+    ])
+    
+    // Example plugin configurations string format
+    pluginConfigurations = "io.gitlab.arturbosch.detekt:1.23.4;org.jetbrains.dokka:1.9.10"
+    
+    // Enable plugin injection
+    enablePluginInjection = true
+    
+    doFirst {
+        logger.lifecycle("🔧 Salle plugin injection example starting...")
+        logger.lifecycle("📍 Target directory: ${projectDir.get()}")
+        logger.lifecycle("🎯 Tasks to execute: ${tasks.get().join(', ')}")
+    }
+}
+
+// Example using the DSL approach
+task salleAdvancedPluginExample(type: PluginInjectingGradleBuild) {
+    description = "Advanced plugin injection example with DSL configuration"
+    group = "salle-build"
+    
+    projectDir = project.projectDir.absolutePath
+    tasks = ["build"]
+    
+    pluginInjection {
+        // Standard Android plugins
+        androidBuildPlugins()
+        
+        // Salle verification plugins
+        salleVerificationPlugins()
+        
+        // Quality plugins
+        qualityPlugins()
+        
+        // Custom plugin configuration
+        plugin("com.google.gms.google-services", "4.4.2") {
+            put("enableCrashlytics", "true")
+            put("enableAnalytics", "true")
+        }
+    }
+    
+    doFirst {
+        logger.lifecycle("🚀 Advanced Salle plugin injection starting - Got it, love.")
+    }
+}
