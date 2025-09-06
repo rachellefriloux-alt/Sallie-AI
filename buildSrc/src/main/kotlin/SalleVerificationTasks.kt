@@ -151,3 +151,56 @@ abstract class VerifySalleLayering : DefaultTask() {
         println("🏗️ Salle layering verification passed - Modular architecture preserved.")
     }
 }
+
+/**
+ * Verifies plugin injection tasks are properly configured.
+ */
+abstract class VerifySallePluginInjection : DefaultTask() {
+    
+    @get:Input
+    abstract val baseDirPath: Property<String>
+    
+    @get:Input
+    abstract val requiredPluginTasks: ListProperty<String>
+    
+    @get:InputFiles
+    abstract val buildFiles: Property<FileTree>
+    
+    @TaskAction
+    fun verifyPluginInjection() {
+        val violations = mutableListOf<String>()
+        
+        // Check for plugin injection task definitions
+        buildFiles.get().forEach { file ->
+            if (file.name.contains("build.gradle")) {
+                val content = file.readText()
+                
+                // Verify plugin injection tasks exist
+                requiredPluginTasks.get().forEach { taskName ->
+                    if (!content.contains("task $taskName(type: PluginInjectingGradleBuild)") &&
+                        !content.contains("\"$taskName\", PluginInjectingGradleBuild")) {
+                        violations.add("${file.path}: missing required plugin injection task '$taskName'")
+                    }
+                }
+                
+                // Check for proper Salle headers in plugin injection tasks
+                if (content.contains("PluginInjectingGradleBuild") && 
+                    !content.contains("Salle 1.0 Module")) {
+                    violations.add("${file.path}: plugin injection tasks missing Salle header")
+                }
+                
+                // Verify plugin injection follows Salle persona
+                if (content.contains("PluginInjectingGradleBuild") && 
+                    !content.contains("Got it, love")) {
+                    violations.add("${file.path}: plugin injection tasks missing persona signature")
+                }
+            }
+        }
+        
+        if (violations.isNotEmpty()) {
+            throw RuntimeException("Salle plugin injection violations found:\n${violations.joinToString("\n")}")
+        }
+        
+        println("🔌 Salle plugin injection verification passed - Plugin architecture intact, love.")
+    }
+}
