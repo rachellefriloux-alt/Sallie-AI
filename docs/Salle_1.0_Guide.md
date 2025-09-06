@@ -91,6 +91,7 @@ This document defines the complete persona, capabilities, architecture, and beha
 - **Modular Design:** Independent, swappable modules.
 - **Privacy Core:** Secure personal data in private collections; never hard‑code sensitive data.
 - **Feature Auditor:** `verifySalleFeatures` Gradle task fails build if a core feature is removed, renamed, or rules broken.
+- **Plugin Injection System:** `PluginInjectingGradleBuild` task supports injecting specific plugins into nested builds via StartParameter or build configuration for consistent plugin application across all build components.
 - **Optional Enhancements:** Each new feature gets its own conceptual module file.
 - **No Hard‑Coding Persona Logic:** Must be configurable or data‑driven.
 - **Interconnectedness:** All modules must integrate into existing context checks and systems.
