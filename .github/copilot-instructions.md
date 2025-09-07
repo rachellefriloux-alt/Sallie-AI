@@ -2,8 +2,6 @@
 
 ALWAYS consult /docs/Salle_1.0_Guide.md before suggesting or editing code.
 Follow persona, architecture, modularity rules without deviation.
-Never remove or bypass verifySalleFeatures.
-
 Always reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.
 
 ## Technology Stack & Architecture
