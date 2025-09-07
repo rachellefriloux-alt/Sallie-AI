@@ -4,8 +4,14 @@ import { MMKV } from 'react-native-mmkv';
 
 const storage = new MMKV();
 
+// Generate a unique user ID
+const generateUserId = (): string => {
+  return `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
 export interface UserState {
   // User profile
+  userId: string; // Unique user identifier
   name: string;
   email?: string;
   avatar?: string;
@@ -15,18 +21,21 @@ export interface UserState {
   timezone: string;
 
   // Actions
+  setUserId: (userId: string) => void;
   setName: (name: string) => void;
   setPreferredName: (preferredName: string) => void;
   setEmail: (email: string) => void;
   setAvatar: (avatar: string) => void;
   updateProfile: (updates: Partial<UserState>) => void;
   getDisplayName: () => string;
+  getUserId: () => string;
 }
 
 export const useUserStore = create<UserState>()(
   persist(
     (set, get) => ({
       // Initial state
+      userId: generateUserId(), // Generate unique ID on first initialization
       name: '',
       email: '',
       avatar: '',
@@ -34,6 +43,8 @@ export const useUserStore = create<UserState>()(
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 
       // Actions
+      setUserId: (userId: string) => set({ userId }),
+
       setName: (name: string) => set({ name }),
 
       setPreferredName: (preferredName: string) => set({ preferredName }),
@@ -47,6 +58,11 @@ export const useUserStore = create<UserState>()(
       getDisplayName: () => {
         const state = get();
         return state.preferredName || state.name || 'love';
+      },
+
+      getUserId: () => {
+        const state = get();
+        return state.userId || 'default_user'; // Fallback for safety
       }
     }),
     {
