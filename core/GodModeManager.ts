@@ -34,8 +34,12 @@ class GodModeManager {
 <<<<<<< HEAD
   private activationAttempts: Map<string, number[]> = new Map();
 =======
+<<<<<<< HEAD
+  private activationAttempts: Map<string, number[]> = new Map();
+=======
   private readonly provenanceLogger = new ProvenanceLogger();
 >>>>>>> 4308d26bc4acfd1ce38a62c2338c1b02438e3024
+>>>>>>> origin/main
 
   private readonly defaultFeatures: GodModeFeature[] = [
     {
@@ -232,6 +236,23 @@ class GodModeManager {
   }
 
   private async checkActivationRequirements(userId: string): Promise<boolean> {
+<<<<<<< HEAD
+    try {
+      console.log('Checking God-Mode activation requirements for user:', userId);
+
+      // 1. Validate user identity
+      if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
+        console.error('God-Mode activation failed: Invalid userId');
+        return false;
+      }
+
+      // 2. Check for required consents for sensitive features
+      const hasRequiredConsents = await this.checkRequiredConsents(userId);
+      if (!hasRequiredConsents) {
+        console.error('God-Mode activation failed: Required consents not granted');
+        return false;
+      }
+=======
       try {
         console.log('Checking God-Mode activation requirements for user:', userId);
 
@@ -247,6 +268,7 @@ class GodModeManager {
           console.error('God-Mode activation failed: Required consents not granted');
           return false;
         }
+>>>>>>> origin/main
 
       // 3. Check device permissions for features that require them
       const hasRequiredPermissions = await this.checkRequiredPermissions();
@@ -604,6 +626,8 @@ class GodModeManager {
   }
 
   /**
+<<<<<<< HEAD
+=======
    * Execute emergency override with monitoring
    */
   private async executeEmergencyOverride(params: any): Promise<boolean> {
@@ -702,6 +726,7 @@ class GodModeManager {
   }
 
   /**
+>>>>>>> origin/main
    * Check required consents for sensitive God-Mode features
    */
   private async checkRequiredConsents(userId: string): Promise<boolean> {
@@ -712,7 +737,11 @@ class GodModeManager {
 
       // Check consents for features that require special permissions
       const sensitiveFeatures = this.defaultFeatures.filter(f => f.requiresPermission);
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> origin/main
       for (const feature of sensitiveFeatures) {
         const consentType = this.mapFeatureToConsentType(feature.id);
         if (consentType && !runtimeConsent.isConsentGranted(consentType, { userId, feature: feature.id })) {
@@ -731,13 +760,22 @@ class GodModeManager {
   }
 
   /**
+<<<<<<< HEAD
+   * Map God-Mode features to consent types
+=======
    * Map God-Mode features to consent types with enhanced mapping
+>>>>>>> origin/main
    */
   private mapFeatureToConsentType(featureId: string): string | null {
     const consentMapping: Record<string, string> = {
       'device_control': 'DEVICE_CONTROL',
       'security_bypass': 'EMERGENCY_ACCESS',
       'advanced_ai': 'BEHAVIOR_ANALYSIS',
+<<<<<<< HEAD
+      'unlimited_memory': 'CONVERSATION_LOGGING'
+    };
+    
+=======
       'unlimited_memory': 'CONVERSATION_LOGGING',
       'gesture_control': 'GESTURE_RECOGNITION',
       'emergency_communication': 'EMERGENCY_COMMUNICATION',
@@ -752,6 +790,7 @@ class GodModeManager {
       'predictive_actions': 'PREDICTIVE_ANALYSIS'
     };
 
+>>>>>>> origin/main
     return consentMapping[featureId] || null;
   }
 
@@ -762,7 +801,11 @@ class GodModeManager {
     try {
       // For features requiring device permissions, we check if they're available
       const permissionRequiredFeatures = this.defaultFeatures.filter(f => f.requiresPermission);
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> origin/main
       if (permissionRequiredFeatures.length === 0) {
         return true; // No permission-dependent features
       }
@@ -770,7 +813,11 @@ class GodModeManager {
       // In a React Native environment, we would check actual permissions here
       // For now, we simulate permission checking
       const hasDevicePermissions = await this.checkDevicePermissions(permissionRequiredFeatures);
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> origin/main
       return hasDevicePermissions;
     } catch (error) {
       console.error('Error checking device permissions:', error);
@@ -786,7 +833,11 @@ class GodModeManager {
   private async checkDevicePermissions(features: GodModeFeature[]): Promise<boolean> {
     // This would integrate with react-native-permissions or similar
     // For now, we simulate the check
+<<<<<<< HEAD
+    
+=======
 
+>>>>>>> origin/main
     for (const feature of features) {
       switch (feature.id) {
         case 'device_control':
@@ -801,21 +852,45 @@ class GodModeManager {
           console.log(`No specific permission check for feature: ${feature.id}`);
       }
     }
+<<<<<<< HEAD
+    
+=======
 
+>>>>>>> origin/main
     // For now, assume permissions are available
     return true;
   }
 
   /**
+<<<<<<< HEAD
+   * Check security constraints for God-Mode activation
+   */
+  private checkSecurityConstraints(userId: string): boolean {
+    // 1. Basic user validation
+    if (userId.length < 3) {
+      console.warn('User ID too short for God-Mode activation');
+=======
    * Check security constraints for God-Mode activation with enhanced validation
    */
   private checkSecurityConstraints(userId: string): boolean {
     // 1. Basic user validation
     if (!this.validateUserId(userId)) {
+>>>>>>> origin/main
       return false;
     }
 
     // 2. Check for suspicious patterns
+<<<<<<< HEAD
+    if (userId.toLowerCase().includes('test') || userId.toLowerCase().includes('admin')) {
+      console.warn('God-Mode activation blocked for test/admin user');
+      return false;
+    }
+
+    // 3. Time-based constraints (e.g., not during maintenance hours)
+    const currentHour = new Date().getHours();
+    if (currentHour >= 2 && currentHour <= 4) {
+      console.warn('God-Mode activation restricted during maintenance hours (2-4 AM)');
+=======
     if (this.detectSuspiciousPatterns(userId)) {
       return false;
     }
@@ -832,6 +907,7 @@ class GodModeManager {
 
     // 5. System health check
     if (!this.checkSystemHealth()) {
+>>>>>>> origin/main
       return false;
     }
 
@@ -839,6 +915,9 @@ class GodModeManager {
   }
 
   /**
+<<<<<<< HEAD
+   * Rate limiting for God-Mode activations
+=======
    * Enhanced user ID validation
    */
   private validateUserId(userId: string): boolean {
@@ -998,10 +1077,16 @@ class GodModeManager {
 
   /**
    * Rate limiting for God-Mode activations with enhanced logic
+>>>>>>> origin/main
    */
   private checkRateLimit(userId: string): boolean {
     const key = `godmode_activation_${userId}`;
     const now = Date.now();
+<<<<<<< HEAD
+    const oneHourMs = 60 * 60 * 1000;
+    
+    // Simple in-memory rate limiting (in production, would use persistent storage)
+=======
 
     // Enhanced rate limiting configuration
     const limits = {
@@ -1012,11 +1097,30 @@ class GodModeManager {
       suspiciousThreshold: 10 // Flag for investigation if exceeded
     };
 
+>>>>>>> origin/main
     if (!this.activationAttempts) {
       this.activationAttempts = new Map();
     }
 
     const attempts = this.activationAttempts.get(key) || [];
+<<<<<<< HEAD
+    
+    // Remove attempts older than 1 hour
+    const recentAttempts = attempts.filter(timestamp => now - timestamp < oneHourMs);
+    
+    // Limit: 5 activations per hour
+    if (recentAttempts.length >= 5) {
+      console.warn(`God-Mode activation rate limit exceeded for user: ${userId}`);
+      return false;
+    }
+
+    // Record this attempt
+    recentAttempts.push(now);
+    this.activationAttempts.set(key, recentAttempts);
+    
+    return true;
+  }
+=======
     const recentAttempts = attempts.filter(timestamp => {
       const age = now - timestamp;
       return age < (7 * 24 * 60 * 60 * 1000); // Keep 7 days of history
@@ -1183,6 +1287,7 @@ class GodModeManager {
 
     console.log(`Cleaned up old activation attempts. Active users: ${this.activationAttempts.size}`);
   }
+>>>>>>> origin/main
 }
 
 export const godModeManager = new GodModeManager();
