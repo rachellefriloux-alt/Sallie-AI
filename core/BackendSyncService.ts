@@ -59,8 +59,10 @@ class BackendSyncService {
     }
   }
 
+  private networkSubscription: any;
+
   private setupConnectivityMonitoring() {
-    Network.addNetworkStateListener((state) => {
+    this.networkSubscription = Network.addNetworkStateListener((state) => {
       this.isOnline = state.isConnected || false;
     });
   }
@@ -248,6 +250,18 @@ class BackendSyncService {
 
   isConnected(): boolean {
     return this.isOnline;
+  }
+
+  // Cleanup resources
+  destroy() {
+    try {
+      if (this.networkSubscription && typeof this.networkSubscription.remove === 'function') {
+        this.networkSubscription.remove();
+        this.networkSubscription = null;
+      }
+    } catch (error) {
+      console.warn('Error cleaning up BackendSyncService:', error);
+    }
   }
 }
 

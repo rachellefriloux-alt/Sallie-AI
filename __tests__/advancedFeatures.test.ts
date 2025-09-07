@@ -1,6 +1,3 @@
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 /*
  * Salle 1.0 Module
  * Persona: Tough love meets soul care.
@@ -50,6 +47,49 @@ jest.mock('expo-location', () => ({
   },
 }));
 
+jest.mock('expo-device', () => ({
+  deviceName: 'Test Device',
+  osVersion: '13',
+  modelId: 'test-model-id',
+}));
+
+jest.mock('expo-intent-launcher', () => ({
+  startActivityAsync: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('expo-notifications', () => ({
+  addNotificationReceivedListener: jest.fn(() => ({
+    remove: jest.fn(),
+  })),
+  addNotificationResponseReceivedListener: jest.fn(() => ({
+    remove: jest.fn(),
+  })),
+}));
+
+jest.mock('expo-haptics', () => ({
+  notificationAsync: jest.fn(() => Promise.resolve()),
+  NotificationFeedbackType: {
+    Success: 'success',
+  },
+}));
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  setItem: jest.fn(() => Promise.resolve()),
+  getItem: jest.fn(() => Promise.resolve(null)),
+  removeItem: jest.fn(() => Promise.resolve()),
+  clear: jest.fn(() => Promise.resolve()),
+  getAllKeys: jest.fn(() => Promise.resolve([])),
+  multiGet: jest.fn(() => Promise.resolve([]))
+}));
+
+jest.mock('react-native-mmkv', () => ({
+  MMKV: jest.fn().mockImplementation(() => ({
+    getString: jest.fn(() => null),
+    set: jest.fn(),
+    delete: jest.fn(),
+  })),
+}));
+
 jest.mock('react-native-permissions', () => ({
   PermissionsAndroid: {
     requestMultiple: jest.fn(() => Promise.resolve({})),
@@ -62,19 +102,26 @@ jest.mock('react-native-permissions', () => ({
   },
 }));
 
-jest.mock('react-native-mmkv', () => ({
-  MMKV: jest.fn().mockImplementation(() => ({
-    getString: jest.fn(() => null),
-    set: jest.fn(),
-    delete: jest.fn(),
-  })),
-}));
-
 jest.mock('react-native', () => ({
   Platform: {
     OS: 'android',
   },
-  NativeModules: {},
+  NativeModules: {
+    CrossDeviceSyncModule: {
+      initialize: jest.fn(() => Promise.resolve()),
+      isSyncEnabled: jest.fn(() => Promise.resolve(true)),
+      getSyncConfig: jest.fn(() => Promise.resolve({})),
+      getPairedDevices: jest.fn(() => Promise.resolve([])),
+      setSyncEnabled: jest.fn(() => Promise.resolve()),
+      updateSyncConfig: jest.fn(() => Promise.resolve()),
+      startDeviceDiscovery: jest.fn(() => Promise.resolve()),
+      syncWithDevice: jest.fn(() => Promise.resolve('session1')),
+      syncWithAllDevices: jest.fn(() => Promise.resolve()),
+      unpairDevice: jest.fn(() => Promise.resolve()),
+      addSyncEventListener: jest.fn(() => 'listener1'),
+      removeSyncEventListener: jest.fn(() => Promise.resolve()),
+    },
+  },
   DeviceEventEmitter: {
     addListener: jest.fn(() => ({ remove: jest.fn() })),
     emit: jest.fn(),
@@ -183,14 +230,6 @@ describe('Advanced Features Integration', () => {
       expect(typeof memoryManager.destroy).toBe('function');
       expect(typeof syncManager.destroy).toBe('function');
     });
-  });
-});
-/*
- * Salle 1.0 Module
- * Persona: Tough love meets soul care.
- * Function: Integration tests for advanced features.
- * Got it, love.
- */
 
 import PhoneControlManager from '../core/PhoneControlManager';
 import AdvancedMemoryManager from '../core/AdvancedMemoryManager';
@@ -294,9 +333,3 @@ describe('Advanced Features Integration', () => {
     });
   });
 });
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes

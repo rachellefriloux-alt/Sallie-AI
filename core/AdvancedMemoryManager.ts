@@ -1,6 +1,3 @@
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 /*
  * Salle 1.0 Module
  * Persona: Tough love meets soul care.
@@ -342,6 +339,7 @@ class AdvancedMemoryManager {
 
   // Cleanup
   destroy() {
+
     if (this.cleanupTimer) {
       clearInterval(this.cleanupTimer);
       this.cleanupTimer = null;
@@ -349,16 +347,17 @@ class AdvancedMemoryManager {
     if (this.memoryMonitorTimer) {
       clearInterval(this.memoryMonitorTimer);
       this.memoryMonitorTimer = null;
+    try {
+      if (this.cleanupTimer) {
+        clearInterval(this.cleanupTimer);
+        this.cleanupTimer = null;
+      }
+      this.persistCache();
+    } catch (error) {
+      console.warn('Error cleaning up AdvancedMemoryManager:', error);
     }
-    this.persistCache();
   }
 }
 
 export default AdvancedMemoryManager;
 export type { MemoryConfig, MemoryStats, CacheEntry };
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes

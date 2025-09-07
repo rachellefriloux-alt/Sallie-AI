@@ -4,6 +4,21 @@
  */
 
 const { describe, it, expect, beforeEach, jest } = require('@jest/globals');
+
+// Mock AIContextManager at the top level
+jest.mock('./AIContextManager.ts', () => ({
+    getInstance: jest.fn(() => ({
+        buildContext: jest.fn(() => Promise.resolve({
+            emotionalState: { sentiment: 'neutral', intensity: 0.5 },
+            preferences: {},
+            recentMemories: [],
+            activeTasks: [],
+            relevantPeople: []
+        })),
+        learnFromInteraction: jest.fn(() => Promise.resolve())
+    }))
+}));
+
 const { OpenAIIntegration } = require('./OpenAIIntegration');
 
 describe('OpenAIIntegration', () => {
@@ -27,10 +42,10 @@ describe('OpenAIIntegration', () => {
             expect(openai.model).toBe('gpt-4o');
             expect(openai.defaultConfig).toEqual({
                 max_tokens: 500,
-                maxTokens: 500,
-                topP: 0.9,
-                frequencyPenalty: 0.3,
-                presencePenalty: 0.3
+                temperature: 0.7,
+                top_p: 0.9,
+                frequency_penalty: 0.3,
+                presence_penalty: 0.3
             });
         });
     });
