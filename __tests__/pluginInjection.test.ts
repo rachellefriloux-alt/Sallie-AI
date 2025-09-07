@@ -246,7 +246,7 @@ describe('Gradle-TypeScript Plugin Bridge', () => {
       },
       phase2_inject: (config: any) => {
         return {
-          injectionScript: generateInjectionScript(config.plugins),
+          injectionScript: generateTestInjectionScript(config.plugins),
           buildFile: 'build.gradle',
           status: 'ready'
         };
@@ -286,7 +286,7 @@ describe('Gradle-TypeScript Plugin Bridge', () => {
 });
 
 // Helper function for test
-function generateInjectionScript(plugins: string[]) {
+function generateTestInjectionScript(plugins: string[]) {
   return {
     plugins: plugins,
     content: `// Sallie 1.0 Plugin Injection\n${plugins.map(p => `apply plugin: '${p}'`).join('\n')}`,
