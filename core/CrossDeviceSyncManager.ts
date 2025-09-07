@@ -456,11 +456,13 @@ class CrossDeviceSyncManager {
       this.saveSyncState();
     } catch (error) {
       console.warn('Error cleaning up CrossDeviceSyncManager:', error);
-=======
+    }
+  }
+
+  private cleanup() {
     if (this.syncTimer) {
       clearInterval(this.syncTimer);
       this.syncTimer = null;
-
     }
   }
 }
