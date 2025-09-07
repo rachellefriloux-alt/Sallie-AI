@@ -5,6 +5,14 @@
  * Got it, love.
  */
 
+interface PluginPerformanceMetrics {
+  averageResponseTime: number;
+  memoryUsage: number;
+  errorCount: number;
+  successCount: number;
+  lastCallTimestamp: number;
+}
+
 interface Plugin {
   id: string;
   name: string;
@@ -20,6 +28,12 @@ interface Plugin {
   lastUpdated: Date;
   initialize?: () => Promise<void>;
   cleanup?: () => Promise<void>;
+  // Optional health monitoring methods
+  getMemoryUsage?: () => number;
+  getAverageResponseTime?: () => number;
+  getPerformanceMetrics?: () => PluginPerformanceMetrics;
+  validateConfiguration?: () => boolean;
+  checkPermissions?: () => boolean;
 }
 
 interface PluginMetrics {
@@ -35,6 +49,7 @@ class PluginRegistry {
   private plugins: Map<string, Plugin> = new Map();
   private initialized: Set<string> = new Set();
   private hooks: Map<string, Function[]> = new Map();
+  private performanceMetrics: Map<string, PluginPerformanceMetrics> = new Map();
 
   constructor() {
     this.initializeBuiltinPlugins();
@@ -301,23 +316,138 @@ class PluginRegistry {
   }
 
   async runHealthCheck(): Promise<void> {
-    for (const plugin of this.plugins.values()) {
-      if (!plugin.enabled) continue;
+    for (const plugin of Array.from(this.plugins.values())) {
+      if (!plugin.enabled) {
+        plugin.health = 'disabled';
+        continue;
+      }
 
       try {
+        let healthStatus: 'healthy' | 'warning' | 'error' = 'healthy';
+        const warnings: string[] = [];
+
         // Check if dependencies are still healthy
         if (!this.checkDependencies(plugin)) {
           plugin.health = 'warning';
+          warnings.push('dependency issues');
           continue;
         }
 
-        // TODO: Add more specific health checks
-        plugin.health = 'healthy';
+        // Memory usage check
+        if (plugin.getMemoryUsage) {
+          try {
+            const memoryUsage = plugin.getMemoryUsage();
+            const memoryThresholdMB = 50 * 1024 * 1024; // 50MB threshold
+            if (memoryUsage > memoryThresholdMB) {
+              warnings.push('high memory usage');
+              healthStatus = 'warning';
+            }
+          } catch (error) {
+            warnings.push('memory check failed');
+            healthStatus = 'warning';
+          }
+        }
+
+        // Performance/response time check
+        if (plugin.getAverageResponseTime) {
+          try {
+            const avgResponseTime = plugin.getAverageResponseTime();
+            const responseTimeThreshold = 5000; // 5 second threshold
+            if (avgResponseTime > responseTimeThreshold) {
+              warnings.push('slow response time');
+              healthStatus = 'warning';
+            }
+          } catch (error) {
+            warnings.push('performance check failed');
+            healthStatus = 'warning';
+          }
+        }
+
+        // Error rate validation using performance metrics
+        if (plugin.getPerformanceMetrics) {
+          try {
+            const metrics = plugin.getPerformanceMetrics();
+            const totalCalls = metrics.errorCount + metrics.successCount;
+            if (totalCalls > 0) {
+              const errorRate = metrics.errorCount / totalCalls;
+              if (errorRate > 0.5) { // 50% error rate threshold
+                healthStatus = 'error';
+                warnings.push('critical error rate');
+              } else if (errorRate > 0.1) { // 10% warning threshold
+                healthStatus = 'warning';
+                warnings.push('high error rate');
+              }
+            }
+            
+            // Update internal performance tracking
+            this.performanceMetrics.set(plugin.id, metrics);
+          } catch (error) {
+            warnings.push('metrics collection failed');
+            healthStatus = 'warning';
+          }
+        }
+
+        // Configuration validation
+        if (plugin.validateConfiguration) {
+          try {
+            if (!plugin.validateConfiguration()) {
+              warnings.push('invalid configuration');
+              healthStatus = 'warning';
+            }
+          } catch (error) {
+            warnings.push('configuration validation failed');
+            healthStatus = 'warning';
+          }
+        }
+
+        // Permission validation
+        if (plugin.checkPermissions) {
+          try {
+            if (!plugin.checkPermissions()) {
+              warnings.push('permission issues');
+              healthStatus = 'warning';
+            }
+          } catch (error) {
+            warnings.push('permission check failed');
+            healthStatus = 'warning';
+          }
+        }
+
+        // Initialization status verification
+        if (!this.initialized.has(plugin.id)) {
+          warnings.push('not properly initialized');
+          healthStatus = 'warning';
+        }
+
+        // Version compatibility check
+        if (plugin.version && plugin.version.startsWith('0.')) {
+          warnings.push('pre-release version');
+          if (healthStatus === 'healthy') {
+            healthStatus = 'warning';
+          }
+        }
+
+        plugin.health = healthStatus;
+        plugin.lastUpdated = new Date();
+
+        // Log warnings if any
+        if (warnings.length > 0) {
+          console.warn(`Plugin ${plugin.id} health warnings:`, warnings.join(', '));
+        }
+
       } catch (error) {
         plugin.health = 'error';
         console.error(`Health check failed for ${plugin.id}:`, error);
       }
     }
+  }
+
+  getPerformanceMetrics(pluginId: string): PluginPerformanceMetrics | null {
+    return this.performanceMetrics.get(pluginId) || null;
+  }
+
+  getAllPerformanceMetrics(): Map<string, PluginPerformanceMetrics> {
+    return new Map(this.performanceMetrics);
   }
 
   onPluginChange(callback: Function): void {
@@ -368,4 +498,4 @@ class PluginRegistry {
 
 export const pluginRegistry = new PluginRegistry();
 
-export { PluginRegistry, type Plugin, type PluginMetrics };
+export { PluginRegistry, type Plugin, type PluginMetrics, type PluginPerformanceMetrics };
