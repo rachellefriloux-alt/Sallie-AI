@@ -77,8 +77,7 @@
     "react-native-web": "~0.19.13",
     "uuid": "^11.0.3",
     "zod": "^3.23.8",
-    "zustand": "^5.0.0",
-    "expo-constants": "~17.0.8"
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.13",
@@ -97,10 +96,14 @@
   },
   "jest": {
     "preset": "jest-expo",
+
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|react-native-mmkv)"
     ],
     "setupFiles": [
+      "./jest.setup.js"
+    ],
+    "setupFilesAfterEnv": [
       "./jest.setup.js"
     ]
   },

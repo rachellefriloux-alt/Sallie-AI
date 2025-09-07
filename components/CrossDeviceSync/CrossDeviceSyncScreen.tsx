@@ -37,15 +37,15 @@ type DeviceSyncCardProps = {
 /**
  * Card component to display a paired device with sync controls
  */
-const DeviceSyncCard: React.FC<DeviceSyncCardProps> = ({ 
-  device, 
-  onSyncPress, 
+const DeviceSyncCard: React.FC<DeviceSyncCardProps> = ({
+  device,
+  onSyncPress,
   onUnpairPress,
-  syncSession 
+  syncSession
 }) => {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
-  
+
   // Normalize device type (supports legacy uppercase and new lowercase values)
   const getDeviceIcon = () => {
     const rawType = (device.type || device.deviceType || '').toString().toUpperCase();
@@ -64,7 +64,7 @@ const DeviceSyncCard: React.FC<DeviceSyncCardProps> = ({
         return 'hardware-chip';
     }
   };
-  
+
   // Get transport icon (normalize legacy uppercase names)
   const getTransportIcon = () => {
     const tt = (device.transportType || '').toString().toUpperCase();
@@ -83,7 +83,7 @@ const DeviceSyncCard: React.FC<DeviceSyncCardProps> = ({
         return 'swap-horizontal' as const;
     }
   };
-  
+
   // Format last sync time
   const getLastSyncText = () => {
     const ts = device.lastSyncTime ?? device.lastSeen ?? 0;
@@ -91,7 +91,7 @@ const DeviceSyncCard: React.FC<DeviceSyncCardProps> = ({
     const date = new Date(typeof ts === 'number' ? ts : new Date(ts).getTime());
     return `Last synced: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   };
-  
+
   return (
     <View style={[styles.deviceCard, { backgroundColor: colors.card }]}>
       <View style={styles.deviceHeader}>
@@ -107,7 +107,7 @@ const DeviceSyncCard: React.FC<DeviceSyncCardProps> = ({
             </View>
           </View>
         </View>
-        
+
         {syncSession ? (
           <View style={styles.syncStatusContainer}>
             {(syncSession && (syncSession.status === 'TRANSFERRING' || syncSession.status === 'active' || syncSession.status === 'ACTIVE')) ? (
@@ -127,7 +127,7 @@ const DeviceSyncCard: React.FC<DeviceSyncCardProps> = ({
           </View>
         ) : (
           <View style={styles.actionsRow}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.syncButton, { backgroundColor: colors.primary }]}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -136,8 +136,8 @@ const DeviceSyncCard: React.FC<DeviceSyncCardProps> = ({
             >
               <Text style={styles.syncButtonText}>Sync</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={styles.unpairButton}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -149,7 +149,7 @@ const DeviceSyncCard: React.FC<DeviceSyncCardProps> = ({
           </View>
         )}
       </View>
-      
+
       {syncSession && (syncSession.error || syncSession.status === 'FAILED') && (
         <Text style={[styles.errorText, { color: 'red' }]}>
           {syncSession.error || 'Sync failed'}
@@ -167,7 +167,7 @@ export default function CrossDeviceSyncScreen() {
   const colors = Colors[colorScheme];
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  
+
   // State
   const [isLoading, setIsLoading] = useState(true);
   const [syncEnabled, setSyncEnabled] = useState(false);
@@ -182,7 +182,7 @@ export default function CrossDeviceSyncScreen() {
   const [pairedDevices, setPairedDevices] = useState<PairedDevice[]>([]);
   const [syncSessions, setSyncSessions] = useState<Record<string, SyncSession>>({});
   const [isDiscovering, setIsDiscovering] = useState(false);
-  
+
   // Initialize
   useEffect(() => {
     const initSync = async () => {
@@ -190,13 +190,13 @@ export default function CrossDeviceSyncScreen() {
         await CrossDeviceSyncModule.initialize();
         const enabled = await CrossDeviceSyncModule.isSyncEnabled();
         setSyncEnabled(enabled);
-        
+
         const config = await CrossDeviceSyncModule.getSyncConfig();
         setSyncConfig(config);
-        
+
         const devices = await CrossDeviceSyncModule.getPairedDevices();
         setPairedDevices(devices);
-        
+
         setIsLoading(false);
       } catch (error) {
         console.error('Error initializing sync:', error);
@@ -204,9 +204,9 @@ export default function CrossDeviceSyncScreen() {
         setIsLoading(false);
       }
     };
-    
+
     initSync();
-    
+
     // Setup event listener for sync events
     const eventListener = CrossDeviceSyncModule.addSyncEventListener((event: { type: any; sessionId: string | number; progress: any; error: any; device: { id: any; }; }) => {
       switch (event.type) {
@@ -219,7 +219,7 @@ export default function CrossDeviceSyncScreen() {
             }
           }));
           break;
-        
+
         case 'SyncCompleted':
           setSyncSessions(prev => ({
             ...prev,
@@ -229,13 +229,13 @@ export default function CrossDeviceSyncScreen() {
               progress: 100
             }
           }));
-          
+
           // Refresh paired devices to update last sync time
           CrossDeviceSyncModule.getPairedDevices()
             .then((devices: React.SetStateAction<PairedDevice[]>) => setPairedDevices(devices))
             .catch((err: any) => console.error('Failed to refresh devices:', err));
           break;
-          
+
         case 'SyncFailed':
           setSyncSessions(prev => ({
             ...prev,
@@ -246,32 +246,32 @@ export default function CrossDeviceSyncScreen() {
             }
           }));
           break;
-          
+
         case 'DevicePaired':
           // Cast incoming event.device to PairedDevice shape (some native events are partial)
           setPairedDevices(prev => [...prev, (event.device as PairedDevice)]);
           setIsDiscovering(false);
           break;
-          
+
         case 'DeviceUnpaired':
           setPairedDevices(prev => prev.filter(d => d.id !== event.device.id));
           break;
       }
     });
-    
+
     return () => {
       CrossDeviceSyncModule.removeSyncEventListener(eventListener);
     };
   }, []);
-  
+
   // Handle toggle sync
   const handleToggleSync = async (value: boolean) => {
     try {
       await CrossDeviceSyncModule.setSyncEnabled(value);
       setSyncEnabled(value);
       Haptics.notificationAsync(
-        value 
-          ? Haptics.NotificationFeedbackType.Success 
+        value
+          ? Haptics.NotificationFeedbackType.Success
           : Haptics.NotificationFeedbackType.Warning
       );
     } catch (error) {
@@ -279,7 +279,7 @@ export default function CrossDeviceSyncScreen() {
       Alert.alert('Sync Error', 'Failed to toggle sync.');
     }
   };
-  
+
   // Handle sync config change
   const handleConfigChange = async (key: keyof Partial<SyncConfiguration>, value: boolean) => {
     try {
@@ -293,11 +293,11 @@ export default function CrossDeviceSyncScreen() {
       Alert.alert('Sync Error', 'Failed to update sync configuration.');
     }
   };
-  
+
   // Start device discovery
   const handleStartDiscovery = async () => {
     if (isDiscovering) return;
-    
+
     setIsDiscovering(true);
     try {
       await CrossDeviceSyncModule.startDeviceDiscovery();
@@ -308,12 +308,12 @@ export default function CrossDeviceSyncScreen() {
       setIsDiscovering(false);
     }
   };
-  
+
   // Sync with device
   const handleSyncWithDevice = async (deviceId: string) => {
     try {
       const sessionId = await CrossDeviceSyncModule.syncWithDevice(deviceId);
-      
+
       // Create initial session state
       const device = pairedDevices.find(d => d.id === deviceId);
       if (device) {
@@ -334,7 +334,7 @@ export default function CrossDeviceSyncScreen() {
       Alert.alert('Sync Error', `Failed to sync with device: ${error}`);
     }
   };
-  
+
   // Sync with all devices
   const handleSyncAll = async () => {
     try {
@@ -344,7 +344,7 @@ export default function CrossDeviceSyncScreen() {
       Alert.alert('Sync Error', 'Failed to sync with all devices.');
     }
   };
-  
+
   // Unpair device
   const handleUnpairDevice = async (deviceId: string) => {
     Alert.alert(
@@ -372,7 +372,7 @@ export default function CrossDeviceSyncScreen() {
       ]
     );
   };
-  
+
   // Render loading state
   if (isLoading) {
     return (
@@ -381,7 +381,7 @@ export default function CrossDeviceSyncScreen() {
       </View>
     );
   }
-  
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -400,7 +400,7 @@ export default function CrossDeviceSyncScreen() {
           thumbColor={colors.switchThumb}
         />
       </View>
-      
+
       {/* Info Card */}
       <BlurView intensity={30} style={[styles.infoCard, { backgroundColor: colors.cardTransparent }]}>
         <Ionicons name="information-circle" size={24} color={colors.primary} style={styles.infoIcon} />
@@ -409,13 +409,13 @@ export default function CrossDeviceSyncScreen() {
           Enable sync to keep your experience consistent everywhere.
         </Text>
       </BlurView>
-      
+
       {syncEnabled && (
         <>
           {/* Sync Settings */}
           <View style={[styles.section, { backgroundColor: colors.card }]}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Sync Settings</Text>
-            
+
             <View style={styles.settingRow}>
               <Text style={[styles.settingLabel, { color: colors.text }]}>Sync Memory</Text>
               <Switch
@@ -425,7 +425,7 @@ export default function CrossDeviceSyncScreen() {
                 thumbColor={colors.switchThumb}
               />
             </View>
-            
+
             <View style={styles.settingRow}>
               <Text style={[styles.settingLabel, { color: colors.text }]}>Sync Preferences</Text>
               <Switch
@@ -435,7 +435,7 @@ export default function CrossDeviceSyncScreen() {
                 thumbColor={colors.switchThumb}
               />
             </View>
-            
+
             <View style={styles.settingRow}>
               <Text style={[styles.settingLabel, { color: colors.text }]}>Sync Personality</Text>
               <Switch
@@ -445,7 +445,7 @@ export default function CrossDeviceSyncScreen() {
                 thumbColor={colors.switchThumb}
               />
             </View>
-            
+
             <View style={styles.settingRow}>
               <Text style={[styles.settingLabel, { color: colors.text }]}>WiFi Only</Text>
               <Switch
@@ -455,7 +455,7 @@ export default function CrossDeviceSyncScreen() {
                 thumbColor={colors.switchThumb}
               />
             </View>
-            
+
             <View style={styles.settingRow}>
               <Text style={[styles.settingLabel, { color: colors.text }]}>Auto Sync</Text>
               <Switch
@@ -466,13 +466,13 @@ export default function CrossDeviceSyncScreen() {
               />
             </View>
           </View>
-          
+
           {/* Paired Devices */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={[styles.sectionTitle, { color: colors.text }]}>Paired Devices</Text>
               {pairedDevices.length > 0 && (
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={[styles.syncAllButton, { backgroundColor: colors.primary }]}
                   onPress={handleSyncAll}
                 >
@@ -480,7 +480,7 @@ export default function CrossDeviceSyncScreen() {
                 </TouchableOpacity>
               )}
             </View>
-            
+
             {pairedDevices.length === 0 ? (
               <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
                 No devices paired yet
@@ -498,8 +498,8 @@ export default function CrossDeviceSyncScreen() {
                 />
               ))
             )}
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={[styles.addDeviceButton, { borderColor: colors.border }]}
               onPress={handleStartDiscovery}
               disabled={isDiscovering}
@@ -521,9 +521,9 @@ export default function CrossDeviceSyncScreen() {
               )}
             </TouchableOpacity>
           </View>
-          
+
           {/* Advanced Options */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.advancedButton, { borderColor: colors.border }]}
             onPress={() => {
               // Navigate to advanced options screen
@@ -708,3 +708,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
