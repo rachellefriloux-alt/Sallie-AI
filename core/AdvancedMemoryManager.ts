@@ -339,18 +339,14 @@ class AdvancedMemoryManager {
 
   // Cleanup
   destroy() {
-
-    if (this.cleanupTimer) {
-      clearInterval(this.cleanupTimer);
-      this.cleanupTimer = null;
-    }
-    if (this.memoryMonitorTimer) {
-      clearInterval(this.memoryMonitorTimer);
-      this.memoryMonitorTimer = null;
     try {
       if (this.cleanupTimer) {
         clearInterval(this.cleanupTimer);
         this.cleanupTimer = null;
+      }
+      if (this.memoryMonitorTimer) {
+        clearInterval(this.memoryMonitorTimer);
+        this.memoryMonitorTimer = null;
       }
       this.persistCache();
     } catch (error) {

@@ -1,3 +1,4 @@
+/*
  * Salle 1.0 Module
  * Persona: Tough love meets soul care.
  * Function: Advanced phone control and device management system.
@@ -303,6 +304,7 @@ class PhoneControlManager {
       }
     } catch (error) {
       console.warn('Error cleaning up PhoneControlManager subscriptions:', error);
+    }
 
     if (this.batterySubscription && typeof this.batterySubscription.remove === 'function') {
       this.batterySubscription.remove();

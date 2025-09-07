@@ -458,13 +458,6 @@ class CrossDeviceSyncManager {
       console.warn('Error cleaning up CrossDeviceSyncManager:', error);
     }
   }
-
-  private cleanup() {
-    if (this.syncTimer) {
-      clearInterval(this.syncTimer);
-      this.syncTimer = null;
-    }
-  }
 }
 
 export default CrossDeviceSyncManager;
