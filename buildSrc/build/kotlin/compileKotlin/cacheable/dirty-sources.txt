@@ -1,0 +1,3 @@
+/home/runner/work/Sallie-AI/Sallie-AI/buildSrc/src/main/kotlin/SalliePluginInjectionPlugin.kt
+/home/runner/work/Sallie-AI/Sallie-AI/buildSrc/src/main/kotlin/GradleBuildWithPlugins.kt
+/home/runner/work/Sallie-AI/Sallie-AI/buildSrc/src/main/kotlin/SalleVerificationTasks.kt

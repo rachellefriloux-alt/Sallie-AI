@@ -6,8 +6,9 @@
  */
 
 plugins {
+    `java-library`
     kotlin("jvm") version "1.9.25"
-    `gradle-plugin-development`
+    `java-gradle-plugin`
 }
 
 repositories {
