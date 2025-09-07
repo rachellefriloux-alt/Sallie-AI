@@ -5,6 +5,9 @@
  * Got it, love.
  */
 
+import AdvancedMemoryManager from './AdvancedMemoryManager';
+import { CodeOptimizationSystem } from '../features/feature/src/CodeOptimizationSystem';
+
 export interface GodModeState {
   isActive: boolean;
   activatedAt: Date | null;
@@ -268,10 +271,87 @@ class GodModeManager {
   }
 
   private async performSystemOptimization(params?: any): Promise<boolean> {
-    // TODO: Implement system optimization
-    console.log('Performing system optimization...');
-    return true;
-    
+    try {
+      console.log('🚀 Sallie\'s firing up the optimization engines - time to make this system purr, love.');
+      
+      const startTime = Date.now();
+      const optimizationResults: any[] = [];
+      
+      // Initialize optimization systems
+      const memoryManager = new AdvancedMemoryManager();
+      const codeOptimizer = new CodeOptimizationSystem();
+      
+      // 1. Memory cleanup and optimization
+      console.log('🧠 First up: clearing out the mental clutter...');
+      await memoryManager.performCleanup();
+      optimizationResults.push({
+        type: 'memory_cleanup',
+        status: 'completed',
+        description: 'Memory caches cleaned and optimized'
+      });
+      
+      // 2. System cache optimization  
+      console.log('⚡ Optimizing system caches - no more digital dust bunnies...');
+      const cacheStats = memoryManager.getMemoryStats();
+      if (cacheStats.memoryPressure === 'high' || cacheStats.memoryPressure === 'critical') {
+        // Force additional cleanup for high memory pressure
+        await memoryManager.performCleanup();
+        optimizationResults.push({
+          type: 'emergency_cache_cleanup',
+          status: 'completed',
+          description: 'Emergency cache cleanup due to high memory pressure'
+        });
+      }
+      
+      // 3. Code optimization (if code optimization is requested)
+      if (params?.optimizeCode && params?.codeTargets) {
+        console.log('💻 Time to polish up that code - making it shine...');
+        for (const target of params.codeTargets) {
+          const result = codeOptimizer.optimizeCode(
+            target.code,
+            target.language || 'javascript',
+            target.profile || 'balanced',
+            target.fileId
+          );
+          optimizationResults.push({
+            type: 'code_optimization',
+            status: 'completed',
+            description: `Code optimized: ${result.improvementPercent}% improvement`,
+            metrics: result.metrics
+          });
+        }
+      }
+      
+      // 4. System resource cleanup
+      console.log('🧹 Final sweep - tidying up loose ends...');
+      // Clear any temporary resources
+      if (global.gc) {
+        global.gc(); // Force garbage collection if available
+      }
+      
+      optimizationResults.push({
+        type: 'resource_cleanup',
+        status: 'completed',
+        description: 'System resources cleaned and optimized'
+      });
+      
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+      
+      console.log(`✨ System optimization complete! Took ${duration}ms - your system just got a whole lot snappier, love.`);
+      console.log(`📊 Optimization summary:`, {
+        totalOperations: optimizationResults.length,
+        duration: `${duration}ms`,
+        memoryPressure: cacheStats.memoryPressure,
+        results: optimizationResults
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('💥 System optimization hit a snag:', error);
+      console.log('Don\'t worry love, we\'ll get this sorted - Sallie never backs down from a challenge.');
+      return false;
+    }
   }
 
   private async performEmergencyOverride(params?: any): Promise<boolean> {
