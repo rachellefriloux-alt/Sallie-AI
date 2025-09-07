@@ -5,6 +5,20 @@
  * Got it, love.
  */
 
+// Type declaration for JavaScript ProvenanceLogger
+declare class ProvenanceLogger {
+  constructor();
+  logEvent(eventType: string, details: any, userId?: string | null): string;
+  startSession(userId: string): string;
+  endSession(userId: string): void;
+  getSessionId(userId: string): string | null;
+  getEntriesForUser(userId: string): any[];
+  getEntriesByType(eventType: string): any[];
+  exportLog(): any;
+}
+
+import { ProvenanceLogger as ProvenanceLoggerImpl } from './ProvenanceLogger.js';
+
 export interface GodModeState {
   isActive: boolean;
   activatedAt: Date | null;
@@ -28,6 +42,8 @@ class GodModeManager {
     features: [],
     restrictions: []
   };
+
+  private readonly provenanceLogger: ProvenanceLogger;
 
   private readonly defaultFeatures: GodModeFeature[] = [
     {
@@ -81,6 +97,7 @@ class GodModeManager {
   ];
 
   constructor() {
+    this.provenanceLogger = new ProvenanceLoggerImpl();
     this.initializeFeatures();
   }
 
@@ -213,6 +230,11 @@ class GodModeManager {
     return this.state.isActive;
   }
 
+  // Method to access logging history for testing and debugging
+  getLoggingHistory(): any[] {
+    return this.provenanceLogger.exportLog();
+  }
+
   private async logActivation(userId: string, reason?: string) {
     const logEntry = {
       type: 'god_mode_activation',
@@ -222,8 +244,13 @@ class GodModeManager {
       features: this.getEnabledFeatures().map(f => f.id)
     };
 
-    // TODO: Implement proper logging
-    console.log('God-Mode activation logged:', logEntry);
+    // Log to ProvenanceLogger for audit trail and debugging
+    this.provenanceLogger.logEvent('god_mode_activation', logEntry, userId);
+    
+    // Keep console.log for development debugging
+    if (__DEV__) {
+      console.log('God-Mode activation logged:', logEntry);
+    }
   }
 
   private async logDeactivation(userId: string, reason?: string) {
@@ -234,8 +261,13 @@ class GodModeManager {
       reason: reason || 'Manual deactivation'
     };
 
-    // TODO: Implement proper logging
-    console.log('God-Mode deactivation logged:', logEntry);
+    // Log to ProvenanceLogger for audit trail and debugging
+    this.provenanceLogger.logEvent('god_mode_deactivation', logEntry, userId);
+    
+    // Keep console.log for development debugging
+    if (__DEV__) {
+      console.log('God-Mode deactivation logged:', logEntry);
+    }
   }
 
   // Advanced God-Mode actions
