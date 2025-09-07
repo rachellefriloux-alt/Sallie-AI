@@ -1,6 +1,3 @@
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 /*
  * Salle 1.0 Module
  * Persona: Tough love meets soul care.
@@ -450,19 +447,23 @@ class CrossDeviceSyncManager {
   }
 
   destroy() {
+
+    try {
+      if (this.syncTimer) {
+        clearInterval(this.syncTimer);
+        this.syncTimer = null;
+      }
+      this.saveSyncState();
+    } catch (error) {
+      console.warn('Error cleaning up CrossDeviceSyncManager:', error);
+=======
     if (this.syncTimer) {
       clearInterval(this.syncTimer);
       this.syncTimer = null;
+
     }
-    this.saveSyncState();
   }
 }
 
 export default CrossDeviceSyncManager;
 export type { SyncConfig, DeviceInfo, SyncData, SyncState };
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes

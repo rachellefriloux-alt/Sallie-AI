@@ -1,7 +1,3 @@
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-/*
  * Salle 1.0 Module
  * Persona: Tough love meets soul care.
  * Function: Advanced phone control and device management system.
@@ -265,6 +261,25 @@ class PhoneControlManager {
 
   // Cleanup
   destroy() {
+
+    try {
+      if (this.batterySubscription && typeof this.batterySubscription.remove === 'function') {
+        this.batterySubscription.remove();
+        this.batterySubscription = null;
+      }
+      
+      if (this.locationSubscription && typeof this.locationSubscription.remove === 'function') {
+        this.locationSubscription.remove();
+        this.locationSubscription = null;
+      }
+      
+      if (this.networkSubscription && typeof this.networkSubscription.remove === 'function') {
+        this.networkSubscription.remove();
+        this.networkSubscription = null;
+      }
+    } catch (error) {
+      console.warn('Error cleaning up PhoneControlManager subscriptions:', error);
+
     if (this.batterySubscription && typeof this.batterySubscription.remove === 'function') {
       this.batterySubscription.remove();
     }
@@ -279,9 +294,3 @@ class PhoneControlManager {
 
 export default PhoneControlManager;
 export type { PhoneControlConfig, DeviceState };
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
