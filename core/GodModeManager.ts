@@ -5,7 +5,23 @@
  * Got it, love.
  */
 
+<<<<<<< HEAD
+// Type declaration for JavaScript ProvenanceLogger
+declare class ProvenanceLogger {
+  constructor();
+  logEvent(eventType: string, details: any, userId?: string | null): string;
+  startSession(userId: string): string;
+  endSession(userId: string): void;
+  getSessionId(userId: string): string | null;
+  getEntriesForUser(userId: string): any[];
+  getEntriesByType(eventType: string): any[];
+  exportLog(): any;
+}
+
+import { ProvenanceLogger as ProvenanceLoggerImpl } from './ProvenanceLogger.js';
+=======
 import { ProvenanceLogger } from './ProvenanceLogger.js';
+>>>>>>> origin/main
 
 export interface GodModeState {
   isActive: boolean;
@@ -32,6 +48,9 @@ class GodModeManager {
   };
 
 <<<<<<< HEAD
+  private readonly provenanceLogger: ProvenanceLogger;
+=======
+<<<<<<< HEAD
   private activationAttempts: Map<string, number[]> = new Map();
 =======
 <<<<<<< HEAD
@@ -39,6 +58,7 @@ class GodModeManager {
 =======
   private readonly provenanceLogger = new ProvenanceLogger();
 >>>>>>> 4308d26bc4acfd1ce38a62c2338c1b02438e3024
+>>>>>>> origin/main
 >>>>>>> origin/main
 
   private readonly defaultFeatures: GodModeFeature[] = [
@@ -165,6 +185,7 @@ class GodModeManager {
   ];
 
   constructor() {
+    this.provenanceLogger = new ProvenanceLoggerImpl();
     this.initializeFeatures();
   }
 
@@ -371,6 +392,13 @@ class GodModeManager {
     return this.state.isActive;
   }
 
+<<<<<<< HEAD
+  // Method to access logging history for testing and debugging
+  getLoggingHistory(): any[] {
+    return this.provenanceLogger.exportLog();
+  }
+
+=======
   // Provenance and audit methods
   getProvenanceLogs(): any {
     return this.provenanceLogger.exportLog();
@@ -384,6 +412,7 @@ class GodModeManager {
     return this.provenanceLogger.getEntriesByType(eventType);
   }
 
+>>>>>>> origin/main
   private async logActivation(userId: string, reason?: string) {
     const logEntry = {
       type: 'god_mode_activation',
@@ -399,6 +428,15 @@ class GodModeManager {
       statistics: this.getActivationStatistics()
     };
 
+<<<<<<< HEAD
+    // Log to ProvenanceLogger for audit trail and debugging
+    this.provenanceLogger.logEvent('god_mode_activation', logEntry, userId);
+    
+    // Keep console.log for development debugging
+    if (__DEV__) {
+      console.log('God-Mode activation logged:', logEntry);
+    }
+=======
 <<<<<<< HEAD
     // Enhanced logging with different levels
     console.log('🔥 God-Mode Activation Event:', {
@@ -420,6 +458,7 @@ class GodModeManager {
 
     console.log('God-Mode activation logged:', logEntry);
 >>>>>>> 4308d26bc4acfd1ce38a62c2338c1b02438e3024
+>>>>>>> origin/main
   }
 
   private async logDeactivation(userId: string, reason?: string) {
@@ -432,6 +471,15 @@ class GodModeManager {
       featuresUsed: this.getEnabledFeatures().length
     };
 
+<<<<<<< HEAD
+    // Log to ProvenanceLogger for audit trail and debugging
+    this.provenanceLogger.logEvent('god_mode_deactivation', logEntry, userId);
+    
+    // Keep console.log for development debugging
+    if (__DEV__) {
+      console.log('God-Mode deactivation logged:', logEntry);
+    }
+=======
 <<<<<<< HEAD
     console.log('🛑 God-Mode Deactivation Event:', {
       user: userId,
@@ -529,6 +577,7 @@ class GodModeManager {
 
     console.log('God-Mode deactivation logged:', logEntry);
 >>>>>>> 4308d26bc4acfd1ce38a62c2338c1b02438e3024
+>>>>>>> origin/main
   }
 
   // Advanced God-Mode actions
