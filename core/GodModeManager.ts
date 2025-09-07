@@ -275,9 +275,122 @@ class GodModeManager {
   }
 
   private async performEmergencyOverride(params?: any): Promise<boolean> {
-    // TODO: Implement emergency override
-    console.log('Performing emergency override...');
-    return true;
+    try {
+      console.log('🚨 EMERGENCY OVERRIDE INITIATED - Tough love mode activated, love.');
+      
+      const overrideType = params?.type || 'full_reset';
+      const reason = params?.reason || 'Emergency system intervention';
+      const bypassRestrictions = params?.bypassRestrictions || false;
+      
+      // Log emergency state before changes
+      const preOverrideState = {
+        isActive: this.state.isActive,
+        enabledFeatures: this.getEnabledFeatures().map(f => f.id),
+        timestamp: new Date(),
+        reason
+      };
+      
+      console.log('📊 Pre-override state captured:', preOverrideState);
+      
+      // Immediate safety actions - disable all features first
+      this.disableAllFeatures();
+      console.log('🔒 All God-Mode features forcibly disabled for safety');
+      
+      // Handle different emergency override types
+      switch (overrideType) {
+        case 'full_reset':
+          // Complete system reset
+          this.state.isActive = false;
+          this.state.activatedAt = null;
+          this.state.restrictions = [];
+          this.initializeFeatures(); // Reset to default state
+          console.log('🔄 Full system reset completed');
+          break;
+          
+        case 'safe_mode':
+          // Keep God-Mode active but only enable safe features
+          this.enableFeature('system_diagnostics');
+          console.log('🛡️ Safe mode enabled - diagnostics only');
+          break;
+          
+        case 'emergency_access':
+          // Temporary bypass for critical operations
+          if (bypassRestrictions) {
+            this.state.restrictions = [];
+            this.enableFeature('advanced_ai');
+            this.enableFeature('system_diagnostics');
+            console.log('🆘 Emergency access granted - restrictions bypassed');
+          }
+          break;
+          
+        case 'lockdown':
+          // Complete lockdown - disable everything
+          this.state.isActive = false;
+          this.state.features.forEach(feature => {
+            feature.isEnabled = false;
+          });
+          this.state.restrictions = ['emergency_lockdown_active'];
+          console.log('🔐 Emergency lockdown activated - all systems secured');
+          break;
+          
+        default:
+          console.warn(`⚠️ Unknown override type: ${overrideType}, performing full reset`);
+          this.state.isActive = false;
+          this.state.activatedAt = null;
+          this.state.restrictions = [];
+          break;
+      }
+      
+      // Log the emergency action
+      await this.logEmergencyOverride(preOverrideState, overrideType, reason);
+      
+      // Verify system integrity after override
+      const postOverrideState = {
+        isActive: this.state.isActive,
+        enabledFeatures: this.getEnabledFeatures().map(f => f.id),
+        restrictions: this.state.restrictions
+      };
+      
+      console.log('✅ Emergency override completed successfully');
+      console.log('📊 Post-override state:', postOverrideState);
+      console.log('💪 Systems stabilized - we got this handled, love.');
+      
+      return true;
+      
+    } catch (error) {
+      console.error('❌ Emergency override failed - this is serious:', error);
+      
+      // Failsafe: If override fails, force complete shutdown
+      try {
+        this.state.isActive = false;
+        this.disableAllFeatures();
+        this.state.restrictions = ['emergency_override_failed'];
+        console.log('🚨 Failsafe activated - forced system shutdown');
+      } catch (failsafeError) {
+        console.error('💥 CRITICAL: Failsafe failed:', failsafeError);
+      }
+      
+      return false;
+    }
+  }
+
+  private async logEmergencyOverride(preState: any, overrideType: string, reason: string) {
+    const logEntry = {
+      type: 'emergency_override',
+      timestamp: new Date(),
+      overrideType,
+      reason,
+      preState,
+      postState: {
+        isActive: this.state.isActive,
+        enabledFeatures: this.getEnabledFeatures().map(f => f.id),
+        restrictions: this.state.restrictions
+      },
+      severity: 'CRITICAL'
+    };
+
+    // TODO: Implement proper audit logging to secure storage
+    console.log('📝 Emergency override logged:', logEntry);
   }
 }
 
