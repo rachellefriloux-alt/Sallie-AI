@@ -329,25 +329,126 @@ class GodModeManager {
     const logEntry = {
       type: 'god_mode_activation',
       userId,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       reason: reason || 'Voice command',
-      features: this.getEnabledFeatures().map(f => f.id)
+      features: this.getEnabledFeatures().map(f => ({ id: f.id, name: f.name })),
+      environment: {
+        platform: this.detectPlatform(),
+        isDevelopment: this.isDevelopmentEnvironment(),
+        timestamp: Date.now()
+      },
+      statistics: this.getActivationStatistics()
     };
 
-    // TODO: Implement proper logging
-    console.log('God-Mode activation logged:', logEntry);
+    // Enhanced logging with different levels
+    console.log('🔥 God-Mode Activation Event:', {
+      user: userId,
+      features: logEntry.features.length,
+      reason: logEntry.reason,
+      platform: logEntry.environment.platform
+    });
+
+    // TODO: Implement persistent logging to file/database
+    // This could integrate with a logging service or database
   }
 
   private async logDeactivation(userId: string, reason?: string) {
     const logEntry = {
       type: 'god_mode_deactivation',
       userId,
-      timestamp: new Date(),
-      reason: reason || 'Manual deactivation'
+      timestamp: new Date().toISOString(),
+      reason: reason || 'Manual deactivation',
+      duration: this.state.activatedAt ? Date.now() - this.state.activatedAt.getTime() : 0,
+      featuresUsed: this.getEnabledFeatures().length
     };
 
-    // TODO: Implement proper logging
-    console.log('God-Mode deactivation logged:', logEntry);
+    console.log('🛑 God-Mode Deactivation Event:', {
+      user: userId,
+      duration: `${Math.round(logEntry.duration / 1000)}s`,
+      featuresUsed: logEntry.featuresUsed,
+      reason: logEntry.reason
+    });
+  }
+
+  /**
+   * Detect current platform
+   */
+  private detectPlatform(): string {
+    if (typeof navigator !== 'undefined') {
+      return navigator.platform || 'web';
+    }
+    if (typeof process !== 'undefined' && process.platform) {
+      return process.platform;
+    }
+    return 'unknown';
+  }
+
+  /**
+   * Check if running in development environment
+   */
+  private isDevelopmentEnvironment(): boolean {
+    return process?.env?.NODE_ENV === 'development' ||
+           __DEV__ || // React Native
+           typeof window !== 'undefined' && window.location?.hostname === 'localhost';
+  }
+
+  /**
+   * Emergency shutdown with enhanced safety
+   */
+  async emergencyShutdown(userId: string, reason?: string): Promise<boolean> {
+    try {
+      console.warn('🚨 Emergency God-Mode shutdown initiated');
+
+      // Immediate feature disable
+      this.disableAllFeatures();
+
+      // Reset state
+      this.state.isActive = false;
+      this.state.activatedAt = null;
+      this.state.restrictions = ['emergency_shutdown'];
+
+      // Log emergency event
+      await this.logEmergencyShutdown(userId, reason);
+
+      // Clear any pending operations
+      this.clearPendingOperations();
+
+      console.warn('✅ Emergency shutdown completed');
+      return true;
+    } catch (error) {
+      console.error('❌ Emergency shutdown failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Log emergency shutdown events
+   */
+  private async logEmergencyShutdown(userId: string, reason?: string) {
+    const logEntry = {
+      type: 'god_mode_emergency_shutdown',
+      userId,
+      timestamp: new Date().toISOString(),
+      reason: reason || 'Emergency shutdown',
+      previousState: {
+        wasActive: this.state.isActive,
+        featuresEnabled: this.getEnabledFeatures().length,
+        activatedAt: this.state.activatedAt
+      }
+    };
+
+    console.error('🚨 Emergency Shutdown Event:', logEntry);
+
+    // TODO: Implement emergency logging (could send alerts, etc.)
+  }
+
+  /**
+   * Clear any pending operations
+   */
+  private clearPendingOperations() {
+    // Clear any timers, intervals, or pending promises
+    // This is a placeholder for actual cleanup logic
+    console.log('🧹 Clearing pending God-Mode operations...');
   }
 
   // Advanced God-Mode actions
@@ -387,9 +488,159 @@ class GodModeManager {
   }
 
   private async performEmergencyOverride(params?: any): Promise<boolean> {
-    // TODO: Implement emergency override
-    console.log('Performing emergency override...');
+    // Enhanced emergency override with safety checks
+    console.log('🔴 Performing emergency override with enhanced safety protocols...');
+
+    try {
+      // Safety checks before override
+      if (!this.validateEmergencyOverride(params)) {
+        console.error('Emergency override validation failed');
+        return false;
+      }
+
+      // Log emergency action
+      await this.logEmergencyAction('emergency_override', params);
+
+      // Perform the override with monitoring
+      const success = await this.executeEmergencyOverride(params);
+
+      if (success) {
+        console.log('✅ Emergency override completed successfully');
+        // Trigger post-override analysis
+        this.performPostOverrideAnalysis();
+      }
+
+      return success;
+    } catch (error) {
+      console.error('❌ Emergency override failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Validate emergency override parameters
+   */
+  private validateEmergencyOverride(params?: any): boolean {
+    if (!params) {
+      console.warn('Emergency override requires parameters');
+      return false;
+    }
+
+    // Validate required fields
+    const requiredFields = ['reason', 'severity'];
+    for (const field of requiredFields) {
+      if (!params[field]) {
+        console.warn(`Emergency override missing required field: ${field}`);
+        return false;
+      }
+    }
+
+    // Validate severity level
+    const validSeverities = ['low', 'medium', 'high', 'critical'];
+    if (!validSeverities.includes(params.severity)) {
+      console.warn(`Invalid emergency severity: ${params.severity}`);
+      return false;
+    }
+
     return true;
+  }
+
+  /**
+   * Execute emergency override with monitoring
+   */
+  private async executeEmergencyOverride(params: any): Promise<boolean> {
+    // Simulate emergency override execution
+    console.log(`Executing emergency override: ${params.reason} (severity: ${params.severity})`);
+
+    // Add emergency restrictions
+    this.state.restrictions.push('emergency_override_active');
+
+    // Enable emergency features
+    this.enableFeature('emergency_communication');
+    this.enableFeature('security_bypass');
+
+    return true;
+  }
+
+  /**
+   * Log emergency actions
+   */
+  private async logEmergencyAction(action: string, params?: any) {
+    const logEntry = {
+      type: 'god_mode_emergency_action',
+      action,
+      params,
+      timestamp: new Date().toISOString(),
+      userId: 'system', // Emergency actions are system-initiated
+      severity: params?.severity || 'unknown'
+    };
+
+    console.error('🚨 Emergency Action Logged:', logEntry);
+  }
+
+  /**
+   * Perform post-override analysis
+   */
+  private performPostOverrideAnalysis() {
+    console.log('🔍 Performing post-override analysis...');
+
+    // Analyze system state after override
+    const enabledFeatures = this.getEnabledFeatures();
+    const activeRestrictions = this.state.restrictions;
+
+    console.log('Post-override status:', {
+      enabledFeatures: enabledFeatures.length,
+      activeRestrictions: activeRestrictions.length,
+      systemHealth: 'monitoring'
+    });
+  }
+
+  /**
+   * Get activation statistics for monitoring
+   */
+  getActivationStatistics(): {
+    totalActivations: number;
+    activeUsers: number;
+    recentActivations: number;
+    averageActivationsPerUser: number;
+    topFeatures: string[];
+  } {
+    if (!this.activationAttempts) {
+      return {
+        totalActivations: 0,
+        activeUsers: 0,
+        recentActivations: 0,
+        averageActivationsPerUser: 0,
+        topFeatures: []
+      };
+    }
+
+    const now = Date.now();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+
+    let totalActivations = 0;
+    let recentActivations = 0;
+
+    for (const attempts of this.activationAttempts.values()) {
+      totalActivations += attempts.length;
+      recentActivations += attempts.filter(timestamp => now - timestamp < oneDayMs).length;
+    }
+
+    // Get most used features
+    const featureUsage = new Map<string, number>();
+    // This would be populated from actual usage data
+    const topFeatures = Array.from(featureUsage.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([feature]) => feature);
+
+    return {
+      totalActivations,
+      activeUsers: this.activationAttempts.size,
+      recentActivations,
+      averageActivationsPerUser: this.activationAttempts.size > 0 ? totalActivations / this.activationAttempts.size : 0,
+      topFeatures
+    };
   }
 
   /**
@@ -422,14 +673,25 @@ class GodModeManager {
   }
 
   /**
-   * Map God-Mode features to consent types
+   * Map God-Mode features to consent types with enhanced mapping
    */
   private mapFeatureToConsentType(featureId: string): string | null {
     const consentMapping: Record<string, string> = {
       'device_control': 'DEVICE_CONTROL',
       'security_bypass': 'EMERGENCY_ACCESS',
       'advanced_ai': 'BEHAVIOR_ANALYSIS',
-      'unlimited_memory': 'CONVERSATION_LOGGING'
+      'unlimited_memory': 'CONVERSATION_LOGGING',
+      'gesture_control': 'GESTURE_RECOGNITION',
+      'emergency_communication': 'EMERGENCY_COMMUNICATION',
+      'advanced_analytics': 'USAGE_ANALYTICS',
+      'voice_enhancement': 'VOICE_PROCESSING',
+      'network_monitoring': 'NETWORK_MONITORING',
+      'backup_automation': 'DATA_BACKUP',
+      'privacy_enhancement': 'PRIVACY_PROTECTION',
+      'performance_optimization': 'SYSTEM_OPTIMIZATION',
+      'cross_device_sync': 'DATA_SYNCHRONIZATION',
+      'system_diagnostics': 'SYSTEM_MONITORING',
+      'predictive_actions': 'PREDICTIVE_ANALYSIS'
     };
 
     return consentMapping[featureId] || null;

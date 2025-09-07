@@ -103,8 +103,10 @@
     ],
     "setupFiles": [
       "./jest.setup.js"
+    ],
+    "setupFilesAfterEnv": [
+      "./jest.setup.js"
     ]
-    "setupFilesAfterEnv": ["./j
   },
   "keywords": [
     "ai",
