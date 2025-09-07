@@ -196,11 +196,14 @@ const DeviceControlDemo: React.FC = () => {
         }
         Alert.alert('Routine Triggered', `Starting ${routineName} routine`, [
           {
-              // TODO: Implement navigation to routine progress
-              // TASK: Track this TODO in your project management tool or implement navigation here.
+            text: 'View Progress',
             onPress: () => {
               console.log('Navigate to routine progress screen');
-              // TODO: Implement navigation to routine progress
+              // Navigate to routine progress screen with routine name
+              router.push({
+                pathname: '/routine-progress',
+                params: { routineName }
+              });
             }
           },
           { text: 'OK' }
