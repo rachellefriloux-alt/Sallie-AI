@@ -1,4 +1,3 @@
-/*
  * Salle 1.0 Module
  * Persona: Tough love meets soul care.
  * Function: Advanced phone control and device management system.
@@ -113,8 +112,8 @@ class PhoneControlManager {
     // Network monitoring
     if (this.config.enableNetworkMonitoring) {
       this.networkSubscription = Network.addNetworkStateListener((state) => {
-        this.deviceState.networkType = state.type;
-        this.deviceState.wifiEnabled = state.isConnected && state.type === 'wifi';
+        this.deviceState.networkType = state?.type || 'unknown';
+        this.deviceState.wifiEnabled = (state?.isConnected || false) && state?.type === Network.NetworkStateType.WIFI;
         this.updateDeviceState();
       });
     }
@@ -262,6 +261,7 @@ class PhoneControlManager {
 
   // Cleanup
   destroy() {
+
     try {
       if (this.batterySubscription && typeof this.batterySubscription.remove === 'function') {
         this.batterySubscription.remove();
@@ -279,6 +279,15 @@ class PhoneControlManager {
       }
     } catch (error) {
       console.warn('Error cleaning up PhoneControlManager subscriptions:', error);
+
+    if (this.batterySubscription && typeof this.batterySubscription.remove === 'function') {
+      this.batterySubscription.remove();
+    }
+    if (this.locationSubscription && typeof this.locationSubscription.remove === 'function') {
+      this.locationSubscription.remove();
+    }
+    if (this.networkSubscription && typeof this.networkSubscription.remove === 'function') {
+      this.networkSubscription.remove();
     }
   }
 }
