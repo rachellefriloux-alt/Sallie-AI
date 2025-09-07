@@ -5,6 +5,8 @@
  * Got it, love.
  */
 
+import { ProvenanceLogger } from './ProvenanceLogger.js';
+
 export interface GodModeState {
   isActive: boolean;
   activatedAt: Date | null;
@@ -28,6 +30,8 @@ class GodModeManager {
     features: [],
     restrictions: []
   };
+
+  private readonly provenanceLogger = new ProvenanceLogger();
 
   private readonly defaultFeatures: GodModeFeature[] = [
     {
@@ -110,7 +114,7 @@ class GodModeManager {
       this.state.activatedAt = new Date();
 
       // Enable core features
-      this.enableCoreFeatures();
+      this.enableCoreFeatures(userId);
 
       // Log activation
       await this.logActivation(userId, reason);
@@ -157,11 +161,11 @@ class GodModeManager {
     return true;
   }
 
-  private enableCoreFeatures() {
+  private enableCoreFeatures(userId?: string) {
     // Enable essential God-Mode features
     const coreFeatureIds = ['advanced_ai', 'system_diagnostics', 'unlimited_memory'];
     coreFeatureIds.forEach(id => {
-      this.enableFeature(id);
+      this.enableFeature(id, userId);
     });
   }
 
@@ -171,21 +175,39 @@ class GodModeManager {
     });
   }
 
-  enableFeature(featureId: string): boolean {
+  enableFeature(featureId: string, userId?: string): boolean {
     const feature = this.state.features.find(f => f.id === featureId);
     if (feature) {
       feature.isEnabled = true;
       console.log(`God-Mode feature enabled: ${feature.name}`);
+      
+      // Log feature enablement for audit trail
+      this.provenanceLogger.logEvent('god_mode_feature_enabled', {
+        featureId: feature.id,
+        featureName: feature.name,
+        category: feature.category,
+        requiresPermission: feature.requiresPermission
+      }, userId as any);
+      
       return true;
     }
     return false;
   }
 
-  disableFeature(featureId: string): boolean {
+  disableFeature(featureId: string, userId?: string): boolean {
     const feature = this.state.features.find(f => f.id === featureId);
     if (feature) {
       feature.isEnabled = false;
       console.log(`God-Mode feature disabled: ${feature.name}`);
+      
+      // Log feature disablement for audit trail
+      this.provenanceLogger.logEvent('god_mode_feature_disabled', {
+        featureId: feature.id,
+        featureName: feature.name,
+        category: feature.category,
+        requiresPermission: feature.requiresPermission
+      }, userId as any);
+      
       return true;
     }
     return false;
@@ -213,6 +235,19 @@ class GodModeManager {
     return this.state.isActive;
   }
 
+  // Provenance and audit methods
+  getProvenanceLogs(): any {
+    return this.provenanceLogger.exportLog();
+  }
+
+  getGodModeLogsForUser(userId: string): any[] {
+    return this.provenanceLogger.getEntriesForUser(userId);
+  }
+
+  getGodModeLogsByType(eventType: string): any[] {
+    return this.provenanceLogger.getEntriesByType(eventType);
+  }
+
   private async logActivation(userId: string, reason?: string) {
     const logEntry = {
       type: 'god_mode_activation',
@@ -222,7 +257,13 @@ class GodModeManager {
       features: this.getEnabledFeatures().map(f => f.id)
     };
 
-    // TODO: Implement proper logging
+    // Log to ProvenanceLogger for proper audit trail
+    this.provenanceLogger.logEvent('god_mode_activation', {
+      reason: logEntry.reason,
+      enabledFeatures: logEntry.features,
+      activatedAt: logEntry.timestamp.toISOString()
+    }, userId as any);
+
     console.log('God-Mode activation logged:', logEntry);
   }
 
@@ -234,7 +275,12 @@ class GodModeManager {
       reason: reason || 'Manual deactivation'
     };
 
-    // TODO: Implement proper logging
+    // Log to ProvenanceLogger for proper audit trail
+    this.provenanceLogger.logEvent('god_mode_deactivation', {
+      reason: logEntry.reason,
+      deactivatedAt: logEntry.timestamp.toISOString()
+    }, userId as any);
+
     console.log('God-Mode deactivation logged:', logEntry);
   }
 
