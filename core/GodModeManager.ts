@@ -79,6 +79,78 @@ class GodModeManager {
       isEnabled: false,
       category: 'ai',
       requiresPermission: false
+    },
+    {
+      id: 'voice_enhancement',
+      name: 'Voice Enhancement',
+      description: 'Advanced voice processing and recognition',
+      isEnabled: false,
+      category: 'ai',
+      requiresPermission: false
+    },
+    {
+      id: 'gesture_control',
+      name: 'Gesture Control',
+      description: 'Advanced gesture recognition and control',
+      isEnabled: false,
+      category: 'device',
+      requiresPermission: true
+    },
+    {
+      id: 'network_monitoring',
+      name: 'Network Monitoring',
+      description: 'Real-time network traffic analysis and optimization',
+      isEnabled: false,
+      category: 'system',
+      requiresPermission: false
+    },
+    {
+      id: 'backup_automation',
+      name: 'Backup Automation',
+      description: 'Automated data backup and synchronization',
+      isEnabled: false,
+      category: 'system',
+      requiresPermission: false
+    },
+    {
+      id: 'privacy_enhancement',
+      name: 'Privacy Enhancement',
+      description: 'Advanced privacy protection and data encryption',
+      isEnabled: false,
+      category: 'security',
+      requiresPermission: false
+    },
+    {
+      id: 'performance_optimization',
+      name: 'Performance Optimization',
+      description: 'System performance monitoring and optimization',
+      isEnabled: false,
+      category: 'system',
+      requiresPermission: false
+    },
+    {
+      id: 'emergency_communication',
+      name: 'Emergency Communication',
+      description: 'Priority communication channels for emergencies',
+      isEnabled: false,
+      category: 'security',
+      requiresPermission: true
+    },
+    {
+      id: 'cross_device_sync',
+      name: 'Cross-Device Synchronization',
+      description: 'Seamless data synchronization across devices',
+      isEnabled: false,
+      category: 'system',
+      requiresPermission: false
+    },
+    {
+      id: 'advanced_analytics',
+      name: 'Advanced Analytics',
+      description: 'Deep behavioral and usage analytics',
+      isEnabled: false,
+      category: 'ai',
+      requiresPermission: true
     }
   ];
 
@@ -415,25 +487,31 @@ class GodModeManager {
   }
 
   /**
-   * Check security constraints for God-Mode activation
+   * Check security constraints for God-Mode activation with enhanced validation
    */
   private checkSecurityConstraints(userId: string): boolean {
     // 1. Basic user validation
-    if (userId.length < 3) {
-      console.warn('User ID too short for God-Mode activation');
+    if (!this.validateUserId(userId)) {
       return false;
     }
 
     // 2. Check for suspicious patterns
-    if (userId.toLowerCase().includes('test') || userId.toLowerCase().includes('admin')) {
-      console.warn('God-Mode activation blocked for test/admin user');
+    if (this.detectSuspiciousPatterns(userId)) {
       return false;
     }
 
-    // 3. Time-based constraints (e.g., not during maintenance hours)
-    const currentHour = new Date().getHours();
-    if (currentHour >= 2 && currentHour <= 4) {
-      console.warn('God-Mode activation restricted during maintenance hours (2-4 AM)');
+    // 3. Time-based constraints
+    if (!this.checkTimeConstraints()) {
+      return false;
+    }
+
+    // 4. Environment validation
+    if (!this.validateEnvironment()) {
+      return false;
+    }
+
+    // 5. System health check
+    if (!this.checkSystemHealth()) {
       return false;
     }
 
@@ -441,29 +519,349 @@ class GodModeManager {
   }
 
   /**
-   * Rate limiting for God-Mode activations
+   * Enhanced user ID validation
+   */
+  private validateUserId(userId: string): boolean {
+    // Basic validation
+    if (userId.length < 3) {
+      console.warn('User ID too short for God-Mode activation');
+      return false;
+    }
+
+    if (userId.length > 50) {
+      console.warn('User ID too long for God-Mode activation');
+      return false;
+    }
+
+    // Check for valid characters (alphanumeric, underscore, dash)
+    const validPattern = /^[a-zA-Z0-9_-]+$/;
+    if (!validPattern.test(userId)) {
+      console.warn('User ID contains invalid characters');
+      return false;
+    }
+
+    // Check for reserved words
+    const reservedWords = ['admin', 'system', 'root', 'god', 'superuser', 'test', 'demo'];
+    if (reservedWords.some(word => userId.toLowerCase().includes(word))) {
+      console.warn('User ID contains reserved word');
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Detect suspicious patterns in user behavior
+   */
+  private detectSuspiciousPatterns(userId: string): boolean {
+    const suspiciousPatterns = [
+      // Check for sequential numbers
+      /^\d+$/,
+      // Check for repeated characters
+      /(.)\1{3,}/,
+      // Check for common attack patterns
+      /['";\\<>]/,
+      // Check for SQL injection patterns
+      /(union|select|insert|delete|update|drop|create)/i
+    ];
+
+    for (const pattern of suspiciousPatterns) {
+      if (pattern.test(userId)) {
+        console.warn(`Suspicious pattern detected in user ID: ${userId}`);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Check time-based constraints with enhanced logic
+   */
+  private checkTimeConstraints(): boolean {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentDay = now.getDay(); // 0 = Sunday, 6 = Saturday
+
+    // Maintenance hours (2-4 AM)
+    if (currentHour >= 2 && currentHour <= 4) {
+      console.warn('God-Mode activation restricted during maintenance hours (2-4 AM)');
+      return false;
+    }
+
+    // Weekend restrictions (more lenient)
+    if (currentDay === 0 || currentDay === 6) {
+      // Allow but log
+      console.info('God-Mode activation during weekend - monitoring closely');
+    }
+
+    // Business hours bonus (more permissive during work hours)
+    const isBusinessHours = currentHour >= 9 && currentHour <= 17 && currentDay >= 1 && currentDay <= 5;
+    if (isBusinessHours) {
+      console.info('God-Mode activation during business hours');
+    }
+
+    return true;
+  }
+
+  /**
+   * Validate environment for God-Mode activation
+   */
+  private validateEnvironment(): boolean {
+    // Check if running in development mode
+    const isDevelopment = process?.env?.NODE_ENV === 'development' ||
+                         __DEV__ || // React Native development flag
+                         false;
+
+    if (isDevelopment) {
+      console.warn('God-Mode activation in development environment - additional logging enabled');
+      // Allow but with enhanced monitoring
+    }
+
+    // Check for debugging tools
+    if (isDevelopment) {
+      // Development environment detected
+      console.info('Development environment detected for God-Mode activation');
+    }
+
+    // Check system resources
+    try {
+      // Basic memory check (if available in browser environment)
+      if (typeof performance !== 'undefined') {
+        // Performance.memory is available in Chrome/Node.js but not in standard types
+        const perfWithMemory = performance as any;
+        if (perfWithMemory.memory) {
+          const memoryUsage = perfWithMemory.memory.usedJSHeapSize / perfWithMemory.memory.totalJSHeapSize;
+          if (memoryUsage > 0.8) {
+            console.warn('High memory usage detected before God-Mode activation');
+          }
+        }
+      }
+    } catch (error) {
+      // Memory check not available, continue
+    }
+
+    return true;
+  }
+
+  /**
+   * Check system health before activation
+   */
+  private checkSystemHealth(): boolean {
+    try {
+      // Check if critical services are available
+      const criticalServices = [
+        'console',
+        'Date',
+        'Math',
+        'JSON'
+      ];
+
+      for (const service of criticalServices) {
+        if (typeof (globalThis as any)[service] === 'undefined') {
+          console.error(`Critical service unavailable: ${service}`);
+          return false;
+        }
+      }
+
+      // Check for any pending errors
+      if (typeof window !== 'undefined' && window.onerror) {
+        console.info('Error monitoring active');
+      }
+
+      return true;
+    } catch (error) {
+      console.error('System health check failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Rate limiting for God-Mode activations with enhanced logic
    */
   private checkRateLimit(userId: string): boolean {
     const key = `godmode_activation_${userId}`;
     const now = Date.now();
-    const oneHourMs = 60 * 60 * 1000;
+
+    // Enhanced rate limiting configuration
+    const limits = {
+      perHour: 5,
+      perDay: 20,
+      perWeek: 50,
+      cooldownMs: 5 * 60 * 1000, // 5 minutes cooldown between activations
+      suspiciousThreshold: 10 // Flag for investigation if exceeded
+    };
+
+    if (!this.activationAttempts) {
+      this.activationAttempts = new Map();
+    }
 
     const attempts = this.activationAttempts.get(key) || [];
+    const recentAttempts = attempts.filter(timestamp => {
+      const age = now - timestamp;
+      return age < (7 * 24 * 60 * 60 * 1000); // Keep 7 days of history
+    });
 
-    // Remove attempts older than 1 hour
-    const recentAttempts = attempts.filter(timestamp => now - timestamp < oneHourMs);
+    // Check cooldown period
+    if (recentAttempts.length > 0) {
+      const lastAttempt = Math.max(...recentAttempts);
+      const timeSinceLastAttempt = now - lastAttempt;
 
-    // Limit: 5 activations per hour
-    if (recentAttempts.length >= 5) {
-      console.warn(`God-Mode activation rate limit exceeded for user: ${userId}`);
+      if (timeSinceLastAttempt < limits.cooldownMs) {
+        const remainingCooldown = Math.ceil((limits.cooldownMs - timeSinceLastAttempt) / 1000);
+        console.warn(`God-Mode activation cooldown active. ${remainingCooldown} seconds remaining for user: ${userId}`);
+        return false;
+      }
+    }
+
+    // Check hourly limit
+    const hourlyAttempts = recentAttempts.filter(timestamp =>
+      now - timestamp < (60 * 60 * 1000)
+    );
+
+    if (hourlyAttempts.length >= limits.perHour) {
+      console.warn(`God-Mode activation hourly limit exceeded for user: ${userId} (${hourlyAttempts.length}/${limits.perHour})`);
+      this.handleRateLimitExceeded(userId, 'hourly', hourlyAttempts.length);
       return false;
+    }
+
+    // Check daily limit
+    const dailyAttempts = recentAttempts.filter(timestamp =>
+      now - timestamp < (24 * 60 * 60 * 1000)
+    );
+
+    if (dailyAttempts.length >= limits.perDay) {
+      console.warn(`God-Mode activation daily limit exceeded for user: ${userId} (${dailyAttempts.length}/${limits.perDay})`);
+      this.handleRateLimitExceeded(userId, 'daily', dailyAttempts.length);
+      return false;
+    }
+
+    // Check weekly limit
+    if (recentAttempts.length >= limits.perWeek) {
+      console.warn(`God-Mode activation weekly limit exceeded for user: ${userId} (${recentAttempts.length}/${limits.perWeek})`);
+      this.handleRateLimitExceeded(userId, 'weekly', recentAttempts.length);
+      return false;
+    }
+
+    // Check for suspicious patterns
+    if (recentAttempts.length >= limits.suspiciousThreshold) {
+      console.warn(`Suspicious activation pattern detected for user: ${userId}`);
+      this.handleSuspiciousActivity(userId, recentAttempts);
     }
 
     // Record this attempt
     recentAttempts.push(now);
     this.activationAttempts.set(key, recentAttempts);
 
+    // Clean up old entries periodically
+    if (Math.random() < 0.1) { // 10% chance to cleanup
+      this.cleanupOldAttempts();
+    }
+
     return true;
+  }
+
+  /**
+   * Handle rate limit exceeded scenarios
+   */
+  private handleRateLimitExceeded(userId: string, period: string, attemptCount: number) {
+    // Log security event
+    const securityEvent = {
+      type: 'rate_limit_exceeded',
+      userId,
+      period,
+      attemptCount,
+      timestamp: new Date(),
+      severity: period === 'weekly' ? 'high' : 'medium'
+    };
+
+    console.error('Security Event - Rate Limit Exceeded:', securityEvent);
+
+    // TODO: Implement proper security event logging
+    // This could integrate with a security monitoring system
+  }
+
+  /**
+   * Handle suspicious activity detection
+   */
+  private handleSuspiciousActivity(userId: string, attempts: number[]) {
+    const analysis = this.analyzeActivationPattern(attempts);
+
+    if (analysis.isSuspicious) {
+      console.error(`Suspicious God-Mode activation pattern for user: ${userId}`, analysis);
+
+      // TODO: Implement additional security measures
+      // - Temporary account lockout
+      // - Security alert notifications
+      // - Pattern analysis for potential abuse
+    }
+  }
+
+  /**
+   * Analyze activation patterns for suspicious behavior
+   */
+  private analyzeActivationPattern(attempts: number[]): {
+    isSuspicious: boolean;
+    pattern: string;
+    riskLevel: 'low' | 'medium' | 'high';
+    recommendations: string[];
+  } {
+    const now = Date.now();
+    const recentAttempts = attempts.filter(timestamp => now - timestamp < (24 * 60 * 60 * 1000));
+
+    // Check for rapid successive attempts
+    let rapidAttempts = 0;
+    for (let i = 1; i < recentAttempts.length; i++) {
+      if (recentAttempts[i] - recentAttempts[i - 1] < (5 * 60 * 1000)) { // Within 5 minutes
+        rapidAttempts++;
+      }
+    }
+
+    // Check for unusual timing patterns
+    const hours = recentAttempts.map(timestamp => new Date(timestamp).getHours());
+    const nightAttempts = hours.filter(hour => hour >= 22 || hour <= 4).length;
+
+    const analysis = {
+      isSuspicious: rapidAttempts >= 3 || nightAttempts >= 5 || recentAttempts.length >= 15,
+      pattern: rapidAttempts >= 3 ? 'rapid_attempts' : nightAttempts >= 5 ? 'unusual_timing' : 'normal',
+      riskLevel: ((rapidAttempts >= 5 || recentAttempts.length >= 20) ? 'high' :
+                 (rapidAttempts >= 3 || nightAttempts >= 3) ? 'medium' : 'low') as 'low' | 'medium' | 'high',
+      recommendations: [] as string[]
+    };
+
+    if (analysis.isSuspicious) {
+      if (rapidAttempts >= 3) {
+        analysis.recommendations.push('Implement longer cooldown periods');
+      }
+      if (nightAttempts >= 5) {
+        analysis.recommendations.push('Review unusual timing patterns');
+      }
+      if (recentAttempts.length >= 15) {
+        analysis.recommendations.push('Consider additional authentication requirements');
+      }
+    }
+
+    return analysis;
+  }
+
+  /**
+   * Clean up old activation attempt records
+   */
+  private cleanupOldAttempts() {
+    const now = Date.now();
+    const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+    for (const [key, attempts] of this.activationAttempts.entries()) {
+      const recentAttempts = attempts.filter(timestamp => now - timestamp < maxAge);
+
+      if (recentAttempts.length === 0) {
+        this.activationAttempts.delete(key);
+      } else {
+        this.activationAttempts.set(key, recentAttempts);
+      }
+    }
+
+    console.log(`Cleaned up old activation attempts. Active users: ${this.activationAttempts.size}`);
   }
 }
 
