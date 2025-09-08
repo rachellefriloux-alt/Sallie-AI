@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Animated, Image, Platform } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useTheme } from '@/components/ThemeSystem';
 import { SalliePersonaEngine } from '@/lib/sallie-persona';
 import { SalliePersona } from '@/types/sallie';
 import { HelloWave } from '@/components/HelloWave';
@@ -11,8 +10,8 @@ import { ThemedView } from '@/components/ThemedView';
 const personaEngine = new SalliePersonaEngine();
 
 export default function SallieHomeScreen() {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const { theme } = useTheme();
+  const colors = theme.colors;
 
   const [currentArchetype, setCurrentArchetype] = useState<SalliePersona['archetype']>('Loyal Strategist');
   const [userInput, setUserInput] = useState('');
@@ -89,12 +88,12 @@ export default function SallieHomeScreen() {
       {/* Mystical Header */}
       <Animated.View style={[
         styles.header, 
-        { backgroundColor: colors.card, shadowColor: colors.shadow },
+        { backgroundColor: colors.surface, shadowColor: colors.primary },
         glowStyle
       ]}>
         <Text style={[styles.title, { color: colors.primary }]}>✨ Sallie</Text>
         <Text style={[styles.subtitle, { color: colors.text }]}>Your Sovereign AI Companion</Text>
-        <View style={[styles.currentArchetype, { backgroundColor: colors.mystical }]}>
+        <View style={[styles.currentArchetype, { backgroundColor: colors.accent1 }]}>
           <Text style={[styles.currentArchetype, { color: colors.primary }]}>
             {currentArchetype}
           </Text>
