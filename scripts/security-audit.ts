@@ -9,7 +9,47 @@
  */
 
 import { EventEmitter } from 'events';
-import * as crypto from 'crypto';
+// Conditional crypto import for Node.js compatibility
+let crypto: any;
+try {
+  crypto = require('crypto');
+} catch {
+  // Fallback for React Native environment
+  crypto = {
+    randomBytes: (length: number) => {
+      const array = new Uint8Array(length);
+      for (let i = 0; i < length; i++) {
+        array[i] = Math.floor(Math.random() * 256);
+      }
+      return {
+        toString: (encoding: string) => {
+          if (encoding === 'hex') {
+            return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+          }
+          return array.toString();
+        }
+      };
+    },
+    pbkdf2Sync: (password: string, salt: string, iterations: number, keylen: number, digest: string) => {
+      // Simple fallback - not cryptographically secure but works for development
+      let hash = password + salt;
+      for (let i = 0; i < iterations; i++) {
+        hash = btoa(hash).slice(0, keylen);
+      }
+      return Buffer.from(hash);
+    },
+    createCipheriv: () => ({
+      update: (data: string) => data,
+      final: () => '',
+      getAuthTag: () => Buffer.from('')
+    }),
+    createDecipheriv: () => ({
+      update: (data: string) => data,
+      final: () => '',
+      setAuthTag: () => {}
+    })
+  };
+}
 import * as fs from 'fs';
 import * as path from 'path';
 

@@ -9,7 +9,14 @@
 // Source: SalleCompanion-1/server/storage.ts (migrated 2025-08-27)
 
 import type { User, InsertUser, Conversation, InsertConversation, Task, InsertTask, Memory, InsertMemory, PersonaState, InsertPersonaState } from "../shared/src/schema";
-import { randomUUID } from "crypto";
+// Simple UUID generator for React Native compatibility
+function randomUUID(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
 export interface IStorage {
   // User management
