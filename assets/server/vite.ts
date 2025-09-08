@@ -12,12 +12,21 @@
 import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
-import { createServer as createViteServer, createLogger } from "vite";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { type Server } from "http";
-import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
 
-const viteLogger = createLogger();
+// Dynamic import for vite to avoid CommonJS/ESM issues
+let createViteServer: any;
+let createLogger: any;
+
+(async () => {
+  const vite = await import("vite");
+  createViteServer = vite.createServer;
+  createLogger = vite.createLogger;
+})();
+
+const viteLogger = createLogger ? createLogger() : console;
 
 export function log(message: string, source = "express") { // eslint-disable-line @typescript-eslint/no-unused-vars
   // Provenance: Sallie-1/server/vite.ts - formattedTime reserved for future timestamp logging
@@ -39,11 +48,10 @@ export async function setupVite(app: Express, server: Server) {
   };
 
   const vite = await createViteServer({
-    ...viteConfig,
     configFile: false,
     customLogger: {
       ...viteLogger,
-      error: (msg, options) => {
+      error: (msg: string, options?: any) => {
         viteLogger.error(msg, options);
         process.exit(1);
       },
@@ -59,7 +67,7 @@ export async function setupVite(app: Express, server: Server) {
 
     try {
       const clientTemplate = path.resolve(
-        import.meta.dirname,
+        __dirname,
         "..",
         "client",
         "index.html",
