@@ -5,11 +5,13 @@ This document defines the complete persona, capabilities, architecture, and beha
 
 - **.copilot.instructions.md** must say:
 
-  ```
+  
+  ```text
   ALWAYS consult /docs/Salle_1.0_Guide.md before suggesting or editing code.
   Follow persona, architecture, modularity rules without deviation.
   Never remove or bypass verifySalleFeatures.
-  ```
+  ```text
+  
 
 - Place top‑of‑file comment anchors pointing to the guide.
 - Extend `verifySalleFeatures` to:

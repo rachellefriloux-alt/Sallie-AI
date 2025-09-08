@@ -4,8 +4,8 @@ Entry point for launching the humanized Sallie system.
 Follows Salle architecture, modularity, and privacy rules.
 */
 
-import { HumanizedSalleDemo } from './HumanizedSallieDemo';
-import { EnhancedSalleDemo } from './EnhancedSalleDemo';
+import { HumanizedSallieDemo } from './HumanizedSallieDemo';
+import { EnhancedSalleDemo} from './EnhancedSalleDemo';
 
 // Launch the demo when this script is executed directly
 async function main() {
@@ -14,11 +14,11 @@ async function main() {
     
     if (demoType === 'enhanced') {
       console.log('Launching Enhanced Humanized Sallie System');
-      const enhancedDemo = new EnhancedSalleDemo();
+      const enhancedDemo = new enhancedDemo();
       await enhancedDemo.runDemo();
     } else {
       console.log('Launching Basic Humanized Sallie System');
-      const demo = new HumanizedSalleDemo();
+      const demo = new HumanizedSalieDemo();
       await demo.runDemo();
     }
     
