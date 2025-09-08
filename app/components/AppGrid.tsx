@@ -130,7 +130,7 @@ export default function AppGrid({ onAppPress }: AppGridProps) {
       <FlatList
         data={filteredApps}
         renderItem={renderAppItem}
-        keyExtractor={(item, index) => `${item.packageName}-${index}`}
+        keyExtractor={(item) => item.id}
         numColumns={numColumns}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.appsContainer}

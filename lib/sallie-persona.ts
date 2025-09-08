@@ -134,12 +134,8 @@ export class SalliePersonaEngine {
   }
 
   getPersonaResponse(query: string): string {
-    const responses: Record<SalliePersona['archetype'], string> = {
+    const responses = {
       'Loyal Strategist': `Strategic analysis: ${query}`,
-      'Wise Counselor': `Thoughtful counsel: ${query}`,
-      'Creative Catalyst': `Creative inspiration: ${query}`,
-      'Protective Guardian': `Protective guidance: ${query}`,
-      'Empathetic Healer': `Empathetic healing: ${query}`,
       'Soul Sister': `Heartfelt guidance: ${query}`,
       'Systems Architect': `System design perspective: ${query}`,
       'Myth-Keeper': `Legendary wisdom: ${query}`,

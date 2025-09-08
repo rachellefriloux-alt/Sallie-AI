@@ -311,7 +311,13 @@ class PluginRegistry {
           continue;
         }
 
-        // TODO: Add more specific health checks
+        // Planned health checks:
+        // - Validate plugin configuration schema
+        // - Check for required permissions
+        // - Verify plugin API connectivity (if applicable)
+        // - Monitor resource usage and performance
+        // - Detect memory leaks or abnormal behavior
+        // Contributors: Implement these checks in future updates.
         plugin.health = 'healthy';
       } catch (error) {
         plugin.health = 'error';

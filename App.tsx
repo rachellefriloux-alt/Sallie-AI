@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -13,9 +13,12 @@ import SalliePanelScreen from './app/screens/SalliePanelScreen';
 import SettingsScreen from './app/screens/SettingsScreen';
 import MemoriesScreen from './app/screens/MemoriesScreen';
 import DebugConsoleScreen from './app/screens/DebugConsoleScreen';
+import ProfileScreen from './app/screens/ProfileScreen';
+import DataManagementScreen from './app/screens/DataManagementScreen';
 
 // Import components
 import EnhancedSallieOverlay from './app/components/EnhancedSallieOverlay';
+import { preloadCriticalComponents } from './components/LazyLoadingSystem';
 
 // Import stores
 import { usePersonaStore } from './app/store/persona';
@@ -26,9 +29,14 @@ import { useThemeStore } from './app/store/theme';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+interface TabBarIconProps {
+  name: 'home' | 'brain' | 'cog';
+  color: string;
+}
+
 function TabNavigator() {
   const { currentTheme } = useThemeStore();
-  
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -49,8 +57,8 @@ function TabNavigator() {
         },
       }}
     >
-      <Tab.Screen 
-        name="Home" 
+      <Tab.Screen
+        name="Home"
         component={HomeLauncherScreen}
         options={{
           tabBarIcon: ({ color }) => (
@@ -58,8 +66,8 @@ function TabNavigator() {
           ),
         }}
       />
-      <Tab.Screen 
-        name="Memories" 
+      <Tab.Screen
+        name="Memories"
         component={MemoriesScreen}
         options={{
           tabBarIcon: ({ color }) => (
@@ -67,8 +75,8 @@ function TabNavigator() {
           ),
         }}
       />
-      <Tab.Screen 
-        name="Settings" 
+      <Tab.Screen
+        name="Settings"
         component={SettingsScreen}
         options={{
           tabBarIcon: ({ color }) => (
@@ -80,10 +88,23 @@ function TabNavigator() {
   );
 }
 
-function TabBarIcon({ name, color }: { name: string; color: string }) {
+function TabBarIcon({ name, color }: TabBarIconProps) {
+  const getIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'home':
+        return '🏠';
+      case 'brain':
+        return '🧠';
+      case 'cog':
+        return '⚙️';
+      default:
+        return '❓';
+    }
+  };
+
   return (
     <Text style={{ color, fontSize: 20 }}>
-      {name === 'home' ? '🏠' : name === 'brain' ? '🧠' : '⚙️'}
+      {getIcon(name)}
     </Text>
   );
 }
@@ -93,6 +114,11 @@ export default function App() {
   const { shortTerm, episodic } = useMemoryStore();
   const { isLauncher } = useDeviceStore();
   const { currentTheme } = useThemeStore();
+
+  // Preload critical components for better performance
+  React.useEffect(() => {
+    preloadCriticalComponents();
+  }, []);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -106,29 +132,43 @@ export default function App() {
             }}
           >
             <Stack.Screen name="Main" component={TabNavigator} />
-            <Stack.Screen 
-              name="SalliePanel" 
+            <Stack.Screen
+              name="SalliePanel"
               component={SalliePanelScreen}
               options={{
                 animation: 'slide_from_bottom',
                 presentation: 'modal',
               }}
             />
-            <Stack.Screen 
-              name="DebugConsole" 
+            <Stack.Screen
+              name="DebugConsole"
               component={DebugConsoleScreen}
               options={{
                 animation: 'fade',
               }}
             />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{
+                animation: 'slide_from_right',
+              }}
+            />
+            <Stack.Screen
+              name="DataManagement"
+              component={DataManagementScreen}
+              options={{
+                animation: 'slide_from_right',
+              }}
+            />
           </Stack.Navigator>
-          
+
           {/* Enhanced Sallie Overlay - Always accessible with dragging support */}
           <EnhancedSallieOverlay />
         </NavigationContainer>
-        
-        <StatusBar 
-          style={currentTheme.name.includes('light') ? 'dark' : 'light'} 
+
+        <StatusBar
+          style={currentTheme.name.includes('light') ? 'dark' : 'light'}
           backgroundColor={currentTheme.colors.background}
         />
       </SafeAreaProvider>

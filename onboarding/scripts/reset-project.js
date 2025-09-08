@@ -9,9 +9,6 @@
 const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
-import { SallieLogger } from '../../assets/src/utils/SallieLogger.js';
-
-const logger = new SallieLogger('reset-project');
 
 const root = process.cwd();
 const oldDirs = ["app", "components", "hooks", "constants", "scripts"];
@@ -53,7 +50,7 @@ const moveDirectories = async (userInput) => {
     if (userInput === "y") {
       // Create the app-example directory
       await fs.promises.mkdir(exampleDirPath, { recursive: true });
-      logger.info(`/${exampleDir} directory created.`);
+      console.log(`📁 /${exampleDir} directory created.`);
     }
 
     // Move old directories to new app-example directory or delete them
@@ -63,33 +60,33 @@ const moveDirectories = async (userInput) => {
         if (userInput === "y") {
           const newDirPath = path.join(root, exampleDir, dir);
           await fs.promises.rename(oldDirPath, newDirPath);
-          logger.info(`/${dir} moved to /${exampleDir}/${dir}.`);
+          console.log(`➡️ /${dir} moved to /${exampleDir}/${dir}.`);
         } else {
           await fs.promises.rm(oldDirPath, { recursive: true, force: true });
-          logger.info(`/${dir} deleted.`);
+          console.log(`❌ /${dir} deleted.`);
         }
       } else {
-        logger.info(`/${dir} does not exist, skipping.`);
+        console.log(`➡️ /${dir} does not exist, skipping.`);
       }
     }
 
     // Create new /app directory
     const newAppDirPath = path.join(root, newAppDir);
     await fs.promises.mkdir(newAppDirPath, { recursive: true });
-    logger.info("New /app directory created.");
+    console.log("\n📁 New /app directory created.");
 
     // Create index.tsx
     const indexPath = path.join(newAppDirPath, "index.tsx");
     await fs.promises.writeFile(indexPath, indexContent);
-    logger.info("app/index.tsx created.");
+    console.log("📄 app/index.tsx created.");
 
     // Create _layout.tsx
     const layoutPath = path.join(newAppDirPath, "_layout.tsx");
     await fs.promises.writeFile(layoutPath, layoutContent);
-    logger.info("app/_layout.tsx created.");
+    console.log("📄 app/_layout.tsx created.");
 
-    logger.info("Project reset complete. Next steps:");
-    logger.info(
+    console.log("\n✅ Project reset complete. Next steps:");
+    console.log(
       `1. Run \`npx expo start\` to start a development server.\n2. Edit app/index.tsx to edit the main screen.${
         userInput === "y"
           ? `\n3. Delete the /${exampleDir} directory when you're done referencing it.`
@@ -97,7 +94,7 @@ const moveDirectories = async (userInput) => {
       }`
     );
   } catch (error) {
-    logger.error(`Error during script execution: ${error.message}`);
+    console.error(`❌ Error during script execution: ${error.message}`);
   }
 };
 
@@ -108,7 +105,7 @@ rl.question(
     if (userInput === "y" || userInput === "n") {
       moveDirectories(userInput).finally(() => rl.close());
     } else {
-      logger.info("Invalid input. Please enter 'Y' or 'N'.");
+      console.log("❌ Invalid input. Please enter 'Y' or 'N'.");
       rl.close();
     }
   }

@@ -2,9 +2,6 @@
 
 ## Objective
 
-Integrate, expand, and enhance all migrated and pending modules from `sallie_1.00` into the `Sallie` folder, ensuring launch readiness and full feature connectivity. All optional enhancements and advanced features will be included.
-
----
 
 ## 1. Core & Feature Module Expansion
 

@@ -49,7 +49,7 @@ export class CreativeTraditionalIntegrator {
    */
   private setupEventListeners(): void {
     // Listen for pre-response events to enhance with creativity when appropriate
-    this.technicalIntegrator.addEventListener('sallie:pre_response', (event: any) => {
+    this.technicalIntegrator.addEventListener('sallie:pre_response', (event) => {
       if (!event.data || typeof event.data.response !== 'string') {
         return;
       }

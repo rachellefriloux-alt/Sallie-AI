@@ -241,7 +241,11 @@ export class NotificationSystem {
         throw new Error('Scheduled date is required for scheduling notifications');
       }
 
-      const trigger = notification.scheduledDate;
+      const trigger = {
+        date: notification.scheduledDate,
+        repeats: !!notification.repeatInterval,
+        seconds: notification.repeatInterval ? this.getRepeatIntervalSeconds(notification.repeatInterval) : undefined,
+      };
 
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
@@ -253,12 +257,7 @@ export class NotificationSystem {
           sound: notification.sound !== false,
           badge: notification.badge,
         },
-        trigger: {
-          // Use a time interval trigger compliant with Expo types
-          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds: notification.scheduledDate ? Math.max(1, Math.floor((notification.scheduledDate.getTime() - Date.now()) / 1000)) : 5,
-          repeats: false,
-        },
+        trigger,
       });
 
       return notificationId;
@@ -315,12 +314,12 @@ export class NotificationSystem {
     }
   }
 
-  async getNotificationPermissions() {
+  async getNotificationPermissions(): Promise<Notifications.PermissionStatus> {
     try {
       return await Notifications.getPermissionsAsync();
     } catch (error) {
       console.error('Error getting notification permissions:', error);
-      return null;
+      return { granted: false, status: 'denied' };
     }
   }
 

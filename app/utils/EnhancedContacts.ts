@@ -31,6 +31,7 @@ export interface ContactInfo {
   imageAvailable?: boolean;
   imageUri?: string;
   favorite?: boolean;
+  lastUpdated?: number;
 }
 
 export interface ContactGroup {
@@ -91,8 +92,8 @@ export class EnhancedContacts {
           Contacts.Fields.Note,
           Contacts.Fields.ImageAvailable,
           Contacts.Fields.Image,
-          Contacts.Fields.IsFavorite,
-          Contacts.Fields.IsFavorite,
+          Contacts.Fields.Favorite,
+          Contacts.Fields.LastUpdated,
         ],
       });
 
@@ -164,7 +165,14 @@ export class EnhancedContacts {
         groups['Favorites'] = favoriteGroup;
       }
 
-  // Recent contacts grouping removed due to limited field availability in Expo Contacts
+      // Group by recent contacts (updated in last 30 days)
+      const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+      const recentGroup = contacts.filter(contact => 
+        contact.lastUpdated && contact.lastUpdated > thirtyDaysAgo
+      );
+      if (recentGroup.length > 0) {
+        groups['Recent'] = recentGroup;
+      }
 
       return Object.entries(groups).map(([name, contacts]) => ({
         id: name,
@@ -201,8 +209,10 @@ export class EnhancedContacts {
   async getRecentContacts(limit: number = 10): Promise<ContactInfo[]> {
     try {
       const contacts = await this.getAllContacts();
-      // Without lastUpdated, fallback to first N contacts
-      return contacts.slice(0, limit);
+      return contacts
+        .filter(contact => contact.lastUpdated)
+        .sort((a, b) => (b.lastUpdated || 0) - (a.lastUpdated || 0))
+        .slice(0, limit);
     } catch (error) {
       console.error('Error getting recent contacts:', error);
       return [];
@@ -273,7 +283,8 @@ export class EnhancedContacts {
       note: contact.note,
       imageAvailable: contact.imageAvailable,
       imageUri: contact.image?.uri,
-  favorite: contact.isFavorite ?? contact.favorite,
+      favorite: contact.favorite,
+      lastUpdated: contact.lastUpdated,
     };
   }
 

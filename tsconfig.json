@@ -1,25 +1,7 @@
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "target": "esnext",
-    "lib": [
-      "dom",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "incremental": true,
-    "allowSyntheticDefaultImports": true,
-    "jsx": "react-native",
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -29,7 +11,7 @@
         "./app/*"
       ],
       "@core/*": [
-        "./core/*"
+        "./app/core/*"
       ],
       "@ui/*": [
         "./app/ui/*"
@@ -55,7 +37,24 @@
       "@assets/*": [
         "./assets/*"
       ]
-    }
+    },
+    "types": [
+      "react-native",
+      "jest",
+      "node"
+    ],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "jsx": "react-native",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "moduleResolution": "node16",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "customConditions": []
   },
   "include": [
     "**/*.ts",
@@ -69,9 +68,6 @@
     "node_modules",
     "babel.config.js",
     "metro.config.js",
-    "jest.config.js",
-    "features/**",
-    "assets/server/**"
-  ],
-  "extends": "expo/tsconfig.base"
+    "jest.config.js"
+  ]
 }

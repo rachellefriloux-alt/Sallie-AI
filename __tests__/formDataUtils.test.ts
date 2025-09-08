@@ -7,6 +7,24 @@
 
 import { ConfigurableFormData, createConfigurableForm, PRESET_CONFIGS } from '../utils/formDataUtils';
 
+// Mock Response for testing
+global.Response = class MockResponse {
+  constructor(public body: any) {}
+
+  async blob() {
+    return new Blob([this.body]);
+  }
+
+  get headers() {
+    return {
+      get: (name: string) => {
+        if (name === 'content-disposition') return 'attachment; filename="test.txt"';
+        return null;
+      }
+    };
+  }
+} as any;
+
 // Mock FormData for testing
 class MockFormData {
   private entries: Array<[string, any]> = [];

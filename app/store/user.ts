@@ -4,50 +4,207 @@ import { MMKV } from 'react-native-mmkv';
 
 const storage = new MMKV();
 
-export interface UserState {
-  // User profile
+interface UserProfile {
+  id: string;
   name: string;
   email?: string;
   avatar?: string;
+  preferences: {
+    theme: 'light' | 'dark' | 'auto';
+    notifications: boolean;
+    soundEnabled: boolean;
+    vibrationEnabled: boolean;
+    language: string;
+  };
+  stats: {
+    totalInteractions: number;
+    favoritePersona: string;
+    lastActive: Date;
+    streakDays: number;
+  };
+  onboarding: {
+    completed: boolean;
+    currentStep: number;
+    skippedSteps: number[];
+    answers: {
+      name?: string;
+      title?: string;
+      location?: string;
+      season?: string;
+      mission?: string;
+      decisionStyle?: string;
+      dare?: string;
+      aesthetics?: string;
+      rhythm?: string;
+      nonnegotiable?: string;
+    };
+    completedAt?: Date;
+  };
+}
 
-  // Preferences
-  preferredName: string; // What they want to be called
-  timezone: string;
+interface UserState {
+  profile: UserProfile | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
 
   // Actions
-  setName: (name: string) => void;
-  setPreferredName: (preferredName: string) => void;
-  setEmail: (email: string) => void;
-  setAvatar: (avatar: string) => void;
-  updateProfile: (updates: Partial<UserState>) => void;
-  getDisplayName: () => string;
+  setProfile: (profile: UserProfile) => void;
+  updateProfile: (updates: Partial<UserProfile>) => void;
+  updatePreferences: (preferences: Partial<UserProfile['preferences']>) => void;
+  updateStats: (stats: Partial<UserProfile['stats']>) => void;
+  updateOnboarding: (onboarding: Partial<UserProfile['onboarding']>) => void;
+  setOnboardingAnswer: (key: keyof UserProfile['onboarding']['answers'], value: string) => void;
+  completeOnboarding: () => void;
+  resetOnboarding: () => void;
+  setAuthenticated: (authenticated: boolean) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+  reset: () => void;
 }
+
+const defaultProfile: UserProfile = {
+  id: '',
+  name: '',
+  preferences: {
+    theme: 'auto',
+    notifications: true,
+    soundEnabled: true,
+    vibrationEnabled: true,
+    language: 'en',
+  },
+  stats: {
+    totalInteractions: 0,
+    favoritePersona: '',
+    lastActive: new Date(),
+    streakDays: 0,
+  },
+  onboarding: {
+    completed: false,
+    currentStep: 0,
+    skippedSteps: [],
+    answers: {},
+  },
+};
 
 export const useUserStore = create<UserState>()(
   persist(
     (set, get) => ({
-      // Initial state
-      name: '',
-      email: '',
-      avatar: '',
-      preferredName: 'love', // Default fallback
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      profile: null,
+      isAuthenticated: false,
+      isLoading: false,
+      error: null,
 
-      // Actions
-      setName: (name: string) => set({ name }),
+      setProfile: (profile) => set({ profile, isAuthenticated: true }),
 
-      setPreferredName: (preferredName: string) => set({ preferredName }),
+      updateProfile: (updates) => {
+        const currentProfile = get().profile;
+        if (currentProfile) {
+          set({
+            profile: { ...currentProfile, ...updates },
+          });
+        }
+      },
 
-      setEmail: (email: string) => set({ email }),
+      updatePreferences: (preferences) => {
+        const currentProfile = get().profile;
+        if (currentProfile) {
+          set({
+            profile: {
+              ...currentProfile,
+              preferences: { ...currentProfile.preferences, ...preferences },
+            },
+          });
+        }
+      },
 
-      setAvatar: (avatar: string) => set({ avatar }),
+      updateStats: (stats) => {
+        const currentProfile = get().profile;
+        if (currentProfile) {
+          set({
+            profile: {
+              ...currentProfile,
+              stats: { ...currentProfile.stats, ...stats },
+            },
+          });
+        }
+      },
 
-      updateProfile: (updates: Partial<UserState>) => set(updates),
+      updateOnboarding: (onboarding) => {
+        const currentProfile = get().profile;
+        if (currentProfile) {
+          set({
+            profile: {
+              ...currentProfile,
+              onboarding: { ...currentProfile.onboarding, ...onboarding },
+            },
+          });
+        }
+      },
 
-      getDisplayName: () => {
-        const state = get();
-        return state.preferredName || state.name || 'love';
-      }
+      setOnboardingAnswer: (key, value) => {
+        const currentProfile = get().profile;
+        if (currentProfile) {
+          set({
+            profile: {
+              ...currentProfile,
+              onboarding: {
+                ...currentProfile.onboarding,
+                answers: {
+                  ...currentProfile.onboarding.answers,
+                  [key]: value,
+                },
+              },
+            },
+          });
+        }
+      },
+
+      completeOnboarding: () => {
+        const currentProfile = get().profile;
+        if (currentProfile) {
+          set({
+            profile: {
+              ...currentProfile,
+              onboarding: {
+                ...currentProfile.onboarding,
+                completed: true,
+                completedAt: new Date(),
+              },
+            },
+          });
+        }
+      },
+
+      resetOnboarding: () => {
+        const currentProfile = get().profile;
+        if (currentProfile) {
+          set({
+            profile: {
+              ...currentProfile,
+              onboarding: {
+                completed: false,
+                currentStep: 0,
+                skippedSteps: [],
+                answers: {},
+              },
+            },
+          });
+        }
+      },
+
+      setAuthenticated: (authenticated) => set({ isAuthenticated: authenticated }),
+
+      setLoading: (loading) => set({ isLoading: loading }),
+
+      setError: (error) => set({ error }),
+
+      reset: () => set({
+        profile: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null,
+      }),
     }),
     {
       name: 'user-storage',
@@ -63,6 +220,10 @@ export const useUserStore = create<UserState>()(
           storage.delete(name);
         },
       })),
+      partialize: (state) => ({
+        profile: state.profile,
+        isAuthenticated: state.isAuthenticated,
+      }),
     }
   )
 );

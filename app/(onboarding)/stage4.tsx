@@ -3,14 +3,22 @@ import { Text, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { OnboardingStage } from '@/components/onboarding/OnboardingStage';
 import { OnboardingButton } from '@/components/onboarding/OnboardingButton';
+import { ProgressIndicator } from '@/components/onboarding/ProgressIndicator';
+import { SkipButton } from '@/components/onboarding/SkipButton';
 
 export default function Stage4() {
   const handleNext = () => {
     router.push('/(onboarding)/stage5' as any);
   };
 
+  const handleSkip = () => {
+    router.replace('/');
+  };
+
   return (
     <OnboardingStage>
+      <SkipButton onSkip={handleSkip} />
+      <ProgressIndicator currentStep={4} totalSteps={6} />
       <Text style={styles.title}>My Facets</Text>
       <View style={styles.facetsList}>
         <Text style={styles.facetItem}>The Strategist — clarity in decisions</Text>

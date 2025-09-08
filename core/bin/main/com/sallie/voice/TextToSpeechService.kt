@@ -7,17 +7,13 @@
 
 package com.sallie.voice
 
-import android.content.Context
-import android.media.AudioManager
-import android.media.MediaPlayer
-import android.speech.tts.TextToSpeech
-import android.speech.tts.Voice
-import com.google.cloud.texttospeech.v1.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.OutputStream
-import java.util.*
-import java.util.Locale
 
 /**
  * Interface for text-to-speech synthesis services
@@ -153,15 +149,13 @@ data class VoiceInfo(
 /**
  * Implementation of the text-to-speech service using on-device and cloud capabilities
  */
-class EnhancedTextToSpeechService(
-    private val context: Context
-) : TextToSpeechService {
+class EnhancedTextToSpeechService : TextToSpeechService {
     
     private val _synthesisState = MutableStateFlow(SynthesisState.IDLE)
     override val synthesisState: StateFlow<SynthesisState> = _synthesisState.asStateFlow()
     
     // TTS engines for different modes
-    private val onDeviceTts = OnDeviceTextToSpeech(context)
+    private val onDeviceTts = OnDeviceTextToSpeech()
     private val cloudTts = CloudTextToSpeech()
     
     // Default to on-device for privacy unless cloud is needed for quality
@@ -367,254 +361,55 @@ abstract class BaseTextToSpeech {
 /**
  * On-device text-to-speech implementation
  */
-class OnDeviceTextToSpeech(
-    private val context: Context
-) : BaseTextToSpeech() {
+class OnDeviceTextToSpeech : BaseTextToSpeech() {
     // Implementation details for on-device TTS
     // This would integrate with the device's native TTS capabilities
-
-    private var textToSpeech: android.speech.tts.TextToSpeech? = null
-    private var isInitialized = false
-    private val availableVoices = mutableListOf<VoiceInfo>()
-    private var currentSynthesisId: String? = null
-
+    
     override suspend fun initialize() {
-        withContext(Dispatchers.Main) {
-            textToSpeech = android.speech.tts.TextToSpeech(context) { status ->
-                if (status == android.speech.tts.TextToSpeech.SUCCESS) {
-                    isInitialized = true
-                    loadAvailableVoices()
-                }
-            }
-        }
+        // Initialize on-device TTS resources
     }
-
+    
     override suspend fun getAvailableVoices(): List<VoiceInfo> {
         // Get available on-device voices
-        if (!isInitialized) {
-            throw IllegalStateException("TTS not initialized")
-        }
-
-        return availableVoices.toList()
+        TODO("Implement on-device voice listing")
     }
-
+    
     override suspend fun speak(text: String, options: SpeechSynthesisOptions): SynthesisResult {
         // Speak text using on-device TTS
-        if (!isInitialized) {
-            throw IllegalStateException("TTS not initialized")
-        }
-
-        val synthesisId = generateSynthesisId()
-        currentSynthesisId = synthesisId
-
-        // Apply speech options
-        applySpeechOptions(options)
-
-        // Start speaking
-        val result = textToSpeech?.speak(text, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, synthesisId)
-
-        return if (result == android.speech.tts.TextToSpeech.SUCCESS) {
-            SynthesisResult(
-                id = synthesisId,
-                audioData = null, // On-device TTS doesn't provide audio data directly
-                duration = estimateSpeechDuration(text, options),
-                wordBoundaries = emptyList() // On-device TTS doesn't provide word boundaries
-            )
-        } else {
-            throw RuntimeException("Failed to start speech synthesis")
-        }
+        TODO("Implement on-device speech synthesis")
     }
-
+    
     override suspend fun speakSsml(ssml: String, options: SpeechSynthesisOptions): SynthesisResult {
         // Speak SSML using on-device TTS
-        if (!isInitialized) {
-            throw IllegalStateException("TTS not initialized")
-        }
-
-        // Check if device supports SSML
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
-            throw UnsupportedOperationException("SSML not supported on this Android version")
-        }
-
-        val synthesisId = generateSynthesisId()
-        currentSynthesisId = synthesisId
-
-        // Apply speech options
-        applySpeechOptions(options)
-
-        // Start speaking SSML
-        val result = textToSpeech?.speak(ssml, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, synthesisId)
-
-        return if (result == android.speech.tts.TextToSpeech.SUCCESS) {
-            SynthesisResult(
-                id = synthesisId,
-                audioData = null,
-                duration = estimateSpeechDuration(ssml, options),
-                wordBoundaries = emptyList()
-            )
-        } else {
-            throw RuntimeException("Failed to start SSML synthesis")
-        }
+        TODO("Implement on-device SSML synthesis")
     }
-
+    
     override suspend fun synthesize(text: String, options: SpeechSynthesisOptions): ByteArray {
         // Synthesize text to audio data using on-device TTS
-        // Note: Android's on-device TTS doesn't directly support synthesizing to byte array
-        // This would require additional processing or using a different approach
-        throw UnsupportedOperationException("On-device TTS does not support direct audio data synthesis")
+        TODO("Implement on-device text synthesis")
     }
-
+    
     override suspend fun synthesizeSsml(ssml: String, options: SpeechSynthesisOptions): ByteArray {
         // Synthesize SSML to audio data using on-device TTS
-        throw UnsupportedOperationException("On-device TTS does not support direct SSML audio data synthesis")
+        TODO("Implement on-device SSML synthesis")
     }
-
+    
     override suspend fun synthesizeToStream(text: String, options: SpeechSynthesisOptions, outputStream: OutputStream) {
         // Synthesize text to output stream using on-device TTS
-        // This would require synthesizing to a temporary file first, then streaming
-        throw UnsupportedOperationException("On-device TTS does not support direct stream synthesis")
+        TODO("Implement on-device stream synthesis")
     }
-
+    
     override suspend fun synthesizeToFile(text: String, options: SpeechSynthesisOptions, outputFile: File): File {
         // Synthesize text to file using on-device TTS
-        if (!isInitialized) {
-            throw IllegalStateException("TTS not initialized")
-        }
-
-        val synthesisId = generateSynthesisId()
-        currentSynthesisId = synthesisId
-
-        // Apply speech options
-        applySpeechOptions(options)
-
-        // Create temporary file for synthesis
-        val tempFile = File.createTempFile("tts_", ".wav")
-
-        // Note: Android's on-device TTS doesn't have a direct synthesizeToFile method
-        // This would require using the speak method with a file output or alternative approach
-        throw UnsupportedOperationException("On-device TTS file synthesis requires additional implementation")
+        TODO("Implement on-device file synthesis")
     }
-
+    
     override suspend fun stop() {
         // Stop on-device TTS
-        textToSpeech?.stop()
-        currentSynthesisId = null
     }
-
+    
     override suspend fun shutdown() {
         // Release on-device TTS resources
-        textToSpeech?.shutdown()
-        textToSpeech = null
-        isInitialized = false
-        availableVoices.clear()
-        currentSynthesisId = null
-    }
-
-    /**
-     * Apply speech synthesis options to the TTS engine
-     */
-    private fun applySpeechOptions(options: SpeechSynthesisOptions) {
-        textToSpeech?.apply {
-            // Set voice
-            if (options.voiceId.isNotEmpty()) {
-                val voice = android.speech.tts.Voice(options.voiceId, Locale.getDefault(), Voice.QUALITY_NORMAL, Voice.LATENCY_NORMAL, false, null)
-                setVoice(voice)
-            }
-
-            // Set speech rate
-            setSpeechRate(options.speakingRate)
-
-            // Set pitch
-            setPitch(options.pitch)
-
-            // Set volume (if supported)
-            // Note: Android TTS doesn't have direct volume control in older versions
-        }
-    }
-
-    /**
-     * Estimate speech duration based on text length and speaking rate
-     */
-    private fun estimateSpeechDuration(text: String, options: SpeechSynthesisOptions): Long {
-        // Rough estimation: ~150 words per minute average speaking rate
-        val wordsPerMinute = 150
-        val wordCount = text.split("\\s+".toRegex()).size
-        val baseDurationMinutes = wordCount.toDouble() / wordsPerMinute.toDouble()
-        val adjustedDurationMinutes = baseDurationMinutes / options.speakingRate
-
-        return (adjustedDurationMinutes * 60 * 1000).toLong()
-    }
-
-    /**
-     * Generate a unique synthesis ID
-     */
-    private fun generateSynthesisId(): String {
-        return "tts_${System.currentTimeMillis()}_${Math.random().toString(36).substring(2, 9)}"
-    }
-
-    /**
-     * Load available voices from the device
-     */
-    private fun loadAvailableVoices() {
-        textToSpeech?.let { tts ->
-            availableVoices.clear()
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                val voices = tts.voices
-                if (voices != null) {
-                    for (voice in voices) {
-                        val voiceInfo = VoiceInfo(
-                            id = voice.name,
-                            name = voice.name,
-                            gender = when {
-                                voice.name.contains("male", ignoreCase = true) -> VoiceGender.MALE
-                                voice.name.contains("female", ignoreCase = true) -> VoiceGender.FEMALE
-                                else -> VoiceGender.NEUTRAL
-                            },
-                            age = VoiceAge.ADULT, // Default assumption
-                            languageCodes = listOf(LanguageCode(voice.locale.toString())),
-                            sampleRateHertz = 22050, // Default sample rate
-                            naturalness = 0.7f, // On-device voices are generally less natural than cloud
-                            isNeural = false, // On-device voices are typically not neural
-                            requiresNetwork = false,
-                            customizationSupport = false
-                        )
-                        availableVoices.add(voiceInfo)
-                    }
-                }
-            }
-
-            // Fallback for older Android versions
-            if (availableVoices.isEmpty()) {
-                val defaultVoice = VoiceInfo(
-                    id = "default",
-                    name = "Default Voice",
-                    gender = VoiceGender.NEUTRAL,
-                    age = VoiceAge.ADULT,
-                    languageCodes = listOf(LanguageCode(Locale.getDefault().toString())),
-                    sampleRateHertz = 22050,
-                    naturalness = 0.6f,
-                    isNeural = false,
-                    requiresNetwork = false,
-                    customizationSupport = false
-                )
-                availableVoices.add(defaultVoice)
-            }
-        }
-    }
-
-    /**
-     * Check if TTS is ready for use
-     */
-    fun isReady(): Boolean {
-        return isInitialized && textToSpeech != null
-    }
-
-    /**
-     * Get current synthesis status
-     */
-    fun getCurrentSynthesisId(): String? {
-        return currentSynthesisId
     }
 }
 
@@ -623,375 +418,52 @@ class OnDeviceTextToSpeech(
  */
 class CloudTextToSpeech : BaseTextToSpeech() {
     // Implementation details for cloud-based TTS
-    // This integrates with Google Cloud Text-to-Speech API
-
-    private var textToSpeechClient: TextToSpeechClient? = null
-    private var isInitialized = false
-    private val availableVoices = mutableListOf<VoiceInfo>()
-    private var currentSynthesisId: String? = null
-    private var mediaPlayer: MediaPlayer? = null
-
+    // This would integrate with cloud TTS services
+    
     override suspend fun initialize() {
-        withContext(Dispatchers.IO) {
-            try {
-                // Initialize Google Cloud Text-to-Speech client
-                // Note: In production, this would use proper authentication
-                textToSpeechClient = TextToSpeechClient.create()
-                isInitialized = true
-                loadAvailableVoices()
-            } catch (e: Exception) {
-                isInitialized = false
-                throw RuntimeException("Failed to initialize cloud TTS: ${e.message}")
-            }
-        }
+        // Initialize cloud TTS resources
     }
-
+    
     override suspend fun getAvailableVoices(): List<VoiceInfo> {
-        if (!isInitialized) {
-            throw IllegalStateException("Cloud TTS not initialized")
-        }
-        return availableVoices.toList()
+        // Get available cloud voices
+        TODO("Implement cloud voice listing")
     }
-
+    
     override suspend fun speak(text: String, options: SpeechSynthesisOptions): SynthesisResult {
-        if (!isInitialized) {
-            throw IllegalStateException("Cloud TTS not initialized")
-        }
-
-        val synthesisId = generateSynthesisId()
-        currentSynthesisId = synthesisId
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val audioData = synthesize(text, options)
-
-                // Play the audio data
-                playAudioData(audioData)
-
-                SynthesisResult(
-                    id = synthesisId,
-                    audioData = audioData,
-                    duration = estimateSpeechDuration(text, options),
-                    wordBoundaries = emptyList() // Cloud TTS doesn't provide word boundaries in basic implementation
-                )
-            } catch (e: Exception) {
-                throw RuntimeException("Failed to speak text: ${e.message}")
-            }
-        }
+        // Speak text using cloud TTS
+        TODO("Implement cloud speech synthesis")
     }
-
+    
     override suspend fun speakSsml(ssml: String, options: SpeechSynthesisOptions): SynthesisResult {
-        if (!isInitialized) {
-            throw IllegalStateException("Cloud TTS not initialized")
-        }
-
-        val synthesisId = generateSynthesisId()
-        currentSynthesisId = synthesisId
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val audioData = synthesizeSsml(ssml, options)
-
-                // Play the audio data
-                playAudioData(audioData)
-
-                SynthesisResult(
-                    id = synthesisId,
-                    audioData = audioData,
-                    duration = estimateSpeechDuration(ssml, options),
-                    wordBoundaries = emptyList()
-                )
-            } catch (e: Exception) {
-                throw RuntimeException("Failed to speak SSML: ${e.message}")
-            }
-        }
+        // Speak SSML using cloud TTS
+        TODO("Implement cloud SSML synthesis")
     }
-
+    
     override suspend fun synthesize(text: String, options: SpeechSynthesisOptions): ByteArray {
-        if (!isInitialized) {
-            throw IllegalStateException("Cloud TTS not initialized")
-        }
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val synthesisInput = SynthesisInput.newBuilder()
-                    .setText(text)
-                    .build()
-
-                val voice = createVoiceSelectionParams(options)
-                val audioConfig = createAudioConfig(options)
-
-                val request = SynthesizeSpeechRequest.newBuilder()
-                    .setInput(synthesisInput)
-                    .setVoice(voice)
-                    .setAudioConfig(audioConfig)
-                    .build()
-
-                val response = textToSpeechClient?.synthesizeSpeech(request)
-                    ?: throw RuntimeException("Text-to-speech client not available")
-
-                response.audioContent.toByteArray()
-            } catch (e: Exception) {
-                throw RuntimeException("Failed to synthesize text: ${e.message}")
-            }
-        }
+        // Synthesize text to audio data using cloud TTS
+        TODO("Implement cloud text synthesis")
     }
-
+    
     override suspend fun synthesizeSsml(ssml: String, options: SpeechSynthesisOptions): ByteArray {
-        if (!isInitialized) {
-            throw IllegalStateException("Cloud TTS not initialized")
-        }
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val synthesisInput = SynthesisInput.newBuilder()
-                    .setSsml(ssml)
-                    .build()
-
-                val voice = createVoiceSelectionParams(options)
-                val audioConfig = createAudioConfig(options)
-
-                val request = SynthesizeSpeechRequest.newBuilder()
-                    .setInput(synthesisInput)
-                    .setVoice(voice)
-                    .setAudioConfig(audioConfig)
-                    .build()
-
-                val response = textToSpeechClient?.synthesizeSpeech(request)
-                    ?: throw RuntimeException("Text-to-speech client not available")
-
-                response.audioContent.toByteArray()
-            } catch (e: Exception) {
-                throw RuntimeException("Failed to synthesize SSML: ${e.message}")
-            }
-        }
+        // Synthesize SSML to audio data using cloud TTS
+        TODO("Implement cloud SSML synthesis")
     }
-
+    
     override suspend fun synthesizeToStream(text: String, options: SpeechSynthesisOptions, outputStream: OutputStream) {
-        if (!isInitialized) {
-            throw IllegalStateException("Cloud TTS not initialized")
-        }
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val audioData = synthesize(text, options)
-                outputStream.write(audioData)
-                outputStream.flush()
-            } catch (e: Exception) {
-                throw RuntimeException("Failed to synthesize to stream: ${e.message}")
-            }
-        }
+        // Synthesize text to output stream using cloud TTS
+        TODO("Implement cloud stream synthesis")
     }
-
+    
     override suspend fun synthesizeToFile(text: String, options: SpeechSynthesisOptions, outputFile: File): File {
-        if (!isInitialized) {
-            throw IllegalStateException("Cloud TTS not initialized")
-        }
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val audioData = synthesize(text, options)
-                outputFile.writeBytes(audioData)
-                outputFile
-            } catch (e: Exception) {
-                throw RuntimeException("Failed to synthesize to file: ${e.message}")
-            }
-        }
+        // Synthesize text to file using cloud TTS
+        TODO("Implement cloud file synthesis")
     }
-
+    
     override suspend fun stop() {
-        withContext(Dispatchers.Main) {
-            mediaPlayer?.stop()
-            mediaPlayer?.reset()
-            currentSynthesisId = null
-        }
+        // Stop cloud TTS
     }
-
+    
     override suspend fun shutdown() {
-        try {
-            withContext(Dispatchers.Main) {
-                mediaPlayer?.release()
-                mediaPlayer = null
-            }
-            textToSpeechClient?.close()
-            textToSpeechClient = null
-            isInitialized = false
-            availableVoices.clear()
-            currentSynthesisId = null
-        } catch (e: Exception) {
-            // Log error but don't throw during shutdown
-        }
-    }
-
-    /**
-     * Load available voices from Google Cloud Text-to-Speech
-     */
-    private suspend fun loadAvailableVoices() {
-        withContext(Dispatchers.IO) {
-            try {
-                val request = ListVoicesRequest.getDefaultInstance()
-                val response = textToSpeechClient?.listVoices(request)
-
-                response?.voicesList?.forEach { voice ->
-                    val voiceInfo = VoiceInfo(
-                        id = voice.name,
-                        name = voice.name,
-                        gender = when (voice.ssmlGender) {
-                            SsmlVoiceGender.MALE -> VoiceGender.MALE
-                            SsmlVoiceGender.FEMALE -> VoiceGender.FEMALE
-                            else -> VoiceGender.NEUTRAL
-                        },
-                        age = VoiceAge.ADULT, // Default assumption for cloud voices
-                        languageCodes = voice.languageCodesList.map { LanguageCode(it) },
-                        sampleRateHertz = 24000, // Default sample rate for cloud TTS
-                        naturalness = 0.9f, // Cloud voices are generally more natural
-                        isNeural = voice.name.contains("Neural2") || voice.name.contains("Wavenet"),
-                        requiresNetwork = true,
-                        customizationSupport = false
-                    )
-                    availableVoices.add(voiceInfo)
-                }
-            } catch (e: Exception) {
-                // Fallback voices if API call fails
-                addFallbackVoices()
-            }
-        }
-    }
-
-    /**
-     * Add fallback voices when API is not available
-     */
-    private fun addFallbackVoices() {
-        val fallbackVoices = listOf(
-            VoiceInfo(
-                id = "en-US-Neural2-F",
-                name = "English US Female Neural",
-                gender = VoiceGender.FEMALE,
-                age = VoiceAge.ADULT,
-                languageCodes = listOf(LanguageCode("en-US")),
-                sampleRateHertz = 24000,
-                naturalness = 0.95f,
-                isNeural = true,
-                requiresNetwork = true,
-                customizationSupport = false
-            ),
-            VoiceInfo(
-                id = "en-US-Neural2-D",
-                name = "English US Male Neural",
-                gender = VoiceGender.MALE,
-                age = VoiceAge.ADULT,
-                languageCodes = listOf(LanguageCode("en-US")),
-                sampleRateHertz = 24000,
-                naturalness = 0.95f,
-                isNeural = true,
-                requiresNetwork = true,
-                customizationSupport = false
-            )
-        )
-        availableVoices.addAll(fallbackVoices)
-    }
-
-    /**
-     * Create voice selection parameters for Google Cloud TTS
-     */
-    private fun createVoiceSelectionParams(options: SpeechSynthesisOptions): VoiceSelectionParams {
-        val builder = VoiceSelectionParams.newBuilder()
-            .setLanguageCode(options.languageCode.code)
-
-        if (options.voiceId.isNotEmpty()) {
-            builder.setName(options.voiceId)
-        }
-
-        return builder.build()
-    }
-
-    /**
-     * Create audio configuration for Google Cloud TTS
-     */
-    private fun createAudioConfig(options: SpeechSynthesisOptions): AudioConfig {
-        return AudioConfig.newBuilder()
-            .setAudioEncoding(AudioEncoding.LINEAR16)
-            .setSpeakingRate(options.speakingRate.toDouble())
-            .setPitch(options.pitch.toDouble())
-            .setVolumeGainDb((20 * Math.log10(options.volume.toDouble())).toFloat())
-            .build()
-    }
-
-    /**
-     * Play audio data using MediaPlayer
-     */
-    private suspend fun playAudioData(audioData: ByteArray) {
-        withContext(Dispatchers.Main) {
-            try {
-                mediaPlayer?.release()
-                mediaPlayer = MediaPlayer().apply {
-                    setAudioStreamType(AudioManager.STREAM_MUSIC)
-                    setDataSource(audioData.inputStream().fd)
-                    prepare()
-                    start()
-                }
-            } catch (e: Exception) {
-                throw RuntimeException("Failed to play audio: ${e.message}")
-            }
-        }
-    }
-
-    /**
-     * Estimate speech duration based on text length and speaking rate
-     */
-    private fun estimateSpeechDuration(text: String, options: SpeechSynthesisOptions): Long {
-        // Rough estimation: ~150 words per minute average speaking rate
-        val wordsPerMinute = 150
-        val wordCount = text.split("\\s+".toRegex()).size
-        val baseDurationMinutes = wordCount.toDouble() / wordsPerMinute.toDouble()
-        val adjustedDurationMinutes = baseDurationMinutes / options.speakingRate
-
-        return (adjustedDurationMinutes * 60 * 1000).toLong()
-    }
-
-    /**
-     * Generate a unique synthesis ID
-     */
-    private fun generateSynthesisId(): String {
-        return "cloud_tts_${System.currentTimeMillis()}_${Math.random().toString(36).substring(2, 9)}"
+        // Release cloud TTS resources
     }
 }
-
-// =============================================================================
-// DATA CLASSES AND ENUMS
-// =============================================================================
-
-/**
- * Voice gender options
- */
-enum class VoiceGender {
-    MALE,
-    FEMALE,
-    NEUTRAL
-}
-
-/**
- * Voice age categories
- */
-enum class VoiceAge {
-    CHILD,
-    TEEN,
-    ADULT,
-    SENIOR
-}
-
-/**
- * Language code for voice synthesis
- */
-data class LanguageCode(val code: String)
-
-/**
- * Speech synthesis options
- */
-data class SpeechSynthesisOptions(
-    val voiceId: String = "",
-    val speakingRate: Float = 1.0f,
-    val pitch: Float = 1.0f,
-    val volume: Float = 1.0f,
-    val languageCode: LanguageCode = LanguageCode("en-US")
-)

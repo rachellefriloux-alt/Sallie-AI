@@ -6,20 +6,6 @@
  */
 package com.sallie.backup
 
-import android.content.Context
-import android.os.Environment
-import android.os.StatFs
-import com.sallie.core.memory.HierarchicalMemorySystem
-import com.sallie.core.memory.MemoryStorageService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.io.*
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
-import kotlin.math.roundToInt
-
 object ZipBackupModule {
 
     private const val BUFFER_SIZE = 8192

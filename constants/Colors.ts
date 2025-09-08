@@ -25,21 +25,12 @@ export const Colors = {
     tabIconDefault: '#94a3b8',
     tabIconSelected: tintColorLight,
     overlay: 'rgba(0, 0, 0, 0.1)',
-    primary: '#6366f1',
-    card: '#ffffff',
-    mystical: '#8b5cf6',
-    shadow: '#000000',
-    switchTrackFalse: '#cbd5e1',
-    switchTrackTrue: tintColorLight,
-    switchThumb: '#ffffff',
-    cardTransparent: 'rgba(255, 255, 255, 0.8)',
-    // Non-color properties moved to separate object
-    gradients: {
+    gradient: {
       primary: `linear-gradient(135deg, ${tintColorLight} 0%, #8b5cf6 100%)`,
       surface: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
       accent: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)'
     },
-    shadows: {
+    shadow: {
       sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
       md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
       lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
@@ -64,21 +55,12 @@ export const Colors = {
     tabIconDefault: '#64748b',
     tabIconSelected: tintColorDark,
     overlay: 'rgba(0, 0, 0, 0.5)',
-    primary: '#8b5cf6',
-    card: '#1e293b',
-    mystical: '#a855f7',
-    shadow: '#000000',
-    switchTrackFalse: '#475569',
-    switchTrackTrue: tintColorDark,
-    switchThumb: '#ffffff',
-    cardTransparent: 'rgba(30, 41, 59, 0.8)',
-    // Non-color properties moved to separate object
-    gradients: {
+    gradient: {
       primary: `linear-gradient(135deg, ${tintColorDark} 0%, #a855f7 100%)`,
       surface: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
       accent: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)'
     },
-    shadows: {
+    shadow: {
       sm: '0 1px 2px 0 rgb(0 0 0 / 0.2)',
       md: '0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2)',
       lg: '0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2)',
