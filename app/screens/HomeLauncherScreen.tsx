@@ -88,24 +88,23 @@ export default function HomeLauncherScreen() {
     };
 
     const handleAppPress = (appName: string) => {
-        // Launch app logic here
-        console.log(`Launching ${appName}`);
+        // Launch app logic here - TODO: Implement app launching
     };
 
     const handleVoiceStart = () => {
-        console.log('Voice interaction started');
+        // Voice interaction start logic - TODO: Implement voice recognition
     };
 
     const handleVoiceEnd = () => {
-        console.log('Voice interaction ended');
+        // Voice interaction end logic - TODO: Implement voice processing
     };
 
     const handleTranscription = (text: string) => {
-        console.log('Transcription:', text);
+        // Handle voice transcription - TODO: Process transcribed text
     };
 
     const handleResponse = (response: string) => {
-        console.log('Response:', response);
+        // Handle AI response - TODO: Process and display response
     };
 
     return (

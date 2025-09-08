@@ -23,9 +23,7 @@ export function ThemedText({
   const tintColor = useThemeColor({}, 'tint');
 
   // Ensure color is a string
-  const textColor = typeof color === 'string' ? color :
-    (typeof color === 'object' && color !== null && 'primary' in color) ? color.primary :
-      '#000000';
+  const textColor = typeof color === 'string' ? color : '#000000';
 
   const getTypeStyle = () => {
     switch (type) {

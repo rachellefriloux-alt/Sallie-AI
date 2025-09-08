@@ -7,6 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // Import screens
 import HomeLauncherScreen from './app/screens/HomeLauncherScreen';
 import SalliePanelScreen from './app/screens/SalliePanelScreen';
+import OnboardingScreen from './app/screens/OnboardingScreen';
 import SettingsScreen from './app/screens/SettingsScreen';
 import MemoriesScreen from './app/screens/MemoriesScreen';
 import DebugConsoleScreen from './app/screens/DebugConsoleScreen';
@@ -119,7 +120,7 @@ export default function App() {
   const [navReady, setNavReady] = useState(false);
   const { emotion, tone } = usePersonaStore();
   const { shortTerm, episodic } = useMemoryStore();
-  const { isLauncher } = useDeviceStore();
+  const { isLauncher, onboardingComplete } = useDeviceStore();
   const { currentTheme } = useThemeStore();
 
   // Load navigation components dynamically
@@ -181,36 +182,42 @@ export default function App() {
               gestureEnabled: true,
             }}
           >
-            <Stack.Screen name="Main" component={TabNavigator} />
-            <Stack.Screen
-              name="SalliePanel"
-              component={SalliePanelScreen}
-              options={{
-                animation: 'slide_from_bottom',
-                presentation: 'modal',
-              }}
-            />
-            <Stack.Screen
-              name="DebugConsole"
-              component={DebugConsoleScreen}
-              options={{
-                animation: 'fade',
-              }}
-            />
-            <Stack.Screen
-              name="Profile"
-              component={ProfileScreen}
-              options={{
-                animation: 'slide_from_right',
-              }}
-            />
-            <Stack.Screen
-              name="DataManagement"
-              component={DataManagementScreen}
-              options={{
-                animation: 'slide_from_right',
-              }}
-            />
+            {!onboardingComplete ? (
+              <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+            ) : (
+              <>
+                <Stack.Screen name="Main" component={TabNavigator} />
+                <Stack.Screen
+                  name="SalliePanel"
+                  component={SalliePanelScreen}
+                  options={{
+                    animation: 'slide_from_bottom',
+                    presentation: 'modal',
+                  }}
+                />
+                <Stack.Screen
+                  name="DebugConsole"
+                  component={DebugConsoleScreen}
+                  options={{
+                    animation: 'fade',
+                  }}
+                />
+                <Stack.Screen
+                  name="Profile"
+                  component={ProfileScreen}
+                  options={{
+                    animation: 'slide_from_right',
+                  }}
+                />
+                <Stack.Screen
+                  name="DataManagement"
+                  component={DataManagementScreen}
+                  options={{
+                    animation: 'slide_from_right',
+                  }}
+                />
+              </>
+            )}
           </Stack.Navigator>
 
           {/* Enhanced Sallie Overlay - Always accessible with dragging support */}

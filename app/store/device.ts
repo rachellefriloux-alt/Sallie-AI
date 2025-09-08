@@ -15,6 +15,7 @@ export interface DeviceState {
   isActive: boolean;
   lastActive: number;
   sessionStart: number;
+  onboardingComplete: boolean;
   
   // Permissions
   permissions: {
@@ -42,6 +43,7 @@ export interface DeviceState {
   setPermission: (permission: keyof DeviceState['permissions'], granted: boolean) => void;
   updateSettings: (settings: Partial<DeviceState['settings']>) => void;
   setActive: (active: boolean) => void;
+  setOnboardingComplete: (complete: boolean) => void;
   getSessionDuration: () => number;
 }
 
@@ -56,6 +58,7 @@ export const useDeviceStore = create<DeviceState>()(
       isActive: true,
       lastActive: Date.now(),
       sessionStart: Date.now(),
+      onboardingComplete: false,
       
       permissions: {
         contacts: false,
@@ -107,6 +110,8 @@ export const useDeviceStore = create<DeviceState>()(
           sessionStart: active && !currentState.isActive ? now : currentState.sessionStart
         });
       },
+      
+      setOnboardingComplete: (complete: boolean) => set({ onboardingComplete: complete }),
       
       getSessionDuration: () => {
         const state = get();

@@ -6,7 +6,8 @@
  * Last-Reviewed: 2025-08-28T00:00:00Z
  */
 
-import AdaptivePersonaEngine from '../../core/AdaptivePersonaEngine.js';
+// import AdaptivePersonaEngine from '../../core/AdaptivePersonaEngine.js';
+const AdaptivePersonaEngine = require('../../core/AdaptivePersonaEngine.js');
 import { OpenAIIntegration } from '../../ai/OpenAIIntegration.js';
 import { ProvenanceLogger } from '../../core/ProvenanceLogger.js';
 
