@@ -9,9 +9,6 @@
  */
 
 import { EventEmitter } from 'events';
-// Uncomment when needed
-// import * as fs from 'fs';
-// import * as path from 'path';
 
 export interface BackupJob {
   id: string;
@@ -49,7 +46,7 @@ export interface BackupSource {
 }
 
 export interface BackupDestination {
-  type: 'local' | 's3' | 'azure' | 'gcp' | 'nfs' | 'ftp';
+  type: 'filesystem' | 's3' | 'azure' | 'gcp';
   path: string;
   credentials?: {
     accessKey?: string;
@@ -57,52 +54,83 @@ export interface BackupDestination {
     accountName?: string;
     accountKey?: string;
     projectId?: string;
-    serviceAccountKey?: string;
+    bucket?: string;
   };
   region?: string;
-  bucket?: string;
-  container?: string;
   options: Record<string, any>;
 }
 
 export interface BackupSchedule {
-  type: 'manual' | 'cron' | 'interval';
+  type: 'cron' | 'interval' | 'manual';
   cronExpression?: string;
-  interval?: {
-    value: number;
-    unit: 'seconds' | 'minutes' | 'hours' | 'days';
-  };
-  timezone: string;
-  enabled: boolean;
+  interval?: number; // seconds
+  timezone?: string;
 }
 
 export interface BackupRetention {
-  count?: number;
-  age?: {
-    value: number;
-    unit: 'hours' | 'days' | 'weeks' | 'months' | 'years';
-  };
-  size?: {
-    value: number;
-    unit: 'MB' | 'GB' | 'TB';
-  };
+  count: number;
+  age: number; // days
+  size: number; // bytes
 }
 
 export interface BackupResult {
   id: string;
   jobId: string;
-  status: 'success' | 'partial' | 'failed';
-  startTime: Date;
-  endTime: Date;
-  duration: number;
+  status: 'success' | 'failed' | 'partial';
   size: number;
   compressedSize?: number;
-  filesCount: number;
-  errorCount: number;
-  warnings: string[];
-  errors: string[];
   checksum?: string;
+  duration: number;
+  files: number;
+  errors: string[];
+  warnings: string[];
   metadata: Record<string, any>;
+  startedAt: Date;
+  completedAt: Date;
+}
+
+export interface RecoveryJob {
+  id: string;
+  name: string;
+  source: RecoverySource;
+  destination: RecoveryDestination;
+  pointInTime?: Date;
+  options: Record<string, any>;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  createdAt: Date;
+  startedAt?: Date;
+  completedAt?: Date;
+  result?: RecoveryResult;
+}
+
+export interface RecoverySource {
+  type: 'filesystem' | 'database' | 'kubernetes';
+  recoveryPointId: string;
+  path?: string;
+  database?: string;
+  options: Record<string, any>;
+}
+
+export interface RecoveryDestination {
+  type: 'filesystem' | 'database';
+  path?: string;
+  host?: string;
+  port?: number;
+  database?: string;
+  credentials?: {
+    username: string;
+    password: string;
+  };
+  options: Record<string, any>;
+}
+
+export interface RecoveryResult {
+  status: 'success' | 'failed' | 'partial';
+  duration: number;
+  filesRestored: number;
+  dataRestored: number;
+  errors: string[];
+  warnings: string[];
 }
 
 export interface RecoveryPoint {
@@ -116,31 +144,18 @@ export interface RecoveryPoint {
   checksum: string;
   metadata: Record<string, any>;
   verified: boolean;
-  lastVerified?: Date;
+  lastVerified: Date;
 }
 
 export interface DisasterRecoveryPlan {
   id: string;
   name: string;
   description: string;
-  version: string;
-  createdAt: Date;
-  updatedAt: Date;
-  author: string;
-  scope: {
-    services: string[];
-    regions: string[];
-    environments: string[];
-  };
-  objectives: {
-    rto: number; // Recovery Time Objective in minutes
-    rpo: number; // Recovery Point Objective in minutes
-  };
+  trigger: string;
   procedures: DRProcedure[];
-  contacts: DRContact[];
-  dependencies: string[];
-  testing: DRTest[];
-  status: 'draft' | 'approved' | 'deprecated';
+  createdAt: Date;
+  lastTested?: Date;
+  status: 'active' | 'inactive' | 'testing';
 }
 
 export interface DRProcedure {
@@ -148,12 +163,11 @@ export interface DRProcedure {
   name: string;
   description: string;
   order: number;
-  type: 'manual' | 'automated' | 'semi-automated';
   steps: DRStep[];
-  estimatedDuration: number; // minutes
-  responsible: string;
-  prerequisites: string[];
-  verification: string[];
+  dependencies: string[];
+  timeout: number;
+  retryCount: number;
+  rollbackSteps: DRStep[];
 }
 
 export interface DRStep {
@@ -163,478 +177,113 @@ export interface DRStep {
   script?: string;
   timeout: number;
   retryCount: number;
-  successCriteria: string[];
-  rollbackSteps?: DRStep[];
-}
-
-export interface DRContact {
-  id: string;
-  name: string;
-  role: string;
-  primaryPhone: string;
-  secondaryPhone?: string;
-  email: string;
-  onCall: boolean;
-  escalationOrder: number;
-}
-
-export interface DRTest {
-  id: string;
-  name: string;
-  description: string;
-  type: 'simulation' | 'full' | 'partial';
-  schedule: BackupSchedule;
-  lastRun?: Date;
-  lastResult?: {
-    status: 'passed' | 'failed' | 'partial';
-    duration: number;
-    issues: string[];
-    recommendations: string[];
-  };
-}
-
-export interface RecoveryJob {
-  id: string;
-  name: string;
-  type: 'point_in_time' | 'full' | 'partial';
-  source: RecoveryPoint;
-  destination: RecoveryDestination;
-  options: RecoveryOptions;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
-  createdAt: Date;
-  startedAt?: Date;
-  completedAt?: Date;
-  result?: RecoveryResult;
-}
-
-export interface RecoveryDestination {
-  type: 'filesystem' | 'database' | 'kubernetes' | 'docker';
-  path?: string;
-  host?: string;
-  port?: number;
-  database?: string;
-  credentials?: {
-    username: string;
-    password: string;
-  };
-  options: Record<string, any>;
-}
-
-export interface RecoveryOptions {
-  pointInTime?: Date;
-  includeData: boolean;
-  includeSchema: boolean;
-  overwrite: boolean;
-  dryRun: boolean;
-  parallel: boolean;
-  maxConcurrency: number;
-}
-
-export interface RecoveryResult {
-  status: 'success' | 'partial' | 'failed';
-  duration: number;
-  filesRestored: number;
-  dataRestored: number;
-  errors: string[];
-  warnings: string[];
-  verificationResult?: {
-    passed: boolean;
-    details: string[];
-  };
+  dependencies: string[];
+  rollbackCommand?: string;
 }
 
 /**
- * Backup & Disaster Recovery Manager
+ * Main Backup and Recovery Manager
  */
-export class BackupDRManager extends EventEmitter {
+export class BackupRecoveryManager extends EventEmitter {
   private backupJobs: Map<string, BackupJob> = new Map();
-  private recoveryPoints: Map<string, RecoveryPoint[]> = new Map();
   private recoveryJobs: Map<string, RecoveryJob> = new Map();
+  private recoveryPoints: Map<string, RecoveryPoint[]> = new Map();
   private drPlans: Map<string, DisasterRecoveryPlan> = new Map();
-  private activeJobs: Set<string> = new Set();
+
+  private backupInterval: NodeJS.Timeout | null = null;
+  private cleanupInterval: NodeJS.Timeout | null = null;
 
   constructor() {
     super();
-    this.initializeDefaultConfigurations();
-    this.startScheduler();
+    this.initializeDefaultJobs();
   }
 
   /**
-   * Initialize default backup configurations
+   * Initialize default backup jobs
    */
-  private initializeDefaultConfigurations(): void {
-    // Default backup jobs
-    const defaultJobs: BackupJob[] = [
-      {
-        id: 'database_full_backup',
-        name: 'Database Full Backup',
-        type: 'full',
-        source: {
-          type: 'database',
-          host: 'localhost',
-          port: 5432,
-          database: 'sallie_prod',
-          credentials: {
-            username: process.env.DB_USERNAME || 'sallie',
-            password: process.env.DB_PASSWORD || ''
-          },
-          includes: ['*'],
-          excludes: [],
-          options: {
-            format: 'custom',
-            compress: true
-          }
-        },
-        destination: {
-          type: 's3',
-          path: 'backups/database/',
-          credentials: {
-            accessKey: process.env.AWS_ACCESS_KEY_ID,
-            secretKey: process.env.AWS_SECRET_ACCESS_KEY
-          },
-          region: 'us-east-1',
-          bucket: 'sallie-backups',
-          options: {
-            storageClass: 'STANDARD_IA'
-          }
-        },
-        schedule: {
-          type: 'cron',
-          cronExpression: '0 2 * * *', // Daily at 2 AM
-          timezone: 'UTC',
-          enabled: true
-        },
-        retention: {
-          count: 30,
-          age: {
-            value: 90,
-            unit: 'days'
-          }
-        },
-        compression: true,
-        encryption: true,
-        verification: true,
-        status: 'pending',
-        createdAt: new Date(),
-        metadata: {}
+  private initializeDefaultJobs(): void {
+    // Default filesystem backup job
+    const defaultFilesystemJob: BackupJob = {
+      id: 'default-filesystem',
+      name: 'Default Filesystem Backup',
+      type: 'full',
+      source: {
+        type: 'filesystem',
+        path: '/app/data',
+        includes: ['**/*'],
+        excludes: ['**/node_modules/**', '**/logs/**'],
+        options: {}
       },
-      {
-        id: 'filesystem_incremental_backup',
-        name: 'Filesystem Incremental Backup',
-        type: 'incremental',
-        source: {
-          type: 'filesystem',
-          path: '/app/data',
-          includes: ['**/*'],
-          excludes: ['*.tmp', '*.log'],
-          options: {}
-        },
-        destination: {
-          type: 'local',
-          path: '/backups/filesystem/',
-          options: {}
-        },
-        schedule: {
-          type: 'cron',
-          cronExpression: '0 */4 * * *', // Every 4 hours
-          timezone: 'UTC',
-          enabled: true
-        },
-        retention: {
-          count: 50,
-          age: {
-            value: 30,
-            unit: 'days'
-          }
-        },
-        compression: true,
-        encryption: false,
-        verification: true,
-        status: 'pending',
-        createdAt: new Date(),
-        metadata: {}
+      destination: {
+        type: 'filesystem',
+        path: '/backups/filesystem',
+        options: {}
       },
-      {
-        id: 'kubernetes_config_backup',
-        name: 'Kubernetes Config Backup',
-        type: 'full',
-        source: {
-          type: 'kubernetes',
-          includes: ['configmaps', 'secrets', 'deployments', 'services'],
-          excludes: [],
-          options: {
-            namespace: 'sallie-prod'
-          }
-        },
-        destination: {
-          type: 's3',
-          path: 'backups/kubernetes/',
-          credentials: {
-            accessKey: process.env.AWS_ACCESS_KEY_ID,
-            secretKey: process.env.AWS_SECRET_ACCESS_KEY
-          },
-          region: 'us-east-1',
-          bucket: 'sallie-backups',
-          options: {
-            storageClass: 'STANDARD'
-          }
-        },
-        schedule: {
-          type: 'cron',
-          cronExpression: '0 1 * * *', // Daily at 1 AM
-          timezone: 'UTC',
-          enabled: true
-        },
-        retention: {
-          count: 7,
-          age: {
-            value: 7,
-            unit: 'days'
-          }
-        },
-        compression: true,
-        encryption: true,
-        verification: true,
-        status: 'pending',
-        createdAt: new Date(),
-        metadata: {}
-      }
-    ];
-
-    defaultJobs.forEach(job => {
-      this.backupJobs.set(job.id, job);
-    });
-
-    // Default DR plan
-    const defaultDRPlan: DisasterRecoveryPlan = {
-      id: 'primary_dr_plan',
-      name: 'Primary Disaster Recovery Plan',
-      description: 'Comprehensive DR plan for Sallie AI production environment',
-      version: '1.0.0',
+      schedule: {
+        type: 'interval',
+        interval: 86400 // Daily
+      },
+      retention: {
+        count: 7,
+        age: 30,
+        size: 10737418240 // 10GB
+      },
+      compression: true,
+      encryption: false,
+      verification: true,
+      status: 'pending',
       createdAt: new Date(),
-      updatedAt: new Date(),
-      author: 'DevOps Team',
-      scope: {
-        services: ['api', 'database', 'cache', 'storage'],
-        regions: ['us-east-1', 'us-west-2'],
-        environments: ['production']
-      },
-      objectives: {
-        rto: 240, // 4 hours
-        rpo: 60   // 1 hour
-      },
-      procedures: [
-        {
-          id: 'failover_procedure',
-          name: 'Failover to Secondary Region',
-          description: 'Automated failover to secondary region',
-          order: 1,
-          type: 'automated',
-          estimatedDuration: 30,
-          responsible: 'DevOps Lead',
-          prerequisites: ['Secondary region healthy', 'Data replication current'],
-          verification: ['Services accessible', 'Data consistency verified'],
-          steps: [
-            {
-              id: 'dns_failover',
-              description: 'Update DNS to point to secondary region',
-              command: 'aws route53 change-resource-record-sets --hosted-zone-id $HOSTED_ZONE_ID --change-batch file://dns-failover.json',
-              timeout: 300,
-              retryCount: 2,
-              successCriteria: ['DNS propagation complete', 'Traffic routing to secondary region']
-            },
-            {
-              id: 'database_failover',
-              description: 'Promote read replica to primary',
-              command: './scripts/database-failover.sh',
-              timeout: 600,
-              retryCount: 1,
-              successCriteria: ['Database promoted successfully', 'Connections established']
-            }
-          ]
-        },
-        {
-          id: 'data_recovery',
-          name: 'Data Recovery',
-          description: 'Restore data from backups if needed',
-          order: 2,
-          type: 'semi-automated',
-          estimatedDuration: 120,
-          responsible: 'Database Administrator',
-          prerequisites: ['Backup files accessible', 'Recovery environment ready'],
-          verification: ['Data integrity verified', 'Application tests pass'],
-          steps: [
-            {
-              id: 'restore_database',
-              description: 'Restore database from latest backup',
-              script: './scripts/restore-database.sh --point-in-time $(date -d "1 hour ago" +%Y-%m-%dT%H:%M:%S)',
-              timeout: 1800,
-              retryCount: 1,
-              successCriteria: ['Database restored successfully', 'Data consistency verified']
-            }
-          ]
-        }
-      ],
-      contacts: [
-        {
-          id: 'devops_lead',
-          name: 'DevOps Lead',
-          role: 'Incident Commander',
-          primaryPhone: '+1-555-0101',
-          email: 'devops-lead@sallie.ai',
-          onCall: true,
-          escalationOrder: 1
-        },
-        {
-          id: 'database_admin',
-          name: 'Database Administrator',
-          role: 'Database Recovery',
-          primaryPhone: '+1-555-0102',
-          email: 'dba@sallie.ai',
-          onCall: true,
-          escalationOrder: 2
-        }
-      ],
-      dependencies: ['backup_system', 'monitoring_system', 'automation_platform'],
-      testing: [
-        {
-          id: 'quarterly_dr_test',
-          name: 'Quarterly DR Test',
-          description: 'Full disaster recovery simulation',
-          type: 'simulation',
-          schedule: {
-            type: 'cron',
-            cronExpression: '0 9 1 */3 *', // First day of every quarter at 9 AM
-            timezone: 'UTC',
-            enabled: true
-          }
-        }
-      ],
-      status: 'approved'
+      metadata: {}
     };
 
-    this.drPlans.set(defaultDRPlan.id, defaultDRPlan);
+    this.backupJobs.set(defaultFilesystemJob.id, defaultFilesystemJob);
   }
 
   /**
-   * Start backup scheduler
+   * Create a new backup job
    */
-  private startScheduler(): void {
-    // Check for scheduled jobs every minute
-    setInterval(() => {
-      this.checkScheduledJobs();
-    }, 60000);
-
-    // Clean up old backups every hour
-    setInterval(() => {
-      this.cleanupOldBackups();
-    }, 3600000);
-
-    console.log('🔄 Backup scheduler started');
-  }
-
-  /**
-   * Check for scheduled backup jobs
-   */
-  private async checkScheduledJobs(): Promise<void> {
-    const now = new Date();
-
-    for (const job of this.backupJobs.values()) {
-      if (!job.schedule.enabled || job.status === 'running') continue;
-
-      const shouldRun = this.shouldRunJob(job, now);
-      if (shouldRun) {
-        await this.executeBackupJob(job.id);
-      }
-    }
-  }
-
-  /**
-   * Check if job should run
-   */
-  private shouldRunJob(job: BackupJob, now: Date): boolean {
-    if (job.schedule.type === 'manual') return false;
-
-    if (job.schedule.type === 'cron' && job.schedule.cronExpression) {
-      // Simple cron check (would use a proper cron library in production)
-      return this.checkCronExpression(job.schedule.cronExpression, now);
-    }
-
-    if (job.schedule.type === 'interval' && job.schedule.interval) {
-      const lastRun = job.lastRun;
-      if (!lastRun) return true;
-
-      const intervalMs = this.convertIntervalToMs(job.schedule.interval);
-      return (now.getTime() - lastRun.getTime()) >= intervalMs;
-    }
-
-    return false;
-  }
-
-  /**
-   * Simple cron expression checker (simplified)
-   */
-  private checkCronExpression(expression: string, date: Date): boolean {
-    // This is a simplified implementation
-    // In production, use a proper cron library like 'node-cron'
-    const parts = expression.split(' ');
-    if (parts.length !== 5) return false;
-
-    const [minute, hour, day, month, dayOfWeek] = parts;
-
-    return (minute === '*' || parseInt(minute) === date.getMinutes()) &&
-           (hour === '*' || parseInt(hour) === date.getHours()) &&
-           (day === '*' || parseInt(day) === date.getDate()) &&
-           (month === '*' || parseInt(month) === date.getMonth() + 1) &&
-           (dayOfWeek === '*' || parseInt(dayOfWeek) === date.getDay());
-  }
-
-  /**
-   * Convert interval to milliseconds
-   */
-  private convertIntervalToMs(interval: { value: number; unit: string }): number {
-    const multipliers = {
-      seconds: 1000,
-      minutes: 60000,
-      hours: 3600000,
-      days: 86400000
+  createBackupJob(job: Omit<BackupJob, 'id' | 'createdAt' | 'status'>): BackupJob {
+    const newJob: BackupJob = {
+      ...job,
+      id: `backup_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+      status: 'pending',
+      createdAt: new Date()
     };
 
-    return interval.value * (multipliers[interval.unit as keyof typeof multipliers] || 60000);
+    this.backupJobs.set(newJob.id, newJob);
+    this.emit('backup-job-created', newJob);
+
+    return newJob;
   }
 
   /**
-   * Execute backup job
+   * Execute a backup job
    */
-  public async executeBackupJob(jobId: string): Promise<BackupResult> {
+  async executeBackupJob(jobId: string): Promise<BackupResult> {
     const job = this.backupJobs.get(jobId);
     if (!job) {
       throw new Error(`Backup job ${jobId} not found`);
     }
 
-    if (this.activeJobs.has(jobId)) {
-      throw new Error(`Backup job ${jobId} is already running`);
-    }
-
-    this.activeJobs.add(jobId);
     job.status = 'running';
     job.lastRun = new Date();
-
     this.emit('backup-job-started', job);
+
     const result: BackupResult = {
       id: `result_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
-      jobId,
+      jobId: job.id,
       status: 'success',
-      startTime: new Date(),
-      endTime: new Date(),
-      duration: 0,
       size: 0,
-      filesCount: 0,
-      errorCount: 0,
-      warnings: [],
+      duration: 0,
+      files: 0,
       errors: [],
-      metadata: {}
+      warnings: [],
+      metadata: {},
+      startedAt: new Date(),
+      completedAt: new Date()
     };
+
+    const startTime = Date.now();
 
     try {
       // Execute backup based on source type
@@ -652,17 +301,17 @@ export class BackupDRManager extends EventEmitter {
           throw new Error(`Unsupported backup source type: ${job.source.type}`);
       }
 
-      // Compress if enabled
+      // Compress if requested
       if (job.compression) {
         await this.compressBackup(result);
       }
 
-      // Encrypt if enabled
+      // Encrypt if requested
       if (job.encryption) {
         await this.encryptBackup(result);
       }
 
-      // Verify backup
+      // Verify if requested
       if (job.verification) {
         await this.verifyBackup(result);
       }
@@ -674,23 +323,19 @@ export class BackupDRManager extends EventEmitter {
       await this.createRecoveryPoint(job, result);
 
       job.status = 'completed';
+      job.lastResult = result;
       result.status = 'success';
 
     } catch (error) {
       job.status = 'failed';
       result.status = 'failed';
-      result.errors.push(error instanceof Error ? error.message : 'Unknown error');
-      console.error(`Backup job ${jobId} failed:`, error);
+      result.errors.push(error instanceof Error ? error.message : String(error));
     }
 
-    result.endTime = new Date();
-    result.duration = (result.endTime.getTime() - result.startTime.getTime()) / 1000;
-
-    job.lastResult = result;
-    this.activeJobs.delete(jobId);
+    result.duration = Date.now() - startTime;
+    result.completedAt = new Date();
 
     this.emit('backup-job-completed', { job, result });
-
     return result;
   }
 
@@ -698,82 +343,76 @@ export class BackupDRManager extends EventEmitter {
    * Execute filesystem backup
    */
   private async executeFilesystemBackup(job: BackupJob, result: BackupResult): Promise<void> {
-    if (!job.source.path) throw new Error('Source path not specified');
+    console.log(`💾 Executing filesystem backup for ${job.source.path}...`);
 
-    console.log(`📁 Executing filesystem backup: ${job.source.path}`);
-
-    // Simulate filesystem backup
+    // Simulate backup process
     await new Promise(resolve => setTimeout(resolve, 5000));
 
-    result.size = Math.floor(Math.random() * 1000000000); // 0-1GB
-    result.filesCount = Math.floor(Math.random() * 10000);
-    result.checksum = this.generateChecksum();
+    result.size = Math.floor(Math.random() * 1073741824); // Random size up to 1GB
+    result.files = Math.floor(Math.random() * 10000);
   }
 
   /**
    * Execute database backup
    */
   private async executeDatabaseBackup(job: BackupJob, result: BackupResult): Promise<void> {
-    console.log(`🗄️ Executing database backup: ${job.source.database}`);
+    console.log(`🗄️ Executing database backup for ${job.source.database}...`);
 
-    // Simulate database backup
+    // Simulate backup process
     await new Promise(resolve => setTimeout(resolve, 10000));
 
-    result.size = Math.floor(Math.random() * 5000000000); // 0-5GB
-    result.filesCount = 1;
-    result.checksum = this.generateChecksum();
+    result.size = Math.floor(Math.random() * 2147483648); // Random size up to 2GB
+    result.files = 1;
   }
-  /**
+
   /**
    * Execute Kubernetes backup
    */
-  private async executeKubernetesBackup(_job: BackupJob, result: BackupResult): Promise<void> {
-    console.log(`☸️ Executing Kubernetes backup`);
+  private async executeKubernetesBackup(job: BackupJob, result: BackupResult): Promise<void> {
+    console.log(`☸️ Executing Kubernetes backup...`);
 
-    // Simulate Kubernetes backup
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // Simulate backup process
+    await new Promise(resolve => setTimeout(resolve, 15000));
 
-    result.size = Math.floor(Math.random() * 100000000); // 0-100MB
-    result.filesCount = Math.floor(Math.random() * 100);
-    result.checksum = this.generateChecksum();
+    result.size = Math.floor(Math.random() * 5368709120); // Random size up to 5GB
+    result.files = Math.floor(Math.random() * 1000);
   }
+
   /**
    * Compress backup
    */
   private async compressBackup(result: BackupResult): Promise<void> {
-    console.log('🗜️ Compressing backup...');
+    console.log('📦 Compressing backup...');
 
     // Simulate compression
     await new Promise(resolve => setTimeout(resolve, 2000));
-
-    result.compressedSize = Math.floor(result.size * 0.7); // 30% compression
+    result.compressedSize = Math.floor(result.size * 0.7);
   }
-  /**
-   * Encrypt backup
+
   /**
    * Encrypt backup
    */
-  private async encryptBackup(_result: BackupResult): Promise<void> {
+  private async encryptBackup(result: BackupResult): Promise<void> {
     console.log('🔐 Encrypting backup...');
 
     // Simulate encryption
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
-   */
+
   /**
    * Verify backup
    */
-  private async verifyBackup(_result: BackupResult): Promise<void> {
+  private async verifyBackup(result: BackupResult): Promise<void> {
     console.log('✅ Verifying backup...');
 
     // Simulate verification
     await new Promise(resolve => setTimeout(resolve, 1500));
   }
-  private async uploadBackup(job: BackupJob, _result: BackupResult): Promise<void> {
+
   /**
    * Upload backup
    */
-  private async uploadBackup(job: BackupJob, _result: BackupResult): Promise<void> {
+  private async uploadBackup(job: BackupJob, result: BackupResult): Promise<void> {
     console.log(`📤 Uploading backup to ${job.destination.type}...`);
 
     // Simulate upload
@@ -811,12 +450,11 @@ export class BackupDRManager extends EventEmitter {
   private generateChecksum(): string {
     return Math.random().toString(36).substring(2, 11) + Math.random().toString(36).substring(2, 11);
   }
-  public async executeRecoveryJob(job: RecoveryJob): Promise<RecoveryResult> {
-    this.recoveryJobs.set(job.id, job);
+
   /**
    * Execute recovery job
    */
-  public async executeRecoveryJob(job: RecoveryJob): Promise<RecoveryResult> {
+  async executeRecoveryJob(job: RecoveryJob): Promise<RecoveryResult> {
     this.recoveryJobs.set(job.id, job);
     job.status = 'running';
     job.startedAt = new Date();
@@ -848,8 +486,8 @@ export class BackupDRManager extends EventEmitter {
       }
 
       // Verify recovery if requested
-      if (!job.options.dryRun) {
-        result.verificationResult = await this.verifyRecovery(job);
+      if (job.options.verify !== false) {
+        await this.verifyRecovery(job);
       }
 
       job.status = 'completed';
@@ -858,18 +496,14 @@ export class BackupDRManager extends EventEmitter {
     } catch (error) {
       job.status = 'failed';
       result.status = 'failed';
-      result.errors.push(error instanceof Error ? error.message : 'Unknown error');
-      console.error(`Recovery job ${job.id} failed:`, error);
+      result.errors.push(error instanceof Error ? error.message : String(error));
     }
 
-    const endTime = Date.now();
-    result.duration = (endTime - startTime) / 1000;
-
+    result.duration = Date.now() - startTime;
     job.completedAt = new Date();
     job.result = result;
 
     this.emit('recovery-job-completed', { job, result });
-
     return result;
   }
 
@@ -877,31 +511,32 @@ export class BackupDRManager extends EventEmitter {
    * Execute filesystem recovery
    */
   private async executeFilesystemRecovery(job: RecoveryJob, result: RecoveryResult): Promise<void> {
-    console.log(`📁 Executing filesystem recovery to: ${job.destination.path}`);
+    console.log(`📁 Executing filesystem recovery to ${job.destination.path}...`);
 
-    // Simulate filesystem recovery
-    await new Promise(resolve => setTimeout(resolve, 8000));
+    // Simulate recovery process
+    await new Promise(resolve => setTimeout(resolve, 10000));
 
-    result.filesRestored = Math.floor(Math.random() * 1000);
-    result.dataRestored = Math.floor(Math.random() * 1000000000);
+    result.filesRestored = Math.floor(Math.random() * 5000);
+    result.dataRestored = Math.floor(Math.random() * 1073741824); // Up to 1GB
   }
 
   /**
    * Execute database recovery
    */
   private async executeDatabaseRecovery(job: RecoveryJob, result: RecoveryResult): Promise<void> {
-    console.log(`🗄️ Executing database recovery to: ${job.destination.database}`);
+    console.log(`🗃️ Executing database recovery to ${job.destination.database}...`);
 
-    // Simulate database recovery
+    // Simulate recovery process
     await new Promise(resolve => setTimeout(resolve, 15000));
 
     result.filesRestored = 1;
-    result.dataRestored = Math.floor(Math.random() * 5000000000);
+    result.dataRestored = Math.floor(Math.random() * 5368709120); // Up to 5GB
   }
+
   /**
    * Verify recovery
    */
-  private async verifyRecovery(_job: RecoveryJob): Promise<{ passed: boolean; details: string[] }> {
+  private async verifyRecovery(job: RecoveryJob): Promise<{ passed: boolean; details: string[] }> {
     console.log('🔍 Verifying recovery...');
 
     // Simulate verification
@@ -909,33 +544,12 @@ export class BackupDRManager extends EventEmitter {
 
     return {
       passed: Math.random() > 0.1, // 90% success rate
-      details: ['Recovery verification completed', 'Data integrity confirmed']
-    };
-  }
-    // Simulate database recovery
-    await new Promise(resolve => setTimeout(resolve, 15000));
-
-    result.filesRestored = 1;
-    result.dataRestored = Math.floor(Math.random() * 5000000000);
-  }
-  /**
-   * Verify recovery
-   */
-  private async verifyRecovery(_job: RecoveryJob): Promise<{ passed: boolean; details: string[] }> {
-    console.log('🔍 Verifying recovery...');
-    console.log('🔍 Verifying recovery...');
-
-    // Simulate verification
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    return {
-      passed: Math.random() > 0.1, // 90% success rate
-      details: ['Recovery verification completed', 'Data integrity confirmed']
+      details: ['Recovery verification completed']
     };
   }
 
   /**
-   * Cleanup old backups
+   * Clean up old backups
    */
   private async cleanupOldBackups(): Promise<void> {
     console.log('🧹 Cleaning up old backups...');
@@ -944,18 +558,10 @@ export class BackupDRManager extends EventEmitter {
       const job = this.backupJobs.get(jobId);
       if (!job) continue;
 
-      const toDelete = this.identifyBackupsForDeletion(recoveryPoints, job.retention);
+      const pointsToDelete = this.identifyBackupsForDeletion(recoveryPoints, job.retention);
 
-      for (const rp of toDelete) {
-        try {
-          await this.deleteRecoveryPoint(rp);
-          const index = recoveryPoints.indexOf(rp);
-          if (index > -1) {
-            recoveryPoints.splice(index, 1);
-          }
-        } catch (error) {
-          console.error(`Failed to delete recovery point ${rp.id}:`, error);
-        }
+      for (const point of pointsToDelete) {
+        await this.deleteRecoveryPoint(point);
       }
     }
   }
@@ -967,30 +573,20 @@ export class BackupDRManager extends EventEmitter {
     recoveryPoints: RecoveryPoint[],
     retention: BackupRetention
   ): RecoveryPoint[] {
+    const sortedPoints = recoveryPoints.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+
     const toDelete: RecoveryPoint[] = [];
-    const now = new Date();
 
-    // Sort by timestamp (newest first)
-    const sorted = recoveryPoints.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-
-    // Apply retention policies
-    if (retention.count && sorted.length > retention.count) {
-      toDelete.push(...sorted.slice(retention.count));
+    // Keep most recent backups
+    if (sortedPoints.length > retention.count) {
+      toDelete.push(...sortedPoints.slice(retention.count));
     }
 
-    if (retention.age) {
-      const ageMs = this.convertIntervalToMs(retention.age);
-      const cutoff = new Date(now.getTime() - ageMs);
+    // Remove old backups
+    const cutoffDate = new Date(Date.now() - retention.age * 24 * 60 * 60 * 1000);
+    toDelete.push(...sortedPoints.filter(point => point.timestamp < cutoffDate));
 
-      for (const rp of sorted) {
-        if (rp.timestamp < cutoff) {
-          toDelete.push(rp);
-        }
-      }
-    }
-
-    // Remove duplicates
-    return [...new Set(toDelete)];
+    return toDelete;
   }
 
   /**
@@ -1001,12 +597,21 @@ export class BackupDRManager extends EventEmitter {
 
     // Simulate deletion
     await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Remove from storage
+    for (const [jobId, points] of this.recoveryPoints.entries()) {
+      const index = points.findIndex(p => p.id === recoveryPoint.id);
+      if (index > -1) {
+        points.splice(index, 1);
+        break;
+      }
+    }
   }
 
   /**
    * Execute disaster recovery plan
    */
-  public async executeDRPlan(planId: string, trigger: string): Promise<void> {
+  async executeDRPlan(planId: string, trigger: string): Promise<void> {
     const plan = this.drPlans.get(planId);
     if (!plan) {
       throw new Error(`DR plan ${planId} not found`);
@@ -1023,11 +628,19 @@ export class BackupDRManager extends EventEmitter {
         await this.executeDRProcedure(procedure);
       }
 
-      this.emit('dr-plan-execution-completed', { plan, trigger });
+      this.emit('dr-plan-execution-completed', { plan, success: true });
 
     } catch (error) {
-      console.error(`DR plan execution failed:`, error);
-      this.emit('dr-plan-execution-failed', { plan, trigger, error });
+      console.error('DR plan execution failed:', error);
+      this.emit('dr-plan-execution-failed', { plan, error });
+
+      // Execute rollback if available
+      try {
+        await this.executeDRRollback(plan.procedures);
+      } catch (rollbackError) {
+        console.error('DR rollback failed:', rollbackError);
+      }
+
       throw error;
     }
   }
@@ -1039,18 +652,7 @@ export class BackupDRManager extends EventEmitter {
     console.log(`📋 Executing DR procedure: ${procedure.name}`);
 
     for (const step of procedure.steps) {
-      try {
-        await this.executeDRStep(step);
-      } catch (error) {
-        console.error(`DR step ${step.id} failed:`, error);
-
-        // Execute rollback if available
-        if (step.rollbackSteps) {
-          await this.executeDRRollback(step.rollbackSteps);
-        }
-
-        throw error;
-      }
+      await this.executeDRStep(step);
     }
   }
 
@@ -1061,29 +663,24 @@ export class BackupDRManager extends EventEmitter {
     console.log(`🔧 Executing DR step: ${step.description}`);
 
     if (step.command) {
-      // Execute command
-      console.log(`Running command: ${step.command}`);
+      // Execute command (simulated)
+      console.log(`Running: ${step.command}`);
       await new Promise(resolve => setTimeout(resolve, 2000));
-    }
-
-    if (step.script) {
-      // Execute script
-      console.log(`Running script: ${step.script}`);
-      await new Promise(resolve => setTimeout(resolve, 3000));
     }
   }
 
   /**
    * Execute DR rollback
    */
-  private async executeDRRollback(rollbackSteps: DRStep[]): Promise<void> {
+  private async executeDRRollback(procedures: DRProcedure[]): Promise<void> {
     console.log('🔄 Executing rollback steps...');
 
-    for (const step of rollbackSteps) {
-      try {
-        await this.executeDRStep(step);
-      } catch (error) {
-        console.error(`Rollback step ${step.id} failed:`, error);
+    for (const procedure of procedures.reverse()) {
+      for (const step of procedure.steps.reverse()) {
+        if (step.rollbackCommand) {
+          console.log(`Rolling back: ${step.rollbackCommand}`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
       }
     }
   }
@@ -1091,14 +688,14 @@ export class BackupDRManager extends EventEmitter {
   /**
    * Get backup jobs
    */
-  public getBackupJobs(): BackupJob[] {
+  getBackupJobs(): BackupJob[] {
     return Array.from(this.backupJobs.values());
   }
 
   /**
    * Get recovery points
    */
-  public getRecoveryPoints(jobId?: string): RecoveryPoint[] {
+  getRecoveryPoints(jobId?: string): RecoveryPoint[] {
     if (jobId) {
       return this.recoveryPoints.get(jobId) || [];
     }
@@ -1113,297 +710,53 @@ export class BackupDRManager extends EventEmitter {
   /**
    * Get DR plans
    */
-  public getDRPlans(): DisasterRecoveryPlan[] {
+  getDRPlans(): DisasterRecoveryPlan[] {
     return Array.from(this.drPlans.values());
   }
 
   /**
    * Generate backup report
    */
-  public generateBackupReport(): string {
+  generateBackupReport(): string {
     const jobs = this.getBackupJobs();
-    const recoveryPoints = this.getRecoveryPoints();
+    const totalBackups = jobs.length;
+    const successfulBackups = jobs.filter(job => job.status === 'completed').length;
+    const failedBackups = jobs.filter(job => job.status === 'failed').length;
 
-    let report = `# Sallie AI Backup Report\n\n`;
-    report += `**Generated:** ${new Date().toISOString()}\n\n`;
+    const totalRecoveryPoints = this.getRecoveryPoints().length;
 
-    report += `## Backup Jobs Summary\n\n`;
-    report += `- **Total Jobs:** ${jobs.length}\n`;
-    report += `- **Active Jobs:** ${jobs.filter(j => j.status === 'running').length}\n`;
-    report += `- **Failed Jobs:** ${jobs.filter(j => j.status === 'failed').length}\n\n`;
+    return `
+Backup & Recovery Report
+========================
 
-    if (jobs.length > 0) {
-      report += `## Backup Jobs\n\n`;
-      jobs.forEach(job => {
-        const status = job.status === 'completed' ? '✅' :
-                      job.status === 'running' ? '⏳' :
-                      job.status === 'failed' ? '❌' : '⏸️';
-        report += `${status} **${job.name}**\n`;
-        report += `  - Type: ${job.type}\n`;
-        report += `  - Schedule: ${job.schedule.enabled ? 'Enabled' : 'Disabled'}\n`;
-        report += `  - Last Run: ${job.lastRun?.toISOString() || 'Never'}\n`;
-        if (job.lastResult) {
-          report += `  - Last Result: ${job.lastResult.status} (${Math.floor(job.lastResult.duration)}s)\n`;
-          report += `  - Size: ${this.formatBytes(job.lastResult.size)}\n`;
-        }
-        report += '\n';
-      });
-    }
+Total Backup Jobs: ${totalBackups}
+Successful Backups: ${successfulBackups}
+Failed Backups: ${failedBackups}
+Success Rate: ${totalBackups > 0 ? Math.round((successfulBackups / totalBackups) * 100) : 0}%
 
-    report += `## Recovery Points\n\n`;
-    report += `- **Total Recovery Points:** ${recoveryPoints.length}\n`;
-    report += `- **Total Size:** ${this.formatBytes(recoveryPoints.reduce((sum, rp) => sum + rp.size, 0))}\n\n`;
+Recovery Points: ${totalRecoveryPoints}
 
-    return report;
+Backup Jobs:
+${jobs.map(job => `- ${job.name} (${job.status}) - Last run: ${job.lastRun?.toISOString() || 'Never'}`).join('\n')}
+    `.trim();
   }
 
   /**
-   * Format bytes
+   * Format bytes for display
    */
   private formatBytes(bytes: number): string {
     const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let size = bytes;
+    let value = bytes;
     let unitIndex = 0;
 
-    while (size >= 1024 && unitIndex < units.length - 1) {
-      size /= 1024;
+    while (value >= 1024 && unitIndex < units.length - 1) {
+      value /= 1024;
       unitIndex++;
     }
 
-    return `${size.toFixed(2)} ${units[unitIndex]}`;
+    return `${value.toFixed(1)} ${units[unitIndex]}`;
   }
 }
 
 // Export singleton instance
-export const backupDRManager = new BackupDRManager();
-
-// Backup utilities
-export class BackupUtils {
-  static validateBackupJob(job: BackupJob): { valid: boolean; errors: string[] } {
-    const errors: string[] = [];
-
-    if (!job.name) errors.push('Job name is required');
-    if (!job.source) errors.push('Backup source is required');
-    if (!job.destination) errors.push('Backup destination is required');
-
-    // Validate source
-    if (job.source.type === 'filesystem' && !job.source.path) {
-      errors.push('Filesystem source requires a path');
-    }
-
-    if (job.source.type === 'database' && !job.source.database) {
-      errors.push('Database source requires database name');
-    }
-
-    // Validate destination
-    if (!job.destination.path) {
-      errors.push('Destination path is required');
-    }
-
-    // Validate schedule
-    if (job.schedule.type === 'cron' && !job.schedule.cronExpression) {
-      errors.push('Cron schedule requires cron expression');
-    }
-
-    if (job.schedule.type === 'interval' && !job.schedule.interval) {
-      errors.push('Interval schedule requires interval configuration');
-    }
-
-    return { valid: errors.length === 0, errors };
-  }
-
-  static estimateBackupDuration(job: BackupJob): number {
-    // Estimate based on job type and source
-    const baseDurations = {
-      filesystem: 300, // 5 minutes
-      database: 600,  // 10 minutes
-      kubernetes: 180, // 3 minutes
-      docker: 240,     // 4 minutes
-      s3: 120,         // 2 minutes
-      azure: 150,      // 2.5 minutes
-      gcp: 150,        // 2.5 minutes
-    };
-
-    const baseDuration = baseDurations[job.source.type] || 300;
-
-    // Adjust for compression and encryption
-    let multiplier = 1;
-    if (job.compression) multiplier *= 1.2;
-    if (job.encryption) multiplier *= 1.1;
-    if (job.verification) multiplier *= 1.3;
-
-    return Math.floor(baseDuration * multiplier);
-  }
-
-  static calculateRecoveryTime(job: BackupJob): number {
-    // Estimate recovery time
-    const backupDuration = this.estimateBackupDuration(job);
-    return Math.floor(backupDuration * 0.8); // Recovery typically 80% of backup time
-  }
-
-  static generateBackupPlan(jobs: BackupJob[]): {
-    totalDuration: number;
-    parallelGroups: BackupJob[][];
-    resourceRequirements: { cpu: number; memory: number; disk: number };
-  } {
-    // Group jobs by type for parallel execution
-    const groups: { [key: string]: BackupJob[] } = {};
-    jobs.forEach(job => {
-      const key = `${job.source.type}_${job.destination.type}`;
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(job);
-    });
-
-    const parallelGroups = Object.values(groups);
-    const totalDuration = Math.max(...parallelGroups.map(group =>
-      group.reduce((sum, job) => sum + this.estimateBackupDuration(job), 0)
-    ));
-
-    // Estimate resource requirements
-    const resourceRequirements = {
-      cpu: parallelGroups.length * 2,
-      memory: parallelGroups.length * 4,
-      disk: jobs.reduce((sum, job) => sum + (job.type === 'full' ? 100 : 50), 0)
-    };
-
-    return { totalDuration, parallelGroups, resourceRequirements };
-  }
-}
-
-// DR utilities
-export class DRUtils {
-  static validateDRPlan(plan: DisasterRecoveryPlan): { valid: boolean; errors: string[] } {
-    const errors: string[] = [];
-
-    if (!plan.name) errors.push('Plan name is required');
-    if (!plan.objectives.rto || plan.objectives.rto <= 0) {
-      errors.push('Valid RTO (Recovery Time Objective) is required');
-    }
-    if (!plan.objectives.rpo || plan.objectives.rpo <= 0) {
-      errors.push('Valid RPO (Recovery Point Objective) is required');
-    }
-
-    if (!plan.procedures || plan.procedures.length === 0) {
-      errors.push('At least one procedure is required');
-    }
-
-    // Validate procedures
-    plan.procedures.forEach((procedure, index) => {
-      if (!procedure.name) {
-        errors.push(`Procedure ${index + 1}: Name is required`);
-      }
-      if (!procedure.steps || procedure.steps.length === 0) {
-        errors.push(`Procedure ${index + 1}: At least one step is required`);
-      }
-    });
-
-    if (!plan.contacts || plan.contacts.length === 0) {
-      errors.push('At least one contact is required');
-    }
-
-    return { valid: errors.length === 0, errors };
-  }
-
-  static calculateDRComplexity(plan: DisasterRecoveryPlan): 'low' | 'medium' | 'high' | 'critical' {
-    let score = 0;
-
-    // RTO/RPO complexity
-    if (plan.objectives.rto < 60) score += 3; // < 1 hour
-    else if (plan.objectives.rto < 240) score += 2; // < 4 hours
-    else if (plan.objectives.rto < 1440) score += 1; // < 24 hours
-
-    if (plan.objectives.rpo < 15) score += 3; // < 15 minutes
-    else if (plan.objectives.rpo < 60) score += 2; // < 1 hour
-    else if (plan.objectives.rpo < 1440) score += 1; // < 24 hours
-
-    // Procedure complexity
-    score += plan.procedures.length;
-
-    // Automation level
-    const automatedProcedures = plan.procedures.filter(p => p.type === 'automated').length;
-    score -= automatedProcedures;
-
-    if (score >= 8) return 'critical';
-    if (score >= 5) return 'high';
-    if (score >= 3) return 'medium';
-    return 'low';
-  }
-
-  static generateDRTestScenario(plan: DisasterRecoveryPlan): {
-    scenario: string;
-    steps: string[];
-    expectedDuration: number;
-    successCriteria: string[];
-  } {
-    const complexity = this.calculateDRComplexity(plan);
-
-    const scenarios = {
-      low: {
-        scenario: 'Single service failure simulation',
-        steps: [
-          'Stop primary service',
-          'Verify failover triggers',
-          'Confirm service restoration',
-          'Validate data consistency'
-        ],
-        expectedDuration: 30,
-        successCriteria: [
-          'Failover completes within RTO',
-          'No data loss beyond RPO',
-          'All health checks pass'
-        ]
-      },
-      medium: {
-        scenario: 'Multi-service failure simulation',
-        steps: [
-          'Stop multiple services',
-          'Trigger DR procedures',
-          'Execute recovery steps',
-          'Verify cross-service dependencies',
-          'Validate end-to-end functionality'
-        ],
-        expectedDuration: 90,
-        successCriteria: [
-          'All services recovered within RTO',
-          'Data consistency maintained',
-          'Business processes functional'
-        ]
-      },
-      high: {
-        scenario: 'Full region failure simulation',
-        steps: [
-          'Simulate complete region outage',
-          'Execute complete DR plan',
-          'Establish secondary region',
-          'Migrate all services and data',
-          'Verify full system functionality'
-        ],
-        expectedDuration: 240,
-        successCriteria: [
-          'Complete recovery within RTO',
-          'All data recovered within RPO',
-          'Full business continuity achieved'
-        ]
-      },
-      critical: {
-        scenario: 'Complete infrastructure failure simulation',
-        steps: [
-          'Simulate total infrastructure loss',
-          'Execute emergency DR procedures',
-          'Rebuild from backups',
-          'Restore all systems and data',
-          'Verify complete system integrity'
-        ],
-        expectedDuration: 480,
-        successCriteria: [
-          'System fully recovered within RTO',
-          'All data restored within RPO',
-          'Zero data loss',
-          'All compliance requirements met'
-        ]
-      }
-    };
-
-    return scenarios[complexity];
-  }
-}
+export const backupRecoveryManager = new BackupRecoveryManager();

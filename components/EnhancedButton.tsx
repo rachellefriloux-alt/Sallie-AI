@@ -97,8 +97,7 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
     rightIcon,
     variant = 'primary',
     size = 'medium',
-    /** Whether to animate button on mount (to be implemented) */
-    animate?: boolean;
+    animate = false,
     disabled = false,
     loading = false,
     elevated = false,
@@ -113,7 +112,6 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
     accessibilityLabel,
     testID,
     glow = false,
-    animate = false,
     children,
 }) => {
     const { theme } = useTheme();
@@ -142,64 +140,252 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
         if (animateOut) animateOut();
         if (onPressOut) onPressOut(event);
     }, [onPressOut, animateOut]);
-    // Use animation effect with optional mount animation
-    const { style: pressAnimationStyle, onPressIn: animateIn, onPressOut: animateOut } =
-        usePressAnimation({
-            ...pressAnimationConfig,
-            animateOnMount: animate,
-        });
-    if (!disabled && !loading && onPress) {
-        if (typeof haptic === 'string') {
-            triggerHaptic(haptic);
-        } else if (haptic) {
-            triggerHaptic('light');
+
+    const handlePress = useCallback((event: GestureResponderEvent) => {
+        if (!disabled && !loading && onPress) {
+            if (typeof haptic === 'string') {
+                triggerHaptic(haptic);
+            } else if (haptic) {
+                triggerHaptic('light');
+            }
+            onPress(event);
         }
-        onPress(event);
-    }
-}, [disabled, loading, onPress, haptic]);
+    }, [disabled, loading, onPress, haptic]);
 
-// Determine colors based on variant
-const getColors = () => {
-    const isDark = theme.dark;
+    // Determine colors based on variant
+    const getColors = () => {
+        const isDark = theme.dark;
 
-    switch (variant) {
-        case 'primary':
-            return {
-                background: disabled ? theme.colors.elevation.level3 : theme.colors.primary,
-                text: disabled ? theme.colors.text.disabled : theme.colors.onPrimary,
-                border: 'transparent',
-            };
-            // Determine colors based on variant
-            const getColors = () => {
-                // Theme darkness is handled in individual variant cases as needed
-                switch (variant) {
+        switch (variant) {
+            case 'primary':
+                return {
+                    background: disabled ? theme.colors.elevation.level3 : theme.colors.primary,
+                    text: disabled ? theme.colors.text.disabled : theme.colors.onPrimary,
+                    border: 'transparent',
+                };
+            case 'secondary':
+                return {
+                    background: disabled ? theme.colors.elevation.level3 : theme.colors.secondary,
+                    text: disabled ? theme.colors.text.disabled : theme.colors.onSecondary,
+                    border: 'transparent',
                 };
             case 'outline':
-            return {
-                background: 'transparent',
-                text: disabled ? theme.colors.text.disabled : theme.colors.primary,
-                border: disabled ? theme.colors.border.light : theme.colors.primary,
-            };
-        case 'ghost':
-            return {
-                background: isPressed ? theme.colors.intensity.low : 'transparent',
-                text: disabled ? theme.colors.text.disabled : theme.colors.primary,
-                border: 'transparent',
-            };
-        case 'subtle':
-            return {
-                background: disabled ? theme.colors.elevation.level1 : theme.colors.subtle,
-                text: disabled ? theme.colors.text.disabled : theme.colors.primary,
-                border: 'transparent',
-            };
-        case 'success':
-            return {
-                background: disabled ? theme.colors.elevation.level3 : theme.colors.success,
-                text: disabled ? theme.colors.text.disabled : '#FFFFFF',
-                border: 'transparent',
-            };
-        case 'warning':
-            return {
+                return {
+                    background: 'transparent',
+                    text: disabled ? theme.colors.text.disabled : theme.colors.primary,
+                    border: disabled ? theme.colors.border.light : theme.colors.primary,
+                };
+            case 'ghost':
+                return {
+                    background: isPressed ? theme.colors.intensity.low : 'transparent',
+                    text: disabled ? theme.colors.text.disabled : theme.colors.primary,
+                    border: 'transparent',
+                };
+            case 'subtle':
+                return {
+                    background: disabled ? theme.colors.elevation.level1 : theme.colors.subtle,
+                    text: disabled ? theme.colors.text.disabled : theme.colors.primary,
+                    border: 'transparent',
+                };
+            case 'success':
+                return {
+                    background: disabled ? theme.colors.elevation.level3 : theme.colors.success,
+                    text: disabled ? theme.colors.text.disabled : '#FFFFFF',
+                    border: 'transparent',
+                };
+            case 'warning':
+                return {
+                    background: disabled ? theme.colors.elevation.level3 : theme.colors.warning,
+                    text: disabled ? theme.colors.text.disabled : '#FFFFFF',
+                    border: 'transparent',
+                };
+            case 'danger':
+                return {
+                    background: disabled ? theme.colors.elevation.level3 : theme.colors.error,
+                    text: disabled ? theme.colors.text.disabled : '#FFFFFF',
+                    border: 'transparent',
+                };
+            case 'glass':
+                return {
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    text: disabled ? theme.colors.text.disabled : theme.colors.primary,
+                    border: 'rgba(255, 255, 255, 0.2)',
+                };
+            default:
+                return {
+                    background: disabled ? theme.colors.elevation.level3 : theme.colors.primary,
+                    text: disabled ? theme.colors.text.disabled : theme.colors.onPrimary,
+                    border: 'transparent',
+                };
+        }
+    };
+
+    const colors = getColors();
+
+    // Determine size styles
+    const getSizeStyles = () => {
+        switch (size) {
+            case 'small':
+                return {
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    minHeight: 36,
+                    borderRadius: 6,
+                };
+            case 'large':
+                return {
+                    paddingHorizontal: 24,
+                    paddingVertical: 16,
+                    minHeight: 56,
+                    borderRadius: 12,
+                };
+            default: // medium
+                return {
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                    minHeight: 44,
+                    borderRadius: 8,
+                };
+        }
+    };
+
+    const sizeStyles = getSizeStyles();
+
+    // Combine all styles
+    const buttonStyle = [
+        styles.button,
+        sizeStyles,
+        {
+            backgroundColor: colors.background,
+            borderColor: colors.border,
+            borderWidth: colors.border !== 'transparent' ? 1 : 0,
+            opacity: disabled ? 0.6 : 1,
+            ...pressAnimationStyle,
+        },
+        elevated && styles.elevated,
+        glow && styles.glow,
+        style,
+    ];
+
+    const textStyle = [
+        styles.text,
+        {
+            color: colors.text,
+            fontSize: size === 'small' ? 14 : size === 'large' ? 18 : 16,
+            fontWeight: variant === 'primary' ? '600' : '500',
+        },
+        labelStyle,
+    ];
+
+    const renderContent = () => {
+        if (loading) {
+            return <ActivityIndicator size="small" color={colors.text} />;
+        }
+
+        return (
+            <>
+                {leftIcon && (
+                    <Feather
+                        name={leftIcon}
+                        size={size === 'small' ? 16 : size === 'large' ? 20 : 18}
+                        color={colors.text}
+                        style={styles.leftIcon}
+                    />
+                )}
+                {children || (
+                    <Text style={textStyle} numberOfLines={1}>
+                        {label}
+                    </Text>
+                )}
+                {rightIcon && (
+                    <Feather
+                        name={rightIcon}
+                        size={size === 'small' ? 16 : size === 'large' ? 20 : 18}
+                        color={colors.text}
+                        style={styles.rightIcon}
+                    />
+                )}
+            </>
+        );
+    };
+
+    const buttonContent = (
+        <View style={styles.content}>
+            {renderContent()}
+        </View>
+    );
+
+    return (
+        <TouchableWithoutFeedback
+            onPress={handlePress}
+            onLongPress={onLongPress}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            disabled={disabled || loading}
+            accessibilityLabel={accessibilityLabel || label}
+            testID={testID}
+        >
+            {gradientColors ? (
+                <LinearGradient
+                    colors={gradientColors}
+                    style={buttonStyle}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                >
+                    {buttonContent}
+                </LinearGradient>
+            ) : variant === 'glass' ? (
+                <BlurView intensity={20} style={buttonStyle}>
+                    {buttonContent}
+                </BlurView>
+            ) : (
+                <Animated.View style={buttonStyle}>
+                    {buttonContent}
+                </Animated.View>
+            )}
+        </TouchableWithoutFeedback>
+    );
+};
+
+const styles = StyleSheet.create({
+    button: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 0,
+    },
+    content: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    text: {
+        textAlign: 'center',
+        fontFamily: 'System',
+    },
+    leftIcon: {
+        marginRight: 8,
+    },
+    rightIcon: {
+        marginLeft: 8,
+    },
+    elevated: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 4,
+    },
+    glow: {
+        shadowColor: '#007AFF',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.5,
+        shadowRadius: 8,
+        elevation: 8,
+    },
+});
+
+export default EnhancedButton;
                 background: disabled ? theme.colors.elevation.level3 : theme.colors.warning,
                 text: disabled ? theme.colors.text.disabled : '#000000',
                 border: 'transparent',
