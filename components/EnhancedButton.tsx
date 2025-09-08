@@ -5,7 +5,9 @@
  * Got it, love.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, {
+    useState, useCallback
+} from 'react';
 import {
     View,
     Text,
@@ -73,7 +75,7 @@ interface EnhancedButtonProps {
     /** Press-out handler */
     onPressOut?: (event: GestureResponderEvent) => void;
     /** Background gradient colors */
-    gradientColors?: string[];
+    gradientColors?: readonly string[];
     /** Whether to use haptic feedback on press */
     haptic?: boolean | 'success' | 'warning' | 'error' | 'light' | 'medium' | 'heavy';
     /** Accessibility label for screen readers */
@@ -116,32 +118,38 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
     animate = false,
     children,
 }) => {
-    const theme = useTheme();
+    const { theme } = useTheme();
     const [isPressed, setIsPressed] = useState(false);
-    const { pressAnimation, animatePress } = usePressAnimation();
+    const pressAnimation = usePressAnimation({
+        scale: 0.95,
+        duration: 150,
+        enabled: !disabled && !loading,
+        haptic: haptic as any,
+    });
 
     // Handle press events
     const handlePressIn = useCallback((event: GestureResponderEvent) => {
         if (disabled || loading) return;
 
         setIsPressed(true);
-        animatePress();
+        pressAnimation.onPressIn?.();
 
         if (haptic && typeof haptic === 'boolean') {
-            triggerHaptic('medium');
+            triggerHaptic('light');
         } else if (typeof haptic === 'string') {
-            triggerHaptic(haptic);
+            triggerHaptic(haptic as any);
         }
 
         onPressIn?.(event);
-    }, [disabled, loading, animatePress, haptic, onPressIn]);
+    }, [disabled, loading, pressAnimation, haptic, onPressIn]);
 
     const handlePressOut = useCallback((event: GestureResponderEvent) => {
         if (disabled || loading) return;
 
         setIsPressed(false);
+        pressAnimation.onPressOut?.();
         onPressOut?.(event);
-    }, [disabled, loading, onPressOut]);
+    }, [disabled, loading, pressAnimation, onPressOut]);
 
     const handlePress = useCallback((event: GestureResponderEvent) => {
         if (disabled || loading) return;
@@ -149,7 +157,7 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
         if (haptic && typeof haptic === 'boolean') {
             triggerHaptic('light');
         } else if (typeof haptic === 'string') {
-            triggerHaptic(haptic);
+            triggerHaptic(haptic as any);
         }
 
         onPress?.(event);
@@ -191,7 +199,7 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
             case 'success':
                 return {
                     background: disabled ? theme.colors.elevation.level3 : theme.colors.success,
-                    text: disabled ? theme.colors.text.disabled : theme.colors.onSuccess,
+                    text: disabled ? theme.colors.text.disabled : '#FFFFFF',
                     border: 'transparent',
                 };
             case 'warning':
@@ -203,7 +211,7 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
             case 'danger':
                 return {
                     background: disabled ? theme.colors.elevation.level3 : theme.colors.error,
-                    text: disabled ? theme.colors.text.disabled : theme.colors.onError,
+                    text: disabled ? theme.colors.text.disabled : theme.colors.onError || '#FFFFFF',
                     border: 'transparent',
                 };
             case 'glass':
@@ -292,10 +300,10 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
         }
 
         return variant === 'glass'
-            ? theme.shadows.subtle
+            ? theme.shadows?.subtle || {}
             : isPressed
-                ? theme.shadows.small
-                : theme.shadows.medium;
+                ? theme.shadows?.small || {}
+                : theme.shadows?.medium || {};
     }, [elevated, disabled, variant, isPressed, theme]);
 
     const shadowStyle = getShadowStyle();
@@ -331,6 +339,7 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
         shadowStyle,
         glowStyle,
         fullWidth && styles.fullWidth,
+        pressAnimation.style,
         style,
     ];
 
@@ -339,7 +348,7 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
         {
             color: colors.text,
             fontSize,
-            fontWeight: variant === 'text' ? '400' : '600',
+            fontWeight: (variant === 'text' ? '400' : '600') as any,
         },
         labelStyle,
     ];
@@ -395,9 +404,9 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
                 accessibilityLabel={accessibilityLabel || label}
                 testID={testID}
             >
-                <Animated.View style={[buttonStyle, pressAnimation]}>
+                <Animated.View style={[buttonStyle]}>
                     <LinearGradient
-                        colors={gradientColors}
+                        colors={gradientColors as any}
                         style={styles.gradient}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
@@ -421,7 +430,7 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
                 accessibilityLabel={accessibilityLabel || label}
                 testID={testID}
             >
-                <Animated.View style={[buttonStyle, pressAnimation]}>
+                <Animated.View style={[buttonStyle]}>
                     <BlurView intensity={80} style={styles.blur}>
                         {renderContent()}
                     </BlurView>
@@ -441,7 +450,7 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
             accessibilityLabel={accessibilityLabel || label}
             testID={testID}
         >
-            <Animated.View style={[buttonStyle, pressAnimation]}>
+            <Animated.View style={[buttonStyle]}>
                 {renderContent()}
             </Animated.View>
         </TouchableWithoutFeedback>
@@ -487,20 +496,6 @@ const styles = StyleSheet.create({
     },
     loading: {
         alignSelf: 'center',
-    },
-    elevated: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 4,
-    },
-    glow: {
-        shadowColor: '#007AFF',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-        elevation: 8,
     },
 });
 
