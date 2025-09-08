@@ -43,7 +43,7 @@ export default function DrawerLayout() {
                             marginLeft: -8,
                         },
                     }}
-                    drawerContent={(props) => <CustomDrawerContent {...props} />}
+                    drawerContent={(props: any) => <CustomDrawerContent {...props} />}
                 >
                     {/* Main Navigation */}
                     <Drawer.Screen
@@ -51,7 +51,7 @@ export default function DrawerLayout() {
                         options={{
                             title: 'Home',
                             drawerLabel: 'Home',
-                            drawerIcon: ({ color, size }) => (
+                            drawerIcon: ({ color, size }: { color: string; size: number }) => (
                                 <IconSymbol name="house.fill" size={size} color={color} />
                             ),
                         }}
@@ -61,7 +61,7 @@ export default function DrawerLayout() {
                         options={{
                             title: 'AI Companion',
                             drawerLabel: 'AI Companion',
-                            drawerIcon: ({ color, size }) => (
+                            drawerIcon: ({ color, size }: { color: string; size: number }) => (
                                 <IconSymbol name="brain" size={size} color={color} />
                             ),
                         }}
@@ -72,7 +72,7 @@ export default function DrawerLayout() {
                         options={{
                             title: 'Emotional Support',
                             drawerLabel: 'Emotional Support',
-                            drawerIcon: ({ color, size }) => (
+                            drawerIcon: ({ color, size }: { color: string; size: number }) => (
                                 <IconSymbol name="heart.fill" size={size} color={color} />
                             ),
                         }}
@@ -84,7 +84,7 @@ export default function DrawerLayout() {
                         options={{
                             title: 'My Profile',
                             drawerLabel: 'My Profile',
-                            drawerIcon: ({ color, size }) => (
+                            drawerIcon: ({ color, size }: { color: string; size: number }) => (
                                 <IconSymbol name="person.circle.fill" size={size} color={color} />
                             ),
                         }}
@@ -95,7 +95,7 @@ export default function DrawerLayout() {
                         options={{
                             title: 'Achievements',
                             drawerLabel: 'Achievements',
-                            drawerIcon: ({ color, size }) => (
+                            drawerIcon: ({ color, size }: { color: string; size: number }) => (
                                 <IconSymbol name="trophy.fill" size={size} color={color} />
                             ),
                         }}
@@ -106,7 +106,7 @@ export default function DrawerLayout() {
                         options={{
                             title: 'Growth Journal',
                             drawerLabel: 'Growth Journal',
-                            drawerIcon: ({ color, size }) => (
+                            drawerIcon: ({ color, size }: { color: string; size: number }) => (
                                 <IconSymbol name="book.fill" size={size} color={color} />
                             ),
                         }}
