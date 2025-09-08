@@ -5,8 +5,8 @@ import { Platform, View } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { CustomDrawerContent } from '@/components/CustomDrawerContent';
-import { ThemeProvider } from '@/components/ThemeSystem';
+import CustomDrawerContent from '@/components/CustomDrawerContent';
+import ThemeProvider from '@/components/ThemeSystem';
 import { ToastProvider } from '@/components/ToastNotification';
 
 export default function DrawerLayout() {
@@ -118,7 +118,7 @@ export default function DrawerLayout() {
                         options={{
                             title: 'Settings',
                             drawerLabel: 'Settings',
-                            drawerIcon: ({ color, size }) => (
+                            drawerIcon: ({ color, size }: { color: string; size: number }) => (
                                 <IconSymbol name="gear" size={size} color={color} />
                             ),
                         }}
@@ -129,7 +129,7 @@ export default function DrawerLayout() {
                         options={{
                             title: 'Help & Support',
                             drawerLabel: 'Help & Support',
-                            drawerIcon: ({ color, size }) => (
+                            drawerIcon: ({ color, size }: { color: string; size: number }) => (
                                 <IconSymbol name="questionmark.circle.fill" size={size} color={color} />
                             ),
                         }}
