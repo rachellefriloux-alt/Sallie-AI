@@ -18,11 +18,11 @@ export class HumanizedSalleDemo {
     this.pluginRegistry = new PluginRegistry();
     this.initializer = new HumanizedSalleInitializer(this.pluginRegistry);
     this.plugin = new HumanizedSallePlugin();
+    
+    // Register the plugin with the registry
+    this.pluginRegistry.register('humanizedSalle', this.plugin);
   }
   
-  /**
-   * Run a demo showcasing humanized features
-   */
   async runDemo(): Promise<void> {
     console.log('-------- Humanized Sallie Demo --------');
     
@@ -33,6 +33,10 @@ export class HumanizedSalleDemo {
     
     const userId = 'demo-user-123';
     
+    // Example user interactions
+    console.log('\n--- Cognitive Features ---');
+    // Get handlers from the already registered plugin
+    const reg = this.plugin.getHandlers();
     // Example user interactions
     console.log('\n--- Cognitive Features ---');
     const reg = this.plugin.register();

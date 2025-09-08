@@ -341,7 +341,7 @@ export class ProductionMonitoringManager extends EventEmitter {
         id: 'slack-devops',
         type: 'slack',
         config: {
-          webhookUrl: process.env.SLACK_DEVOPS_WEBHOOK,
+          webhookUrl: process.env.SLACK_DEVOPS_WEBHOOK || '',
           channel: '#devops-alerts'
         },
         enabled: true
@@ -350,10 +350,10 @@ export class ProductionMonitoringManager extends EventEmitter {
         id: 'email-devops',
         type: 'email',
         config: {
-          smtpHost: process.env.SMTP_HOST,
-          smtpPort: process.env.SMTP_PORT,
-          username: process.env.SMTP_USERNAME,
-          password: process.env.SMTP_PASSWORD,
+          smtpHost: process.env.SMTP_HOST || '',
+          smtpPort: process.env.SMTP_PORT || '587',
+          username: process.env.SMTP_USERNAME || '',
+          password: process.env.SMTP_PASSWORD || '',
           from: 'alerts@sallie.ai',
           to: ['devops@sallie.ai', 'oncall@sallie.ai']
         },
@@ -363,8 +363,8 @@ export class ProductionMonitoringManager extends EventEmitter {
         id: 'pagerduty',
         type: 'pagerduty',
         config: {
-          integrationKey: process.env.PAGERDUTY_INTEGRATION_KEY,
-          serviceId: process.env.PAGERDUTY_SERVICE_ID
+          integrationKey: process.env.PAGERDUTY_INTEGRATION_KEY || '',
+          serviceId: process.env.PAGERDUTY_SERVICE_ID || ''
         },
         enabled: true
       }
