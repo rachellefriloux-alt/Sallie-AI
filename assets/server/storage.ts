@@ -8,7 +8,7 @@
 
 // Source: SalleCompanion-1/server/storage.ts (migrated 2025-08-27)
 
-import type { User, InsertUser, Conversation, InsertConversation, Task, InsertTask, Memory, InsertMemory, PersonaState, InsertPersonaState } from "../shared/src/schema";
+import type { User, InsertUser, Conversation, InsertConversation, Task, InsertTask, Memory, InsertMemory, PersonaState, InsertPersonaState } from "../../shared/src/schema";
 // Simple UUID generator for React Native compatibility
 function randomUUID(): string {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {

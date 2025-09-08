@@ -8,7 +8,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  colorName: 'text' | 'textSecondary' | 'background' | 'surface' | 'surfaceElevated' | 'tint' | 'accent' | 'success' | 'warning' | 'error' | 'icon' | 'iconSecondary' | 'border' | 'borderFocus' | 'tabIconDefault' | 'tabIconSelected' | 'overlay' | 'primary' | 'card' | 'mystical' | 'shadow'
 ) {
   const theme = useColorScheme() ?? 'light';
   const colorFromProps = props[theme];
