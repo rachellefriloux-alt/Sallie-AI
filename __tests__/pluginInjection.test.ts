@@ -184,9 +184,9 @@ describe('Plugin Injection Integration', () => {
   it('should integrate with verification tasks', () => {
     // Test integration with Sallie verification system
     const verificationTasks = [
-      'verifySalleFeatures',
-      'verifySallePrivacy',
-      'verifySalleLayering'
+      'verifySallieFeatures',
+      'verifySalliePrivacy',
+      'verifySallieLayering'
     ];
 
     const buildTaskConfiguration = {

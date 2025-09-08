@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+// import { useNavigation } from '@react-navigation/native';
 
 interface QuickAction {
   id: string;
@@ -11,7 +11,20 @@ interface QuickAction {
 }
 
 export default function QuickActions() {
-  const navigation = useNavigation();
+  // Dynamic import for navigation to avoid CommonJS/ESM conflicts
+  const [navigation, setNavigation] = useState<any>(null);
+  
+  useEffect(() => {
+    const loadNavigation = async () => {
+      try {
+        const { useNavigation: navHook } = await import('@react-navigation/native');
+        setNavigation(navHook());
+      } catch (error) {
+        console.warn('Failed to load navigation:', error);
+      }
+    };
+    loadNavigation();
+  }, []);
 
   const quickActions: QuickAction[] = [
     {

@@ -1,5 +1,5 @@
 /*
- * Salle 1.0 Module
+ * Sallie 1.0 Module
  * Persona: Tough love meets soul care.
  * Function: Main technical integration system for event handling and coordination.
  */

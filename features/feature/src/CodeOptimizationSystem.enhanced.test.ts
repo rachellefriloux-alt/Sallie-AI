@@ -1,5 +1,5 @@
 /*
- * Salle 1.0 Module
+ * Sallie 1.0 Module
  * Persona: Tough love meets soul care.
  * Function: Basic tests for enhanced code optimization system
  * Got it, love.
@@ -178,8 +178,8 @@ describe('Enhanced CodeOptimizationSystem', () => {
     });
   });
 
-  describe('Integration with Salle Persona', () => {
-    test('should maintain Salle persona in optimization descriptions', () => {
+  describe('Integration with Sallie Persona', () => {
+    test('should maintain Sallie persona in optimization descriptions', () => {
       const code = `
         if (array.indexOf(item) !== -1) {
           console.log('found');
@@ -188,7 +188,7 @@ describe('Enhanced CodeOptimizationSystem', () => {
 
       const result = optimizer.optimizeCode(code, 'javascript', 'balanced');
       
-      // Check that descriptions are helpful and clear (Salle's tough love style)
+      // Check that descriptions are helpful and clear (Sallie's tough love style)
       result.changesLog.forEach(change => {
         expect(change.description).toBeTruthy();
         expect(change.description.length).toBeGreaterThan(10);

@@ -74,10 +74,10 @@ class ActionRouterTest {
         actionRouter.handleUserAction("Write a social media post about resilience")
         // Check Logcat
         // Expected:
-        // D/Salle: handleUserAction received: 'Write a social media post about resilience'
-        // D/Salle: Creative task identified, routing to CreativeTaskHandler: 'Write a social media post about resilience'
-        // D/SalleMock: MockCreativeTaskHandler processing: 'Write a social media post about resilience'
-        // D/SalleMock: --> SIMULATING CREATIVE TASK (Gemini route): Write a social media post about resilience
+        // D/Sallie: handleUserAction received: 'Write a social media post about resilience'
+        // D/Sallie: Creative task identified, routing to CreativeTaskHandler: 'Write a social media post about resilience'
+        // D/SallieMock: MockCreativeTaskHandler processing: 'Write a social media post about resilience'
+        // D/SallieMock: --> SIMULATING CREATIVE TASK (Gemini route): Write a social media post about resilience
     }
 
     @Test
@@ -85,13 +85,13 @@ class ActionRouterTest {
         actionRouter.handleUserAction("Start Morning Routine")
         // Check Logcat
         // Expected:
-        // D/Salle: handleUserAction received: 'Start Morning Routine'
-        // D/Salle: Routine identified, routing to RoutineManager: 'Start Morning Routine'
-        // D/SalleMock: MockRoutineManager starting routine: 'Morning'
-        // D/SalleMock: --> Step 1/3: Open blinds (simulated)
-        // D/SalleMock: --> Step 2/3: Start coffee (simulated)
-        // D/SalleMock: --> Step 3/3: Play news briefing (simulated)
-        // D/SalleMock: --> Morning Routine complete (simulated)
+        // D/Sallie: handleUserAction received: 'Start Morning Routine'
+        // D/Sallie: Routine identified, routing to RoutineManager: 'Start Morning Routine'
+        // D/SallieMock: MockRoutineManager starting routine: 'Morning'
+        // D/SallieMock: --> Step 1/3: Open blinds (simulated)
+        // D/SallieMock: --> Step 2/3: Start coffee (simulated)
+        // D/SallieMock: --> Step 3/3: Play news briefing (simulated)
+        // D/SallieMock: --> Morning Routine complete (simulated)
     }
 }
 
@@ -104,7 +104,7 @@ class ActionRouterTest {
 // Example re-definitions if needed for compilation in test (less ideal):
 /*
 class MockDirectActionHandler : DirectActionHandler {
-    private val TAG = "SalleMock"
+    private val TAG = "SallieMock"
     override fun execute(action: String): Boolean {
         android.util.Log.d(TAG, "MockDirectActionHandler executing: '$action'")
         if (action.startsWith("Call", ignoreCase = true)) {
@@ -116,7 +116,7 @@ class MockDirectActionHandler : DirectActionHandler {
 }
 
 class MockCreativeTaskHandler : CreativeTaskHandler {
-    private val TAG = "SalleMock"
+    private val TAG = "SallieMock"
     override fun process(task: String) {
         android.util.Log.d(TAG, "MockCreativeTaskHandler processing: '$task'")
         android.util.Log.d(TAG, "--> SIMULATING CREATIVE TASK (Gemini route): $task")
@@ -124,7 +124,7 @@ class MockCreativeTaskHandler : CreativeTaskHandler {
 }
 
 class MockRoutineManager : RoutineManager {
-    private val TAG = "SalleMock"
+    private val TAG = "SallieMock"
     override fun startRoutine(routineName: String) {
         android.util.Log.d(TAG, "MockRoutineManager starting routine: '$routineName'")
         // ... (rest of mock logic)

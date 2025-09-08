@@ -1,6 +1,17 @@
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import { StyleSheet } from 'react-native';
+
+// Dynamic import for navigation hook to avoid CommonJS/ESM conflicts
+let useBottomTabBarHeight: any;
+
+(async () => {
+  try {
+    const { useBottomTabBarHeight: hook } = await import('@react-navigation/bottom-tabs');
+    useBottomTabBarHeight = hook;
+  } catch (error) {
+    console.warn('Failed to load navigation hook:', error);
+  }
+})();
 
 export default function BlurTabBarBackground() {
   return (
@@ -15,5 +26,5 @@ export default function BlurTabBarBackground() {
 }
 
 export function useBottomTabOverflow() {
-  return useBottomTabBarHeight();
+  return useBottomTabBarHeight?.() || 0;
 }

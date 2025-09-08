@@ -1,4 +1,4 @@
-// Salle Persona Module
+// Sallie Persona Module
 // CompletePersonalityIntegration.js (converted from TypeScript)
 // JavaScript compatibility verified - no TypeScript-specific logic requiring adaptation
 

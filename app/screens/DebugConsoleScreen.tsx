@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+// import { useNavigation } from '@react-navigation/native';
 import { usePersonaStore } from '../store/persona';
 import { useMemoryStore } from '../store/memory';
 import { useDeviceStore } from '../store/device';
@@ -23,7 +23,21 @@ interface LogEntry {
 }
 
 export default function DebugConsoleScreen() {
-  const navigation = useNavigation();
+  // Dynamic import for navigation to avoid CommonJS/ESM conflicts
+  const [navigation, setNavigation] = useState<any>(null);
+  
+  useEffect(() => {
+    const loadNavigation = async () => {
+      try {
+        const { useNavigation: navHook } = await import('@react-navigation/native');
+        setNavigation(navHook());
+      } catch (error) {
+        console.warn('Failed to load navigation:', error);
+      }
+    };
+    loadNavigation();
+  }, []);
+  
   const persona = usePersonaStore();
   const memory = useMemoryStore();
   const device = useDeviceStore();

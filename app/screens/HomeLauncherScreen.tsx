@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+// import { useNavigation } from '@react-navigation/native';
 import { usePersonaStore } from '../store/persona';
 import { useMemoryStore } from '../store/memory';
 import { useDeviceStore } from '../store/device';
@@ -25,7 +25,21 @@ import EmotionMeter from '../components/EmotionMeter';
 const { width, height } = Dimensions.get('window');
 
 export default function HomeLauncherScreen() {
-  const navigation = useNavigation();
+  // Dynamic import for navigation to avoid CommonJS/ESM conflicts
+  const [navigation, setNavigation] = useState<any>(null);
+  
+  useEffect(() => {
+    const loadNavigation = async () => {
+      try {
+        const { useNavigation: navHook } = await import('@react-navigation/native');
+        setNavigation(navHook());
+      } catch (error) {
+        console.warn('Failed to load navigation:', error);
+      }
+    };
+    loadNavigation();
+  }, []);
+  
   const { emotion, tone, mood, intensity } = usePersonaStore();
   const { shortTerm, episodic } = useMemoryStore();
   const { isLauncher, settings } = useDeviceStore();

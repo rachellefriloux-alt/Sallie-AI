@@ -1,5 +1,5 @@
 /*
- * Salle 1.0 Module
+ * Sallie 1.0 Module
  * Persona: Tough love meets soul care.
  * Function: Enhanced accessibility system for WCAG 2.1 AA compliance
  * Got it, love.

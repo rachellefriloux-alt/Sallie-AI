@@ -1,8 +1,21 @@
-import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
-import { PlatformPressable } from '@react-navigation/elements';
 import * as Haptics from 'expo-haptics';
 
-export function HapticTab(props: BottomTabBarButtonProps) {
+// Dynamic imports for navigation components to avoid CommonJS/ESM conflicts
+let BottomTabBarButtonProps: any;
+let PlatformPressable: any;
+
+(async () => {
+  try {
+    const bottomTabs = await import('@react-navigation/bottom-tabs');
+    const elements = await import('@react-navigation/elements');
+    BottomTabBarButtonProps = bottomTabs.BottomTabBarButtonProps;
+    PlatformPressable = elements.PlatformPressable;
+  } catch (error) {
+    console.warn('Failed to load navigation components:', error);
+  }
+})();
+
+export function HapticTab(props: any) {
   return (
     <PlatformPressable
       {...props}

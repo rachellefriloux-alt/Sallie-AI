@@ -20,6 +20,8 @@ export interface Theme {
     error: string;
     info: string;
     overlay: string;
+    mystical: string;
+    shadow: string;
   };
   gradients: {
     primary: string[];
@@ -67,6 +69,7 @@ export interface Theme {
     lg: object;
     xl: object;
   };
+  shadow: string;
 }
 
 const baseSpacing = {
@@ -156,6 +159,8 @@ export const themes: Record<string, Theme> = {
       error: '#E76F51',
       info: '#87CEEB',
       overlay: 'rgba(44, 24, 16, 0.9)',
+      mystical: '#D4AF37',
+      shadow: '#000000',
     },
     gradients: {
       primary: ['#8B5A3C', '#D4AF37'],
@@ -167,6 +172,7 @@ export const themes: Record<string, Theme> = {
     typography: baseTypography,
     borderRadius: baseBorderRadius,
     shadows: baseShadows,
+    shadow: '#000000',
   },
   
   'southern-grit': {
@@ -187,6 +193,8 @@ export const themes: Record<string, Theme> = {
       error: '#DC143C',
       info: '#4682B4',
       overlay: 'rgba(28, 28, 28, 0.9)',
+      mystical: '#FF6347',
+      shadow: '#000000',
     },
     gradients: {
       primary: ['#8B0000', '#CD853F'],
@@ -198,6 +206,7 @@ export const themes: Record<string, Theme> = {
     typography: baseTypography,
     borderRadius: baseBorderRadius,
     shadows: baseShadows,
+    shadow: '#000000',
   },
   
   'hustle-legacy': {
@@ -218,6 +227,8 @@ export const themes: Record<string, Theme> = {
       error: '#FF1493',
       info: '#00BFFF',
       overlay: 'rgba(15, 15, 35, 0.9)',
+      mystical: '#9370DB',
+      shadow: '#000000',
     },
     gradients: {
       primary: ['#4B0082', '#FFD700'],
@@ -229,6 +240,7 @@ export const themes: Record<string, Theme> = {
     typography: baseTypography,
     borderRadius: baseBorderRadius,
     shadows: baseShadows,
+    shadow: '#000000',
   },
   
   'soul-care': {
@@ -249,6 +261,8 @@ export const themes: Record<string, Theme> = {
       error: '#F08080',
       info: '#87CEEB',
       overlay: 'rgba(47, 79, 79, 0.9)',
+      mystical: '#DDA0DD',
+      shadow: '#000000',
     },
     gradients: {
       primary: ['#708090', '#F0E68C'],
@@ -260,6 +274,7 @@ export const themes: Record<string, Theme> = {
     typography: baseTypography,
     borderRadius: baseBorderRadius,
     shadows: baseShadows,
+    shadow: '#000000',
   },
   
   'quiet-power': {
@@ -280,6 +295,8 @@ export const themes: Record<string, Theme> = {
       error: '#CD5C5C',
       info: '#87CEFA',
       overlay: 'rgba(30, 30, 30, 0.9)',
+      mystical: '#6A5ACD',
+      shadow: '#000000',
     },
     gradients: {
       primary: ['#2F2F2F', '#C0C0C0'],
@@ -291,6 +308,7 @@ export const themes: Record<string, Theme> = {
     typography: baseTypography,
     borderRadius: baseBorderRadius,
     shadows: baseShadows,
+    shadow: '#000000',
   },
   
   'midnight-hustle': {
@@ -311,6 +329,8 @@ export const themes: Record<string, Theme> = {
       error: '#FF0000',
       info: '#40E0D0',
       overlay: 'rgba(10, 10, 10, 0.9)',
+      mystical: '#40E0D0',
+      shadow: '#000000',
     },
     gradients: {
       primary: ['#000080', '#FF4500'],
@@ -322,6 +342,7 @@ export const themes: Record<string, Theme> = {
     typography: baseTypography,
     borderRadius: baseBorderRadius,
     shadows: baseShadows,
+    shadow: '#000000',
   },
 };
 
