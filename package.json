@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-community/slider": "^5.0.1",
     "@react-native-firebase/app": "^23.3.0",
     "@react-native-firebase/auth": "^23.3.0",
     "@react-native-firebase/firestore": "^23.3.0",
@@ -40,16 +41,19 @@
     "expo-av": "~15.1.0",
     "expo-battery": "~9.1.0",
     "expo-blur": "~14.1.0",
+    "expo-brightness": "^13.1.4",
     "expo-camera": "~16.1.0",
     "expo-constants": "~17.1.0",
     "expo-contacts": "~14.1.0",
     "expo-crypto": "~14.1.0",
     "expo-device": "~7.0.2",
+    "expo-document-picker": "~13.0.3",
     "expo-file-system": "~18.1.0",
     "expo-haptics": "~14.1.0",
     "expo-image": "~2.1.0",
     "expo-image-picker": "~16.1.0",
     "expo-intent-launcher": "~12.1.0",
+    "expo-linear-gradient": "^14.1.5",
     "expo-linking": "~7.1.0",
     "expo-location": "~18.1.0",
     "expo-media-library": "~17.1.0",
@@ -83,8 +87,7 @@
     "react-native-web": "~0.19.13",
     "uuid": "^11.0.3",
     "zod": "^3.23.8",
-    "zustand": "^5.0.0",
-    "expo-document-picker": "~13.0.3"
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.13",

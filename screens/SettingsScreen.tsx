@@ -16,6 +16,7 @@ import {
     Modal,
     Dimensions,
     Image,
+    Animated,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../components/ThemeSystem';
@@ -23,9 +24,239 @@ import { getFontStyle } from '../components/FontManager';
 import { usePressAnimation } from '../components/AnimationSystem';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import MediaUpload from '../components/MediaUpload';
+import MediaUpload, { UploadResult } from '../components/MediaUpload';
+import { profile } from 'console';
+import { title } from 'process';
 
 const { width, height } = Dimensions.get('window');
+
+// Define styles outside component to avoid type issues
+const createStyles = (theme: any) => StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: theme.colors.background,
+    },
+    centered: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        ...getFontStyle(theme.type, 'regular'),
+        fontSize: theme.typography.sizes.body1,
+        color: theme.colors.text.secondary,
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        padding: theme.spacing.m,
+    },
+    profileSection: {
+        backgroundColor: theme.colors.surface,
+        borderRadius: theme.borderRadius.medium,
+        padding: theme.spacing.m,
+        marginBottom: theme.spacing.m,
+    },
+    profileHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: theme.spacing.m,
+    },
+    avatarContainer: {
+        position: 'relative',
+        marginRight: theme.spacing.m,
+    },
+    avatar: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: theme.colors.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    avatarImage: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+    },
+    avatarPlaceholder: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: theme.colors.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    avatarEditButton: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: theme.colors.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    profileInfo: {
+        flex: 1,
+    },
+    profileName: {
+        ...getFontStyle(theme.type, 'medium'),
+        fontSize: theme.typography.sizes.subtitle,
+        color: theme.colors.text.primary,
+        marginBottom: theme.spacing.xs,
+    },
+    profileEmail: {
+        ...getFontStyle(theme.type, 'regular'),
+        fontSize: theme.typography.sizes.body1,
+        color: theme.colors.text.secondary,
+    },
+    profileBio: {
+        ...getFontStyle(theme.type, 'regular'),
+        fontSize: theme.typography.sizes.caption,
+        color: theme.colors.text.secondary,
+        marginTop: theme.spacing.xs,
+    },
+    editButton: {
+        backgroundColor: theme.colors.primary,
+        borderRadius: theme.borderRadius.medium,
+        paddingHorizontal: theme.spacing.m,
+        paddingVertical: theme.spacing.xs,
+    },
+    editButtonText: {
+        ...getFontStyle(theme.type, 'medium'),
+        fontSize: theme.typography.sizes.body1,
+        color: theme.colors.onPrimary,
+    },
+    section: {
+        backgroundColor: theme.colors.surface,
+        borderRadius: theme.borderRadius.medium,
+        marginBottom: theme.spacing.m,
+        overflow: 'hidden',
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: theme.spacing.m,
+        backgroundColor: theme.colors.background,
+    },
+    sectionIcon: {
+        marginRight: theme.spacing.s,
+    },
+    sectionTitle: {
+        ...getFontStyle(theme.type, 'medium'),
+        fontSize: theme.typography.sizes.subtitle,
+        color: theme.colors.text.primary,
+    },
+    settingItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: theme.spacing.m,
+        borderBottomWidth: 1,
+        borderBottomColor: theme.colors.border,
+    },
+    settingContent: {
+        flex: 1,
+    },
+    settingTitle: {
+        ...getFontStyle(theme.type, 'regular'),
+        fontSize: theme.typography.sizes.body1,
+        color: theme.colors.text.primary,
+    },
+    settingSubtitle: {
+        ...getFontStyle(theme.type, 'regular'),
+        fontSize: theme.typography.sizes.caption,
+        color: theme.colors.text.secondary,
+        marginTop: theme.spacing.xs,
+    },
+    settingRight: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    settingValue: {
+        ...getFontStyle(theme.type, 'regular'),
+        fontSize: theme.typography.sizes.body1,
+        color: theme.colors.text.secondary,
+        marginRight: theme.spacing.s,
+    },
+    dangerButton: {
+        backgroundColor: '#FF6B6B',
+        borderRadius: theme.borderRadius.medium,
+        padding: theme.spacing.m,
+        alignItems: 'center',
+        marginTop: theme.spacing.m,
+    },
+    dangerButtonText: {
+        ...getFontStyle(theme.type, 'medium'),
+        fontSize: theme.typography.sizes.body1,
+        color: '#FFFFFF',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        backgroundColor: theme.colors.surface,
+        borderRadius: theme.borderRadius.large,
+        padding: theme.spacing.l,
+        margin: theme.spacing.l,
+        width: width - theme.spacing.l * 2,
+        maxHeight: height * 0.8,
+    },
+    modalTitle: {
+        ...getFontStyle(theme.type, 'medium'),
+        fontSize: theme.typography.sizes.subtitle,
+        color: theme.colors.text.primary,
+        marginBottom: theme.spacing.m,
+        textAlign: 'center',
+    },
+    modalInput: {
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+        borderRadius: theme.borderRadius.medium,
+        padding: theme.spacing.m,
+        ...getFontStyle(theme.type, 'regular'),
+        fontSize: theme.typography.sizes.body1,
+        color: theme.colors.text.primary,
+        marginBottom: theme.spacing.m,
+    },
+    modalTextArea: {
+        height: 80,
+        textAlignVertical: 'top',
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    modalButton: {
+        flex: 1,
+        padding: theme.spacing.m,
+        borderRadius: theme.borderRadius.medium,
+        alignItems: 'center',
+        marginHorizontal: theme.spacing.xs,
+    },
+    cancelButton: {
+        backgroundColor: theme.colors.surface,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+    },
+    cancelButtonText: {
+        ...getFontStyle(theme.type, 'medium'),
+        fontSize: theme.typography.sizes.body1,
+        color: theme.colors.text.primary,
+    },
+    confirmButton: {
+        backgroundColor: theme.colors.primary,
+    },
+    confirmButtonText: {
+        ...getFontStyle(theme.type, 'medium'),
+        fontSize: theme.typography.sizes.body1,
+        color: theme.colors.onPrimary,
+    },
+});
 
 export interface UserProfile {
     id: string;
@@ -85,6 +316,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     style,
 }) => {
     const { theme } = useTheme();
+    const styles = createStyles(theme);
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [settings, setSettings] = useState<AppSettings | null>(null);
     const [editingProfile, setEditingProfile] = useState(false);
@@ -206,7 +438,19 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             },
         };
         setProfile(updatedProfile);
-        setEditForm(updatedProfile);
+        setEditForm(prev => ({
+            ...prev,
+            preferences: {
+                notifications: prev.preferences?.notifications ?? false,
+                soundEffects: prev.preferences?.soundEffects ?? false,
+                hapticFeedback: prev.preferences?.hapticFeedback ?? false,
+                autoSave: prev.preferences?.autoSave ?? false,
+                darkMode: prev.preferences?.darkMode ?? false,
+                language: prev.preferences?.language ?? 'en',
+                timezone: prev.preferences?.timezone ?? 'UTC',
+                [key]: value,
+            },
+        }));
         saveProfile();
     };
 
@@ -217,25 +461,27 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         const updatedSettings = {
             ...settings,
             [category]: {
-                ...settings[category],
+                ...(settings as any)[category],
                 [key]: value,
             },
         };
         setSettings(updatedSettings);
-        saveSettings();
-    };
-
-    // Handle avatar change
-    const handleAvatarChange = async (files: any[]) => {
-        if (files.length > 0 && profile) {
-            const updatedProfile = {
-                ...profile,
-                avatar: files[0].uri,
-            };
-            setProfile(updatedProfile);
-            setEditForm(updatedProfile);
-            setShowAvatarPicker(false);
+        if (onSettingsUpdate) {
+            onSettingsUpdate(updatedSettings);
         }
+    };
+    // Helper to calculate cache size
+    const calculateCacheSize = async (): Promise<number> => {
+        const keys = await AsyncStorage.getAllKeys();
+        const cacheKeys = keys.filter(key => key.startsWith('cache_'));
+        let totalSize = 0;
+        for (const key of cacheKeys) {
+            const value = await AsyncStorage.getItem(key);
+            if (value) {
+                totalSize += new Blob([value]).size;
+            }
+        }
+        return totalSize;
     };
 
     // Clear cache
@@ -255,9 +501,12 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                             const cacheKeys = keys.filter(key => key.startsWith('cache_'));
                             await AsyncStorage.multiRemove(cacheKeys);
 
+                            // Recalculate cache size
+                            const newCacheSize = await calculateCacheSize();
+
                             // Update settings
                             if (settings) {
-                                const updatedSettings = { ...settings, cacheSize: 0 };
+                                const updatedSettings = { ...settings, cacheSize: newCacheSize };
                                 setSettings(updatedSettings);
                                 await AsyncStorage.setItem('app_settings', JSON.stringify(updatedSettings));
                             }
@@ -299,7 +548,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         );
     };
 
-    // Render setting item
+    // Memoized SettingItem component to use hooks properly
     const renderSettingItem = (
         title: string,
         value: any,
@@ -307,38 +556,58 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         rightComponent?: React.ReactNode,
         subtitle?: string
     ) => {
-        const { pressStyle, handlePressIn, handlePressOut } = usePressAnimation();
+        const pressAnimation = usePressAnimation();
+        const scaleAnim = React.useRef(new Animated.Value(1)).current;
+
+        const handlePressIn = () => {
+            Animated.spring(scaleAnim, {
+                toValue: 0.95,
+                tension: 300,
+                friction: 10,
+                useNativeDriver: false,
+            }).start();
+        };
+
+        const handlePressOut = () => {
+            Animated.spring(scaleAnim, {
+                toValue: 1,
+                tension: 300,
+                friction: 10,
+                useNativeDriver: false,
+            }).start();
+        };
 
         return (
-            <TouchableOpacity
-                style={[styles.settingItem, pressStyle]}
-                onPress={onPress}
-                onPressIn={handlePressIn}
-                onPressOut={handlePressOut}
-                disabled={!onPress}
-                activeOpacity={0.7}
-            >
-                <View style={styles.settingContent}>
-                    <Text style={styles.settingTitle}>{title}</Text>
-                    {subtitle && (
-                        <Text style={styles.settingSubtitle}>{subtitle}</Text>
-                    )}
-                </View>
-                <View style={styles.settingRight}>
-                    {rightComponent || (
-                        <Text style={styles.settingValue}>
-                            {typeof value === 'boolean' ? (value ? 'On' : 'Off') : value}
-                        </Text>
-                    )}
-                    {onPress && (
-                        <Feather name="chevron-right" size={20} color={theme.colors.text.secondary} />
-                    )}
-                </View>
-            </TouchableOpacity>
+            <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                <TouchableOpacity
+                    style={[styles.settingItem, pressAnimation.style]}
+                    onPress={onPress}
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                    disabled={!onPress}
+                    activeOpacity={0.7}
+                >
+                    <View style={styles.settingContent}>
+                        <Text style={styles.settingTitle}>{title}</Text>
+                        {subtitle && (
+                            <Text style={styles.settingSubtitle}>{subtitle}</Text>
+                        )}
+                    </View>
+                    <View style={styles.settingRight}>
+                        {rightComponent || (
+                            <Text style={styles.settingValue}>
+                                {typeof value === 'boolean' ? (value ? 'On' : 'Off') : value}
+                            </Text>
+                        )}
+                        {onPress && (
+                            <Feather name="chevron-right" size={20} color={theme.colors.text.secondary} />
+                        )}
+                    </View>
+                </TouchableOpacity>
+            </Animated.View>
         );
     };
 
-    // Render section header
     const renderSectionHeader = (title: string, icon?: string) => (
         <View style={styles.sectionHeader}>
             {icon && (
@@ -356,232 +625,29 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         );
     }
 
-    const styles = StyleSheet.create({
-        container: {
-            flex: 1,
-            backgroundColor: theme.colors.background,
-        },
-        centered: {
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        loadingText: {
-            ...getFontStyle(theme.type, 'regular'),
-            fontSize: theme.typography.sizes.body1,
-            color: theme.colors.text.secondary,
-        },
-        scrollView: {
-            flex: 1,
-        },
-        scrollContent: {
-            padding: theme.spacing.m,
-        },
-        profileSection: {
-            backgroundColor: theme.colors.surface,
-            borderRadius: theme.borderRadius.medium,
-            padding: theme.spacing.m,
-            marginBottom: theme.spacing.m,
-        },
-        profileHeader: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: theme.spacing.m,
-        },
-        avatarContainer: {
-            position: 'relative',
-            marginRight: theme.spacing.m,
-        },
-        avatar: {
-            width: 60,
-            height: 60,
-            borderRadius: 30,
-            backgroundColor: theme.colors.primary,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        avatarImage: {
-            width: 60,
-            height: 60,
-            borderRadius: 30,
-        },
-        avatarPlaceholder: {
-            width: 60,
-            height: 60,
-            borderRadius: 30,
-            backgroundColor: theme.colors.primary,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        avatarEditButton: {
-            position: 'absolute',
-            bottom: 0,
-            right: 0,
-            width: 24,
-            height: 24,
-            borderRadius: 12,
-            backgroundColor: theme.colors.primary,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        profileInfo: {
-            flex: 1,
-        },
-        profileName: {
-            ...getFontStyle(theme.type, 'medium'),
-            fontSize: theme.typography.sizes.subtitle,
-            color: theme.colors.text.primary,
-            marginBottom: theme.spacing.xs,
-        },
-        profileEmail: {
-            ...getFontStyle(theme.type, 'regular'),
-            fontSize: theme.typography.sizes.body1,
-            color: theme.colors.text.secondary,
-        },
-        profileBio: {
-            ...getFontStyle(theme.type, 'regular'),
-            fontSize: theme.typography.sizes.caption,
-            color: theme.colors.text.secondary,
-            marginTop: theme.spacing.xs,
-        },
-        editButton: {
-            backgroundColor: theme.colors.primary,
-            borderRadius: theme.borderRadius.medium,
-            paddingHorizontal: theme.spacing.m,
-            paddingVertical: theme.spacing.xs,
-        },
-        editButtonText: {
-            ...getFontStyle(theme.type, 'medium'),
-            fontSize: theme.typography.sizes.body1,
-            color: theme.colors.onPrimary,
-        },
-        section: {
-            backgroundColor: theme.colors.surface,
-            borderRadius: theme.borderRadius.medium,
-            marginBottom: theme.spacing.m,
-            overflow: 'hidden',
-        },
-        sectionHeader: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            padding: theme.spacing.m,
-            backgroundColor: theme.colors.background,
-        },
-        sectionIcon: {
-            marginRight: theme.spacing.s,
-        },
-        sectionTitle: {
-            ...getFontStyle(theme.type, 'medium'),
-            fontSize: theme.typography.sizes.subtitle,
-            color: theme.colors.text.primary,
-        },
-        settingItem: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            padding: theme.spacing.m,
-            borderBottomWidth: 1,
-            borderBottomColor: theme.colors.border,
-        },
-        settingContent: {
-            flex: 1,
-        },
-        settingTitle: {
-            ...getFontStyle(theme.type, 'regular'),
-            fontSize: theme.typography.sizes.body1,
-            color: theme.colors.text.primary,
-        },
-        settingSubtitle: {
-            ...getFontStyle(theme.type, 'regular'),
-            fontSize: theme.typography.sizes.caption,
-            color: theme.colors.text.secondary,
-            marginTop: theme.spacing.xs,
-        },
-        settingRight: {
-            flexDirection: 'row',
-            alignItems: 'center',
-        },
-        settingValue: {
-            ...getFontStyle(theme.type, 'regular'),
-            fontSize: theme.typography.sizes.body1,
-            color: theme.colors.text.secondary,
-            marginRight: theme.spacing.s,
-        },
-        dangerButton: {
-            backgroundColor: '#FF6B6B',
-            borderRadius: theme.borderRadius.medium,
-            padding: theme.spacing.m,
-            alignItems: 'center',
-            marginTop: theme.spacing.m,
-        },
-        dangerButtonText: {
-            ...getFontStyle(theme.type, 'medium'),
-            fontSize: theme.typography.sizes.body1,
-            color: '#FFFFFF',
-        },
-        modalContainer: {
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        },
-        modalContent: {
-            backgroundColor: theme.colors.surface,
-            borderRadius: theme.borderRadius.large,
-            padding: theme.spacing.l,
-            margin: theme.spacing.l,
-            width: width - theme.spacing.l * 2,
-            maxHeight: height * 0.8,
-        },
-        modalTitle: {
-            ...getFontStyle(theme.type, 'medium'),
-            fontSize: theme.typography.sizes.subtitle,
-            color: theme.colors.text.primary,
-            marginBottom: theme.spacing.m,
-            textAlign: 'center',
-        },
-        modalInput: {
-            borderWidth: 1,
-            borderColor: theme.colors.border,
-            borderRadius: theme.borderRadius.medium,
-            padding: theme.spacing.m,
-            ...getFontStyle(theme.type, 'regular'),
-            fontSize: theme.typography.sizes.body1,
-            color: theme.colors.text.primary,
-            marginBottom: theme.spacing.m,
-        },
-        modalTextArea: {
-            height: 80,
-            textAlignVertical: 'top',
-        },
-        modalButtons: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-        },
-        modalButton: {
-            flex: 1,
-            padding: theme.spacing.m,
-            borderRadius: theme.borderRadius.medium,
-            alignItems: 'center',
-            marginHorizontal: theme.spacing.xs,
-        },
-        cancelButton: {
-            backgroundColor: theme.colors.surface,
-            borderWidth: 1,
-            borderColor: theme.colors.border,
-        },
-        cancelButtonText: {
-            ...getFontStyle(theme.type, 'medium'),
-            fontSize: theme.typography.sizes.body1,
-            color: theme.colors.text.primary,
-        },
-        confirmButton: {
-            backgroundColor: theme.colors.primary,
-        },
-        confirmButtonText: {
-            ...getFontStyle(theme.type, 'medium'),
-            fontSize: theme.typography.sizes.body1,
-            color: theme.colors.onPrimary,
-        },
-    });
+    const handleAvatarChange = async (results: UploadResult[]) => {
+        if (results.length > 0 && profile) {
+            try {
+                const updatedProfile = {
+                    ...profile,
+                    avatar: results[0].uri,
+                };
+
+                setProfile(updatedProfile);
+                setEditForm(prev => ({ ...prev, avatar: results[0].uri }));
+                setShowAvatarPicker(false);
+
+                await AsyncStorage.setItem('user_profile', JSON.stringify(updatedProfile));
+                onProfileUpdate?.(updatedProfile);
+
+                // Optional feedback
+                Alert.alert('Success', 'Avatar updated successfully');
+            } catch (error) {
+                console.error('Failed to update avatar:', error);
+                Alert.alert('Error', 'Failed to update avatar');
+            }
+        }
+    };
 
     return (
         <View style={[styles.container, style]}>
@@ -634,7 +700,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         <Switch
                             value={profile?.preferences.notifications}
                             onValueChange={(value) => updateProfilePreference('notifications', value)}
-                            trackColor={{ false: theme.colors.border, true: theme.colors.primary + '50' }}
+                            trackColor={{ false: theme.colors.border.medium, true: '#4CAF50' }}
                             thumbColor={profile?.preferences.notifications ? theme.colors.primary : '#FFFFFF'}
                         />
                     )}
@@ -645,7 +711,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         <Switch
                             value={profile?.preferences.soundEffects}
                             onValueChange={(value) => updateProfilePreference('soundEffects', value)}
-                            trackColor={{ false: theme.colors.border, true: theme.colors.primary + '50' }}
+                            trackColor={{ false: theme.colors.border.medium, true: '#4CAF50' }}
                             thumbColor={profile?.preferences.soundEffects ? theme.colors.primary : '#FFFFFF'}
                         />
                     )}
@@ -656,7 +722,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         <Switch
                             value={profile?.preferences.hapticFeedback}
                             onValueChange={(value) => updateProfilePreference('hapticFeedback', value)}
-                            trackColor={{ false: theme.colors.border, true: theme.colors.primary + '50' }}
+                            trackColor={{ false: theme.colors.border.medium, true: theme.colors.primary }}
                             thumbColor={profile?.preferences.hapticFeedback ? theme.colors.primary : '#FFFFFF'}
                         />
                     )}
@@ -667,7 +733,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         <Switch
                             value={profile?.preferences.autoSave}
                             onValueChange={(value) => updateProfilePreference('autoSave', value)}
-                            trackColor={{ false: theme.colors.border, true: theme.colors.primary + '50' }}
+                            trackColor={{ false: theme.colors.border.medium, true: theme.colors.primary }}
                             thumbColor={profile?.preferences.autoSave ? theme.colors.primary : '#FFFFFF'}
                         />
                     )}
@@ -683,7 +749,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         <Switch
                             value={settings?.privacy.analytics}
                             onValueChange={(value) => updateAppSetting('privacy', 'analytics', value)}
-                            trackColor={{ false: theme.colors.border, true: theme.colors.primary + '50' }}
+                            trackColor={{ false: theme.colors.border.medium, true: theme.colors.primary }}
                             thumbColor={settings?.privacy.analytics ? theme.colors.primary : '#FFFFFF'}
                         />,
                         'Help improve the app with usage data'
@@ -695,7 +761,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         <Switch
                             value={settings?.privacy.crashReporting}
                             onValueChange={(value) => updateAppSetting('privacy', 'crashReporting', value)}
-                            trackColor={{ false: theme.colors.border, true: theme.colors.primary + '50' }}
+                            trackColor={{ false: theme.colors.border.medium, true: theme.colors.primary }}
                             thumbColor={settings?.privacy.crashReporting ? theme.colors.primary : '#FFFFFF'}
                         />,
                         'Send crash reports to help fix issues'
@@ -707,7 +773,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         <Switch
                             value={settings?.privacy.dataSharing}
                             onValueChange={(value) => updateAppSetting('privacy', 'dataSharing', value)}
-                            trackColor={{ false: theme.colors.border, true: theme.colors.primary + '50' }}
+                            trackColor={{ false: theme.colors.border.medium, true: theme.colors.primary }}
                             thumbColor={settings?.privacy.dataSharing ? theme.colors.primary : '#FFFFFF'}
                         />,
                         'Share data with third-party services'
@@ -724,7 +790,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         <Switch
                             value={settings?.advanced.debugMode}
                             onValueChange={(value) => updateAppSetting('advanced', 'debugMode', value)}
-                            trackColor={{ false: theme.colors.border, true: theme.colors.primary + '50' }}
+                            trackColor={{ false: theme.colors.border.medium, true: theme.colors.primary }}
                             thumbColor={settings?.advanced.debugMode ? theme.colors.primary : '#FFFFFF'}
                         />,
                         'Enable debug logging and features'
@@ -736,7 +802,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         <Switch
                             value={settings?.advanced.experimentalFeatures}
                             onValueChange={(value) => updateAppSetting('advanced', 'experimentalFeatures', value)}
-                            trackColor={{ false: theme.colors.border, true: theme.colors.primary + '50' }}
+                            trackColor={{ false: theme.colors.border.medium, true: theme.colors.primary }}
                             thumbColor={settings?.advanced.experimentalFeatures ? theme.colors.primary : '#FFFFFF'}
                         />,
                         'Try new features before they are released'
@@ -748,7 +814,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         <Switch
                             value={settings?.advanced.performanceMode}
                             onValueChange={(value) => updateAppSetting('advanced', 'performanceMode', value)}
-                            trackColor={{ false: theme.colors.border, true: theme.colors.primary + '50' }}
+                            trackColor={{ false: theme.colors.border.medium, true: theme.colors.primary }}
                             thumbColor={settings?.advanced.performanceMode ? theme.colors.primary : '#FFFFFF'}
                         />,
                         'Optimize for better performance'
@@ -884,7 +950,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                         <MediaUpload
                             uploadType="image"
                             multiple={false}
-                            showPreview={true}
+                            // export default SettingsScreen; // Removed redundant default export
                             onUploadComplete={handleAvatarChange}
                             style={{ marginBottom: theme.spacing.m }}
                         />
@@ -902,3 +968,4 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 };
 
 export default SettingsScreen;
+

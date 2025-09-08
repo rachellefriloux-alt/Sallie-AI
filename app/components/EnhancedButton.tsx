@@ -40,6 +40,9 @@ interface EnhancedButtonProps {
     iconPosition?: 'left' | 'right';
     style?: ViewStyle;
     textStyle?: TextStyle;
+    accessibilityLabel?: string;
+    accessibilityHint?: string;
+    accessibilityRole?: 'button';
 }
 
 export function EnhancedButton({
@@ -55,6 +58,9 @@ export function EnhancedButton({
     iconPosition = 'left',
     style,
     textStyle,
+    accessibilityLabel,
+    accessibilityHint,
+    accessibilityRole = 'button',
 }: EnhancedButtonProps) {
     const { currentTheme } = useThemeStore();
     const isDark = currentTheme.name.toLowerCase().includes('dark');
@@ -329,6 +335,10 @@ export function EnhancedButton({
                 onPressOut={handlePressOut}
                 disabled={disabled || loading}
                 style={{ borderRadius: 12 }}
+                accessibilityLabel={accessibilityLabel || title}
+                accessibilityHint={accessibilityHint}
+                accessibilityRole={accessibilityRole}
+                accessibilityState={{ disabled: disabled || loading }}
             >
                 <LinearGradient
                     colors={isDark ? ['#FFD700', '#FFA500'] : ['#1a1a1a', '#333']}
@@ -349,6 +359,10 @@ export function EnhancedButton({
             onPressOut={handlePressOut}
             disabled={disabled || loading}
             style={{ borderRadius: 12 }}
+            accessibilityLabel={accessibilityLabel || title}
+            accessibilityHint={accessibilityHint}
+            accessibilityRole={accessibilityRole}
+            accessibilityState={{ disabled: disabled || loading }}
         >
             {buttonContent}
         </TouchableOpacity>

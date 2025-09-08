@@ -101,7 +101,7 @@ export class UITester {
                 layout: null,
                 renderTime: Date.now() - startTime,
                 passed: false,
-                issues: [{ type: 'error', message: error.message, severity: 'high' }]
+                issues: [{ type: 'error', message: error instanceof Error ? error.message : String(error), severity: 'high' }]
             };
 
             this.testResults.push(result);

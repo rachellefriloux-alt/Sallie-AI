@@ -56,7 +56,7 @@ interface UserProfileManagerProps {
     style?: any;
 }
 
-export const UserProfileManager: React.FC<UserProfileManagerProps> = ({
+const UserProfileManager: React.FC<UserProfileManagerProps> = ({
     userId = 'current_user',
     onProfileUpdate,
     onAvatarUpdate,

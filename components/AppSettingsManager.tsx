@@ -69,7 +69,7 @@ interface AppSettingsManagerProps {
     style?: any;
 }
 
-export const AppSettingsManager: React.FC<AppSettingsManagerProps> = ({
+const AppSettingsManager: React.FC<AppSettingsManagerProps> = ({
     onSettingsUpdate,
     style,
 }) => {

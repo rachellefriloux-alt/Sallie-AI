@@ -32,6 +32,7 @@ export interface UploadProgress {
 }
 
 export interface UploadResult {
+    uri: any;
     success: boolean;
     url?: string;
     error?: string;

@@ -26,6 +26,9 @@ import { useMemoryStore } from './app/store/memory';
 import { useDeviceStore } from './app/store/device';
 import { useThemeStore } from './app/store/theme';
 
+// Import orchestrator
+import { systemOrchestrator } from './core/SystemOrchestrator';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -61,7 +64,7 @@ function TabNavigator() {
         name="Home"
         component={HomeLauncherScreen}
         options={{
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color }: { color: string }) => (
             <TabBarIcon name="home" color={color} />
           ),
         }}
@@ -70,7 +73,7 @@ function TabNavigator() {
         name="Memories"
         component={MemoriesScreen}
         options={{
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color }: { color: string }) => (
             <TabBarIcon name="brain" color={color} />
           ),
         }}
@@ -79,7 +82,7 @@ function TabNavigator() {
         name="Settings"
         component={SettingsScreen}
         options={{
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color }: { color: string }) => (
             <TabBarIcon name="cog" color={color} />
           ),
         }}
@@ -118,6 +121,11 @@ export default function App() {
   // Preload critical components for better performance
   React.useEffect(() => {
     preloadCriticalComponents();
+
+    // Initialize system orchestrator
+    systemOrchestrator.initialize().catch((error) => {
+      console.error('Failed to initialize system orchestrator:', error);
+    });
   }, []);
 
   return (

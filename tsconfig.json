@@ -12,28 +12,28 @@
         "./app/*"
       ],
       "@core/*": [
-        "./app/core/*"
+        "./core/*"
       ],
       "@ui/*": [
-        "./app/ui/*"
+        "./ui/*"
       ],
       "@store/*": [
         "./app/store/*"
       ],
       "@components/*": [
-        "./app/components/*"
+        "./components/*"
       ],
       "@screens/*": [
         "./app/screens/*"
       ],
       "@utils/*": [
-        "./app/utils/*"
+        "./utils/*"
       ],
       "@types/*": [
-        "./app/types/*"
+        "./types/*"
       ],
       "@ai/*": [
-        "./app/ai/*"
+        "./ai/*"
       ],
       "@assets/*": [
         "./assets/*"

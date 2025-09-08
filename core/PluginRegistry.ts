@@ -35,9 +35,17 @@ class PluginRegistry {
   private plugins: Map<string, Plugin> = new Map();
   private initialized: Set<string> = new Set();
   private hooks: Map<string, Function[]> = new Map();
+  private static instance: PluginRegistry;
 
   constructor() {
     this.initializeBuiltinPlugins();
+  }
+
+  static getInstance(): PluginRegistry {
+    if (!PluginRegistry.instance) {
+      PluginRegistry.instance = new PluginRegistry();
+    }
+    return PluginRegistry.instance;
   }
 
   private initializeBuiltinPlugins(): void {

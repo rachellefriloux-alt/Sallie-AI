@@ -74,30 +74,30 @@ export const preloadComponent = (importFunc: () => Promise<any>) => {
 
 // Lazy load UserProfileManager
 export const LazyUserProfileManager = withLazyLoading(
-    () => import('./UserProfileManager'),
+    () => import('./UserProfileManager.js'),
     undefined
 );
 
 // Lazy load AppSettingsManager
 export const LazyAppSettingsManager = withLazyLoading(
-    () => import('./AppSettingsManager'),
+    () => import('./AppSettingsManager.js'),
     undefined
 );
 
 // Lazy load DataExportImportManager
 export const LazyDataExportImportManager = withLazyLoading(
-    () => import('./DataExportImportManager'),
+    () => import('./DataExportImportManager.js'),
     undefined
 );
 
 // Lazy load screens
 export const LazyProfileScreen = withLazyLoading(
-    () => import('../app/screens/ProfileScreen'),
+    () => import('../app/screens/ProfileScreen.js'),
     undefined
 );
 
 export const LazyDataManagementScreen = withLazyLoading(
-    () => import('../app/screens/DataManagementScreen'),
+    () => import('../app/screens/DataManagementScreen.js'),
     undefined
 );
 

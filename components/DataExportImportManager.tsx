@@ -46,7 +46,7 @@ interface DataExportImportManagerProps {
     style?: any;
 }
 
-export const DataExportImportManager: React.FC<DataExportImportManagerProps> = ({
+const DataExportImportManager: React.FC<DataExportImportManagerProps> = ({
     onDataImported,
     onDataExported,
     style,
