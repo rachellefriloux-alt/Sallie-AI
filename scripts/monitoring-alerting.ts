@@ -31,7 +31,7 @@ export interface AlertRule {
     duration: number; // seconds
   };
   severity: 'info' | 'warning' | 'error' | 'critical';
-  channels: AlertChannel[];
+  channels: string[];
   enabled: boolean;
   cooldown: number; // seconds between alerts
   lastTriggered?: Date;
@@ -88,7 +88,7 @@ export interface Incident {
 export interface IncidentEvent {
   id: string;
   timestamp: Date;
-  type: 'created' | 'updated' | 'comment' | 'assignment' | 'status_change' | 'alert_added';
+  type: 'created' | 'updated' | 'comment' | 'assignment' | 'status_change' | 'alert_added' | 'identified';
   author: string;
   description: string;
   metadata: Record<string, any>;
@@ -145,11 +145,11 @@ export interface SLO {
     type: 'availability' | 'latency' | 'error_rate' | 'throughput';
     metric: string;
     good: {
-      operator: 'gt' | 'lt';
+      operator: 'gt' | 'lt' | 'eq';
       value: number;
     };
     total?: {
-      operator: 'gt' | 'lt';
+      operator: 'gt' | 'lt' | 'eq';
       value: number;
     };
   };
@@ -1039,7 +1039,6 @@ export class HealthCheckUtils {
 
     try {
       const response = await fetch(endpoint, {
-        timeout: 5000,
         headers: {
           'User-Agent': 'Sallie-Health-Check/1.0'
         }

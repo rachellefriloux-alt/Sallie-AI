@@ -7,7 +7,7 @@ import React from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useThemeStore } from '../store/theme';
-import { LazyDataExportImportManager } from '../../components/LazyLoadingSystem';
+import DataExportImportManager from '../../components/DataExportImportManager';
 
 export default function DataManagementScreen() {
     const { currentTheme } = useThemeStore();
@@ -29,7 +29,7 @@ export default function DataManagementScreen() {
                 backgroundColor={currentTheme.colors.background}
             />
 
-            <LazyDataExportImportManager
+            <DataExportImportManager
                 onDataExported={handleDataExported}
                 onDataImported={handleDataImported}
                 style={styles.dataManager}

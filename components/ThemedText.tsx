@@ -22,6 +22,11 @@ export function ThemedText({
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
   const tintColor = useThemeColor({}, 'tint');
 
+  // Ensure color is a string
+  const textColor = typeof color === 'string' ? color :
+    (typeof color === 'object' && color !== null && 'primary' in color) ? color.primary :
+      '#000000';
+
   const getTypeStyle = () => {
     switch (type) {
       case 'heading1': return styles.heading1;
@@ -40,21 +45,22 @@ export function ThemedText({
 
   const getWeightStyle = () => {
     if (!weight) return {};
+    const fontWeightMap = {
+      light: '300' as const,
+      normal: '400' as const,
+      medium: '500' as const,
+      semibold: '600' as const,
+      bold: '700' as const,
+    };
     return {
-      fontWeight: {
-        light: '300',
-        normal: '400',
-        medium: '500',
-        semibold: '600',
-        bold: '700',
-      }[weight]
+      fontWeight: fontWeightMap[weight]
     };
   };
 
   return (
     <Text
       style={[
-        { color: gradient ? undefined : color },
+        { color: gradient ? undefined : textColor },
         getTypeStyle(),
         getWeightStyle(),
         gradient && styles.gradient,

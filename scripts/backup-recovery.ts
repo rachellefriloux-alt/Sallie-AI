@@ -1196,7 +1196,11 @@ export class BackupUtils {
     const baseDurations = {
       filesystem: 300, // 5 minutes
       database: 600,  // 10 minutes
-      kubernetes: 180  // 3 minutes
+      kubernetes: 180, // 3 minutes
+      docker: 240,     // 4 minutes
+      s3: 120,         // 2 minutes
+      azure: 150,      // 2.5 minutes
+      gcp: 150,        // 2.5 minutes
     };
 
     const baseDuration = baseDurations[job.source.type] || 300;

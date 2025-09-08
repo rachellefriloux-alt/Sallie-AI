@@ -5,15 +5,28 @@ const getNavigationComponents = async () => {
     import('@react-navigation/elements')
   ]);
   return {
-    BottomTabBarButtonProps: bottomTabsModule.BottomTabBarButtonProps,
     PlatformPressable: elementsModule.PlatformPressable,
   };
 };
 
+import React from 'react';
 import * as Haptics from 'expo-haptics';
 import type { GestureResponderEvent } from 'react-native';
 
 export function HapticTab(props: any) {
+  // Use dynamic import to get components
+  const [PlatformPressable, setPlatformPressable] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    getNavigationComponents().then(components => {
+      setPlatformPressable(() => components.PlatformPressable);
+    });
+  }, []);
+
+  if (!PlatformPressable) {
+    return null; // or a loading component
+  }
+
   return (
     <PlatformPressable
       {...props}

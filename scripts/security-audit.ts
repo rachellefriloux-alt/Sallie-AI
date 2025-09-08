@@ -119,7 +119,7 @@ export class SecurityAuditComplianceManager extends EventEmitter {
   private complianceChecks: Map<string, ComplianceCheck> = new Map();
   private securityPolicies: Map<string, SecurityPolicy> = new Map();
   private vulnerabilityScans: VulnerabilityScan[] = [];
-  private metrics: SecurityMetrics;
+  private metrics!: SecurityMetrics;
 
   private auditInterval: NodeJS.Timeout | null = null;
   private complianceInterval: NodeJS.Timeout | null = null;
@@ -847,15 +847,19 @@ export class SecurityUtils {
   }
 
   static encryptData(data: string, key: string): string {
-    const cipher = crypto.createCipher('aes-256-cbc', key);
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key, 'hex'), iv);
     let encrypted = cipher.update(data, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    return encrypted;
+    return iv.toString('hex') + ':' + encrypted;
   }
 
   static decryptData(encryptedData: string, key: string): string {
-    const decipher = crypto.createDecipher('aes-256-cbc', key);
-    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+    const parts = encryptedData.split(':');
+    const iv = Buffer.from(parts.shift()!, 'hex');
+    const encrypted = parts.join(':');
+    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key, 'hex'), iv);
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
     return decrypted;
   }

@@ -139,6 +139,10 @@ export class SalliePersonaEngine {
       'Soul Sister': `Heartfelt guidance: ${query}`,
       'Systems Architect': `System design perspective: ${query}`,
       'Myth-Keeper': `Legendary wisdom: ${query}`,
+      'Wise Counselor': `Wise counsel: ${query}`,
+      'Creative Catalyst': `Creative inspiration: ${query}`,
+      'Protective Guardian': `Protective guidance: ${query}`,
+      'Empathetic Healer': `Empathetic healing: ${query}`,
     };
 
     return responses[this.currentArchetype] || responses['Loyal Strategist'];

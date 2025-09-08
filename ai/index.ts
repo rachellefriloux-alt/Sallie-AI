@@ -16,11 +16,10 @@ export * from './PredictiveSuggestionsEngine';
 // ML Personalization Engine - explicit exports to avoid conflicts
 export {
   MLPersonalizationEngine,
+  UserProfile,
   ContentItem,
   PersonalizationResult,
-  MLModel,
-  RecommendationEngine,
-  AdaptiveLearningSystem
+  MLModel
 } from './MLPersonalizationEngine';
 
 // Advanced Features
@@ -29,13 +28,8 @@ export * from './ARVRIntegration';
 
 // Security & Privacy System - explicit exports to avoid conflicts
 export {
-  SecurityPrivacySystem,
   EncryptionKey,
-  DataRetentionPolicy,
-  SecurityAudit,
-  PrivacyAudit,
-  AccessControl,
-  ThreatDetection
+  PrivacySettings
 } from './SecurityPrivacySystem';
 
 export * from './MultiPlatformSupport';
@@ -45,13 +39,10 @@ export * from './DatabaseIntegration';
 
 // Social Features - explicit exports to avoid conflicts
 export {
-  SocialFeatures,
+  UserProfile as SocialUserProfile,
+  PrivacySettings as SocialPrivacySettings,
   SocialStats,
-  SharedConversation,
-  CommunityInsight,
-  SocialRecommendation,
-  CollaborationSession,
-  SocialMetrics
+  SharedConversation
 } from './SocialFeatures';
 
 // QA & Testing
@@ -64,9 +55,7 @@ export * from './PersonalFeatures';
 export {
   MoodSignal,
   MoodContext,
-  parseMoodSignal,
-  analyzeSentimentLocal,
-  extractKeywordsLocal
+  parseMoodSignal
 } from './moodSignal';
 
 export {

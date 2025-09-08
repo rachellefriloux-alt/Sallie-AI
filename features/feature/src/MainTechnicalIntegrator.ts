@@ -66,4 +66,44 @@ export class MainTechnicalIntegrator {
   clearAllListeners(): void {
     this.eventListeners.clear();
   }
+
+  /**
+   * Handle user message and generate response
+   * @param input - The user's input message
+   * @param context - Additional context for processing
+   * @returns Promise resolving to the response string
+   */
+  async handleUserMessage(input: string, context?: any): Promise<string> {
+    // Emit event for message processing
+    this.emitEvent('sallie:process_message', { input, context });
+
+    // Basic response generation - this would be enhanced with actual AI integration
+    const response = await this.generateResponse(input, context);
+
+    // Emit event for response generation
+    this.emitEvent('sallie:generate_response', { input, response, context });
+
+    return response;
+  }
+
+  /**
+   * Generate a response based on input and context
+   * @param input - The user's input
+   * @param context - Additional context
+   * @returns Promise resolving to the generated response
+   */
+  private async generateResponse(input: string, context?: any): Promise<string> {
+    // This is a placeholder implementation
+    // In a real implementation, this would integrate with AI models
+    const responses = [
+      "I understand what you're saying. Let me think about that.",
+      "That's an interesting point. How can I help you with that?",
+      "I appreciate you sharing that with me. What would you like to explore further?",
+      "Thank you for your input. Let me process that for you.",
+    ];
+
+    // Simple response selection based on input length
+    const responseIndex = Math.min(input.length % responses.length, responses.length - 1);
+    return responses[responseIndex];
+  }
 }

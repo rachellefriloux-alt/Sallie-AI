@@ -10,19 +10,24 @@ export type ThemedViewProps = ViewProps & {
   shadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
 };
 
-export function ThemedView({ 
-  style, 
-  lightColor, 
-  darkColor, 
+export function ThemedView({
+  style,
+  lightColor,
+  darkColor,
   variant = 'default',
   rounded = 'none',
   shadow = 'none',
-  ...otherProps 
+  ...otherProps
 }: ThemedViewProps) {
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 
-    variant === 'surface' ? 'surface' : 
-    variant === 'elevated' ? 'surfaceElevated' : 'background'
+  const themeColor = useThemeColor({ light: lightColor, dark: darkColor },
+    variant === 'surface' ? 'surface' :
+      variant === 'elevated' ? 'surfaceElevated' : 'background'
   );
+
+  // Ensure backgroundColor is a string
+  const backgroundColor = typeof themeColor === 'string' ? themeColor :
+    (typeof themeColor === 'object' && themeColor !== null && 'primary' in themeColor) ? themeColor.primary :
+      '#ffffff';
 
   const borderRadius = {
     none: 0,
@@ -35,7 +40,7 @@ export function ThemedView({
 
   const shadowStyle = {
     none: {},
-    sm: { 
+    sm: {
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.05,
@@ -73,17 +78,17 @@ export function ThemedView({
   } : {};
 
   return (
-    <View 
+    <View
       style={[
-        { 
+        {
           backgroundColor: variant === 'glass' ? undefined : backgroundColor,
           borderRadius,
           ...shadowStyle,
           ...glassStyle,
-        }, 
+        },
         style
-      ]} 
-      {...otherProps} 
+      ]}
+      {...otherProps}
     />
   );
 }

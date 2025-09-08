@@ -291,7 +291,7 @@ const EnhancedModal: React.FC<EnhancedModalProps> = ({
                         {(title || showCloseButton) && (
                             <View style={styles.header}>
                                 {title && (
-                                    <Text style={[styles.title, { color: theme.colors.text }]}>
+                                    <Text style={[styles.title, { color: theme.colors.text.primary }]}>
                                         {title}
                                     </Text>
                                 )}

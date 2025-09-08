@@ -110,10 +110,10 @@ export class ProductionMonitoringDashboard extends EventEmitter {
   private metrics: Map<string, MetricData[]> = new Map();
   private alerts: Alert[] = [];
   private alertRules: Map<string, AlertRule> = new Map();
-  private systemHealth: SystemHealth;
-  private performanceMetrics: PerformanceMetrics;
-  private userAnalytics: UserAnalytics;
-  private aiMetrics: AIMetrics;
+  private systemHealth!: SystemHealth;
+  private performanceMetrics!: PerformanceMetrics;
+  private userAnalytics!: UserAnalytics;
+  private aiMetrics!: AIMetrics;
 
   private monitoringInterval: NodeJS.Timeout | null = null;
   private alertCheckInterval: NodeJS.Timeout | null = null;
