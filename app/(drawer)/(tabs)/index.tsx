@@ -92,7 +92,7 @@ export default function SallieHomeScreen() {
                 glowStyle
             ]}>
                 <Text style={[styles.title, { color: colors.primary }]}>✨ Sallie</Text>
-                <Text style={[styles.subtitle, { color: colors.text }]}>Your Sovereign AI Companion</Text>
+                <Text style={[styles.subtitle, { color: colors.text.primary }]}>Your Sovereign AI Companion</Text>
                 <View style={[styles.currentArchetype, { backgroundColor: colors.accent1 }]}>
                     <Text style={[styles.currentArchetype, { color: colors.primary }]}>
                         {currentArchetype}
@@ -102,7 +102,7 @@ export default function SallieHomeScreen() {
 
             {/* Archetype Selection */}
             <View style={styles.archetypeContainer}>
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>🎭 Persona Archetypes</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>🎭 Persona Archetypes</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.archetypeScroll}>
                     {archetypes.map((archetype) => (
                         <TouchableOpacity
@@ -118,7 +118,7 @@ export default function SallieHomeScreen() {
                         >
                             <Text style={[
                                 styles.archetypeText,
-                                { color: currentArchetype === archetype ? colors.background : colors.text }
+                                { color: currentArchetype === archetype ? colors.background : colors.text.primary }
                             ]}>
                                 {archetype}
                             </Text>
@@ -129,7 +129,7 @@ export default function SallieHomeScreen() {
 
             {/* Mastery Areas */}
             <View style={styles.masteryContainer}>
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>🔮 Core Masteries</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>🔮 Core Masteries</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.archetypeScroll}>
                     {masteryAreas.map((area, index) => (
                         <View
@@ -141,7 +141,7 @@ export default function SallieHomeScreen() {
                         >
                             <Text style={[styles.masteryTitle, { color: colors.primary }]}>{area.title}</Text>
                             {area.skills.map((skill, skillIndex) => (
-                                <Text key={skillIndex} style={[styles.masterySkill, { color: colors.text }]}>
+                                <Text key={skillIndex} style={[styles.masterySkill, { color: colors.text.primary }]}>
                                     • {skill}
                                 </Text>
                             ))}
