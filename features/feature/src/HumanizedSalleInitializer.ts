@@ -1,17 +1,17 @@
 /*
-Salle Persona Module: HumanizedSalleInitializer
-Initializes the Humanized Salle features and registers them with the core system.
-Follows Salle architecture, modularity, and privacy rules.
+Sallie Persona Module: HumanizedSallieInitializer
+Initializes the Humanized Sallie features and registers them with the core system.
+Follows Sallie architecture, modularity, and privacy rules.
 */
 
-import { HumanizedSallePlugin } from './HumanizedSallePlugin';
+import { HumanizedSalliePlugin } from './HumanizedSalliePlugin';
 import { PluginRegistry } from '../../../core/PluginRegistry';
 
-export class HumanizedSalleInitializer {
-  private plugin: HumanizedSallePlugin;
+export class HumanizedSallieInitializer {
+  private plugin: HumanizedSalliePlugin;
   
   constructor(private registry: PluginRegistry) {
-    this.plugin = new HumanizedSallePlugin();
+    this.plugin = new HumanizedSalliePlugin();
   }
   
   /**
@@ -23,7 +23,7 @@ export class HumanizedSalleInitializer {
       
       // Create a proper plugin object according to PluginRegistry interface
       const pluginObject = {
-        id: 'humanized-salle-1.0',
+        id: 'humanized-sallie-1.0',
         name: 'Humanized Sallie',
         version: '1.0.0',
         description: 'Advanced human-like features for Sallie',
@@ -35,17 +35,17 @@ export class HumanizedSalleInitializer {
         lastUpdated: new Date(),
         initialize: async () => {
           // Any initialization logic here
-          console.log('Humanized Salle plugin initialized');
+          console.log('Humanized Sallie plugin initialized');
         },
         // Store handlers in the config for use
         config: { handlers: registration.handlers }
       };
       
       await this.registry.registerPlugin(pluginObject);
-      console.log('Humanized Salle features registered successfully');
+      console.log('Humanized Sallie features registered successfully');
       return true;
     } catch (error) {
-      console.error('Failed to initialize Humanized Salle features:', error);
+      console.error('Failed to initialize Humanized Sallie features:', error);
       return false;
     }
   }
