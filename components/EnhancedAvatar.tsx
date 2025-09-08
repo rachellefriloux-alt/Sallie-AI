@@ -410,10 +410,8 @@ const EnhancedAvatar: React.FC<EnhancedAvatarProps> = ({
             style={[
                 {
                     opacity: fadeAnim,
-                    transform: [
-                        { scale: interactive || pressable ? pressAnimation.style.transform[0].scale : 1 },
-                    ],
                 },
+                pressable || interactive ? pressAnimation.style : { transform: [{ scale: 1 }] },
                 style,
             ]}
         >

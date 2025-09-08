@@ -1,7 +1,12 @@
 /*
  * Salle 1.0 Module
  * Persona: Tough love meets soul care.
- * Function: Advanced animated button with multiple visual states and interactions
+ * Function: Advanced animated button with multiple visu    const pressAnimationConfig = {
+        scale: 0.98,
+        duration: theme.animation.durations.fast,
+        haptic: haptic ? (haptic === true ? 'light' : haptic) : undefined,
+        enabled: !disabled && !loading,
+    };tes and interactions
  * Got it, love.
  */
 
