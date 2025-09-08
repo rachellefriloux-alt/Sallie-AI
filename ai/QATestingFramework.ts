@@ -589,7 +589,7 @@ export class PerformanceMonitoringSystem extends EventEmitter {
       networkRequests: sum.networkRequests / count,
       responseTime: sum.responseTime / count,
       loadTime: sum.loadTime / count,
-      fps: sum.fps / count
+      fps: (sum.fps || 0) / count
     };
   }
 
