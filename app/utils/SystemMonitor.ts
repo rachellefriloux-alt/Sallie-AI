@@ -204,9 +204,23 @@ export class SystemMonitor {
 
   private async getMemoryUsage(): Promise<number> {
     try {
-      // This is a simplified memory usage calculation
-      // In a real implementation, you might use native modules or other methods
-      return Math.random() * 100; // Placeholder
+      // Use performance.memory if available (Chrome/Edge)
+      if ('memory' in performance) {
+        const memInfo = (performance as any).memory;
+        const usedMemory = memInfo.usedJSHeapSize;
+        const totalMemory = memInfo.totalJSHeapSize;
+        return (usedMemory / totalMemory) * 100;
+      }
+
+      // Fallback: estimate based on performance metrics
+      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      if (navigation) {
+        const loadTime = navigation.loadEventEnd - navigation.fetchStart;
+        // Rough estimation: higher load times might indicate memory pressure
+        return Math.min(100, Math.max(0, (loadTime / 10000) * 100));
+      }
+
+      return 50; // Default estimate
     } catch (error) {
       console.error('Error getting memory usage:', error);
       return 0;
@@ -215,9 +229,23 @@ export class SystemMonitor {
 
   private async getCPUUsage(): Promise<number> {
     try {
-      // This is a simplified CPU usage calculation
-      // In a real implementation, you might use native modules or other methods
-      return Math.random() * 100; // Placeholder
+      // Use performance.now() to measure CPU usage indirectly
+      const startTime = performance.now();
+
+      // Perform a small computational task to measure CPU performance
+      let result = 0;
+      for (let i = 0; i < 100000; i++) {
+        result += Math.sin(i) * Math.cos(i);
+      }
+
+      const endTime = performance.now();
+      const executionTime = endTime - startTime;
+
+      // Normalize execution time to a CPU usage percentage
+      // Faster execution = lower CPU usage (less contention)
+      const normalizedTime = Math.min(executionTime, 50); // Cap at 50ms
+      return (normalizedTime / 50) * 100;
+
     } catch (error) {
       console.error('Error getting CPU usage:', error);
       return 0;
@@ -243,9 +271,21 @@ export class SystemMonitor {
 
   private async getNetworkLatency(): Promise<number> {
     try {
-      // This is a simplified network latency calculation
-      // In a real implementation, you might ping a server or use other methods
-      return Math.random() * 100; // Placeholder
+      // Measure network latency by making a small request
+      const startTime = performance.now();
+
+      // Try to fetch a small resource from a reliable endpoint
+      const response = await fetch('https://www.google.com/favicon.ico', {
+        method: 'HEAD', // Only get headers, not the full content
+        cache: 'no-cache'
+      });
+
+      const endTime = performance.now();
+      const latency = endTime - startTime;
+
+      // Return latency in milliseconds, capped at reasonable range
+      return Math.min(1000, Math.max(0, latency));
+
     } catch (error) {
       console.error('Error getting network latency:', error);
       return 0;

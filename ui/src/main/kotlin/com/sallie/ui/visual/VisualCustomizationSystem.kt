@@ -662,6 +662,28 @@ class VisualCustomizationSystem {
     }
     
     /**
+     * Adjust the brightness of a color
+     */
+    private fun adjustBrightness(color: String, brightnessFactor: Float): String {
+        // Convert hex to RGB
+        val r = color.substring(1, 3).toInt(16) / 255.0
+        val g = color.substring(3, 5).toInt(16) / 255.0
+        val b = color.substring(5, 7).toInt(16) / 255.0
+        
+        // Adjust brightness
+        val newR = (r * (1 + brightnessFactor)).coerceIn(0.0, 1.0)
+        val newG = (g * (1 + brightnessFactor)).coerceIn(0.0, 1.0)
+        val newB = (b * (1 + brightnessFactor)).coerceIn(0.0, 1.0)
+        
+        // Convert back to hex
+        val newRHex = (newR * 255).toInt().toString(16).padStart(2, '0')
+        val newGHex = (newG * 255).toInt().toString(16).padStart(2, '0')
+        val newBHex = (newB * 255).toInt().toString(16).padStart(2, '0')
+        
+        return "#$newRHex$newGHex$newBHex"
+    }
+    
+    /**
      * Convert HSL to RGB
      */
     private fun hslToRgb(h: Double, s: Double, l: Double): List<Double> {
@@ -804,8 +826,7 @@ class VisualCustomizationSystem {
             }
             "morning" -> {
                 // Brighter accent colors in the morning
-                val brighterAccent = adjustColor(baseTheme.accentColor, 0)
-                // TODO: Implement brightness adjustment
+                val brighterAccent = adjustBrightness(baseTheme.accentColor, 0.2f)
                 customizations["header"] = mapOf(
                     "backgroundColor" to brighterAccent
                 )

@@ -1,6 +1,7 @@
 # Personalized Sallie AI Roadmap
 
 ## Overview
+
 This roadmap outlines the development plan for Sallie AI as a personal, private AI companion. Since Sallie is designed exclusively for your use, the focus is on personalized features, privacy, and enhancing your daily life without external integrations or monetization.
 
 ## Phase 3: Advanced AI/ML Features
@@ -93,6 +94,7 @@ This roadmap outlines the development plan for Sallie AI as a personal, private 
 - [ ] Gather feedback for continuous improvement
 
 ## Notes
+
 - All features are designed with privacy as the top priority
 - Development will proceed phase by phase to ensure quality
 - Regular testing and validation at each step

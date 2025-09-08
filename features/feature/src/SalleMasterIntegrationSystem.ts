@@ -47,6 +47,7 @@ export class SalleMasterIntegrationSystem {
   private healthCheckInterval: NodeJS.Timeout | null = null;
   private lastHealthCheck: SystemHealthReport | null = null;
   private healthCheckCallbacks: ((report: SystemHealthReport) => void)[] = [];
+  private lastOptimizationTime: number | null = null;
 
   constructor() {
     this.performanceMonitor = new PerformanceMonitoringSystem();
@@ -183,8 +184,17 @@ export class SalleMasterIntegrationSystem {
   }
 
   private getLastOptimizationTime(): number | undefined {
-    // This would track when optimizations were last run
-    return Date.now() - (60 * 60 * 1000); // Placeholder: 1 hour ago
+    // Track when optimizations were last run
+    if (this.lastOptimizationTime) {
+      return this.lastOptimizationTime;
+    }
+
+    // If no optimization has been run yet, return undefined
+    return undefined;
+  }
+
+  public recordOptimizationRun(): void {
+    this.lastOptimizationTime = Date.now();
   }
 
   private generateMasterRecommendations(

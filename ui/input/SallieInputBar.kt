@@ -1,24 +1,25 @@
 package com.sallie.ui.input
 
-import android.content.Context
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.LinearLayout
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.os.Environment
+import android.os.Handler
+import android.os.Looper
+import android.provider.MediaStore
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import com.sallie.core.input.InputProcessingManager
-import com.sallie.core.input.InputResultListener
-import com.sallie.core.input.InputType
-import com.sallie.core.input.ProcessedInput
-import com.sallie.core.input.InputProcessingError
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * Sallie's Input Bar UI Component
@@ -60,6 +61,19 @@ class SallieInputBar @JvmOverloads constructor(
             inputFeedbackView.text = "Error: ${error.message}"
             inputFeedbackView.visibility = View.VISIBLE
         }
+    }
+    
+    // Voice and image input properties
+    private var speechRecognizer: SpeechRecognizer? = null
+    private var currentPhotoPath: String? = null
+    private var onVoiceInputResult: ((String) -> Unit)? = null
+    private var onImageInputResult: ((String) -> Unit)? = null
+    
+    // Permission request codes
+    companion object {
+        private const val VOICE_PERMISSION_REQUEST_CODE = 1001
+        private const val IMAGE_PERMISSION_REQUEST_CODE = 1002
+        private const val IMAGE_CAPTURE_REQUEST_CODE = 1003
     }
     
     init {
@@ -124,10 +138,17 @@ class SallieInputBar @JvmOverloads constructor(
     }
     
     /**
-     * Set callback for when input is processed
+     * Set callback for voice input results
      */
-    fun setOnInputProcessedListener(listener: (ProcessedInput) -> Unit) {
-        onInputProcessedListener = listener
+    fun setOnVoiceInputResultListener(listener: (String) -> Unit) {
+        onVoiceInputResult = listener
+    }
+    
+    /**
+     * Set callback for image input results
+     */
+    fun setOnImageInputResultListener(listener: (String) -> Unit) {
+        onImageInputResult = listener
     }
     
     /**
@@ -184,20 +205,141 @@ class SallieInputBar @JvmOverloads constructor(
      * Start voice input
      */
     private fun startVoiceInput() {
-        // This would launch a voice input activity or dialog
-        // For now, we'll show a placeholder message
-        inputFeedbackView.text = "Voice input coming soon..."
-        inputFeedbackView.visibility = View.VISIBLE
+        try {
+            // Check for microphone permission
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    context as Activity,
+                    arrayOf(Manifest.permission.RECORD_AUDIO),
+                    VOICE_PERMISSION_REQUEST_CODE
+                )
+                return
+            }
+
+            // Initialize speech recognizer
+            if (speechRecognizer == null) {
+                speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
+                speechRecognizer?.setRecognitionListener(object : RecognitionListener {
+                    override fun onReadyForSpeech(params: Bundle?) {
+                        inputFeedbackView.text = "Listening..."
+                        inputFeedbackView.visibility = View.VISIBLE
+                    }
+
+                    override fun onBeginningOfSpeech() {
+                        inputFeedbackView.text = "Speak now..."
+                    }
+
+                    override fun onRmsChanged(rmsdB: Float) {
+                        // Update visual feedback based on audio level
+                        val level = (rmsdB + 2) / 10 // Normalize to 0-1 range
+                        updateVoiceVisualization(level)
+                    }
+
+                    override fun onBufferReceived(buffer: ByteArray?) {}
+
+                    override fun onEndOfSpeech() {
+                        inputFeedbackView.text = "Processing..."
+                    }
+
+                    override fun onError(error: Int) {
+                        val errorMessage = when (error) {
+                            SpeechRecognizer.ERROR_NO_MATCH -> "No speech detected"
+                            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Speech timeout"
+                            SpeechRecognizer.ERROR_AUDIO -> "Audio recording error"
+                            else -> "Voice recognition error"
+                        }
+                        inputFeedbackView.text = errorMessage
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            inputFeedbackView.visibility = View.GONE
+                        }, 2000)
+                    }
+
+                    override fun onResults(results: Bundle?) {
+                        val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                        if (!matches.isNullOrEmpty()) {
+                            val recognizedText = matches[0]
+                            inputFeedbackView.text = "Recognized: $recognizedText"
+                            onVoiceInputResult?.invoke(recognizedText)
+                        }
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            inputFeedbackView.visibility = View.GONE
+                        }, 1500)
+                    }
+
+                    override fun onPartialResults(partialResults: Bundle?) {
+                        val partial = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                        if (!partial.isNullOrEmpty()) {
+                            inputFeedbackView.text = partial[0]
+                        }
+                    }
+
+                    override fun onEvent(eventType: Int, params: Bundle?) {}
+                })
+            }
+
+            // Start listening
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+                putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak your message to Sallie")
+                putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+            }
+
+            speechRecognizer?.startListening(intent)
+
+        } catch (e: Exception) {
+            inputFeedbackView.text = "Voice input not available"
+            inputFeedbackView.visibility = View.VISIBLE
+            Handler(Looper.getMainLooper()).postDelayed({
+                inputFeedbackView.visibility = View.GONE
+            }, 2000)
+        }
     }
     
     /**
      * Start image input
      */
     private fun startImageInput() {
-        // This would launch an image selection activity
-        // For now, we'll show a placeholder message
-        inputFeedbackView.text = "Image input coming soon..."
-        inputFeedbackView.visibility = View.VISIBLE
+        try {
+            // Check for camera permission
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    context as Activity,
+                    arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    IMAGE_PERMISSION_REQUEST_CODE
+                )
+                return
+            }
+
+            // Create image capture intent
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                // Create a file to store the image
+                val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                val imageFileName = "Sallie_$timeStamp.jpg"
+                val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                val imageFile = File(storageDir, imageFileName)
+
+                currentPhotoPath = imageFile.absolutePath
+                val photoURI = FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.fileprovider",
+                    imageFile
+                )
+                putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+            }
+
+            // Start camera activity
+            (context as Activity).startActivityForResult(intent, IMAGE_CAPTURE_REQUEST_CODE)
+
+        } catch (e: Exception) {
+            inputFeedbackView.text = "Camera not available"
+            inputFeedbackView.visibility = View.VISIBLE
+            Handler(Looper.getMainLooper()).postDelayed({
+                inputFeedbackView.visibility = View.GONE
+            }, 2000)
+        }
     }
     
     /**
@@ -273,10 +415,56 @@ class SallieInputBar @JvmOverloads constructor(
     }
     
     /**
-     * Hide processing indicator
+     * Handle activity result for image capture
      */
-    private fun hideProcessingIndicator() {
-        // Re-enable send button
-        sendButton.isEnabled = true
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            IMAGE_CAPTURE_REQUEST_CODE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    currentPhotoPath?.let { path ->
+                        inputFeedbackView.text = "Image captured: $path"
+                        onImageInputResult?.invoke(path)
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            inputFeedbackView.visibility = View.GONE
+                        }, 2000)
+                    }
+                } else {
+                    inputFeedbackView.text = "Image capture cancelled"
+                    inputFeedbackView.visibility = View.VISIBLE
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        inputFeedbackView.visibility = View.GONE
+                    }, 2000)
+                }
+            }
+        }
     }
-}
+    
+    /**
+     * Handle permission request results
+     */
+    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            VOICE_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startVoiceInput()
+                } else {
+                    inputFeedbackView.text = "Microphone permission denied"
+                    inputFeedbackView.visibility = View.VISIBLE
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        inputFeedbackView.visibility = View.GONE
+                    }, 2000)
+                }
+            }
+            IMAGE_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                    startImageInput()
+                } else {
+                    inputFeedbackView.text = "Camera permission denied"
+                    inputFeedbackView.visibility = View.VISIBLE
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        inputFeedbackView.visibility = View.GONE
+                    }, 2000)
+                }
+            }
+        }
+    }

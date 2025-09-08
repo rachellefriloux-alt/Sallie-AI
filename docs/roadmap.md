@@ -21,14 +21,14 @@ Integrate, expand, and enhance all migrated and pending modules from `sallie_1.0
 
 - [x] All migrated modules reviewed for completeness
 - [x] All modules expanded with advanced features:
-	- Context-aware conversation (see PersonaEngine.kt)
-	- Advanced personality evolution (see PersonalityEvolutionDemoActivity.kt)
- 	- Autonomous skill acquisition & recommendation (see ResearchLearningSystem.js)
- 	- Device transfer & control (see DeviceControlDemoActivity.kt)
- 	- Multimodal input & voice/ASR integration (see EmotionalIntelligence.js)
- 	- Persistence layer & cross-device sync (see HierarchicalMemoryManager.kt)
- 	- Creative expression (multi-domain, collaborative) (see AdaptiveConversationSystem.js)
- 	- Technical capabilities (programming, research, optimization) (see EnhancedTechnicalCapabilitiesOrchestrator.js)
+  - Context-aware conversation (see PersonaEngine.kt)
+  - Advanced personality evolution (see PersonalityEvolutionDemoActivity.kt)
+  - Autonomous skill acquisition & recommendation (see ResearchLearningSystem.js)
+  - Device transfer & control (see DeviceControlDemoActivity.kt)
+  - Multimodal input & voice/ASR integration (see EmotionalIntelligence.js)
+  - Persistence layer & cross-device sync (see HierarchicalMemoryManager.kt)
+  - Creative expression (multi-domain, collaborative) (see AdaptiveConversationSystem.js)
+  - Technical capabilities (programming, research, optimization) (see EnhancedTechnicalCapabilitiesOrchestrator.js)
 - [x] All stubs/TODOs removed and missing logic implemented
 - [x] Usage examples and demo routines added in docs and code
 
@@ -70,35 +70,35 @@ Integrate, expand, and enhance all migrated and pending modules from `sallie_1.0
 
 *Generated and perfected by GitHub Copilot, August 2025.*
 
-## 1. Core & Feature Module Expansion
+## Detailed Roadmap: Core & Feature Module Expansion
 
 - Review all migrated modules for completeness
 - Expand modules with advanced features:
- 	- Context-aware conversation
- 	- Advanced personality evolution
- 	- Autonomous skill acquisition & recommendation
- 	- Device transfer & control (future protocols, automation, energy optimization)
- 	- Multimodal input & voice/ASR integration
- 	- Persistence layer & cross-device sync
- 	- Creative expression (multi-domain, collaborative)
- 	- Technical capabilities (programming, research, optimization)
+  - Context-aware conversation
+  - Advanced personality evolution
+  - Autonomous skill acquisition & recommendation
+  - Device transfer & control (future protocols, automation, energy optimization)
+  - Multimodal input & voice/ASR integration
+  - Persistence layer & cross-device sync
+  - Creative expression (multi-domain, collaborative)
+  - Technical capabilities (programming, research, optimization)
 - Remove stubs/TODOs and implement missing logic
 - Add usage examples and demo routines
 
-## 2. Integration & Connectivity
+## Detailed Roadmap: Integration & Connectivity
 
 - Update imports/exports for compatibility
 - Connect device control, memory, personality, creative, and technical modules
 - Integrate UI components and accessibility features
 - Link server/app entry points to new modules
 
-## 3. Launch Readiness
+## Detailed Roadmap: Launch Readiness
 
 - Validate app launch process and main flows
 - Add tests and demo routines for all major features
 - Ensure all enhancements and optional features are included
 
-## 4. Documentation & Review
+## Detailed Roadmap: Documentation & Review
 
 - Document all enhancements and integration steps
 - Update README and enhancement summary files

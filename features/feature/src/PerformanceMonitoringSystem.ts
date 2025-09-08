@@ -33,6 +33,7 @@ export class PerformanceMonitoringSystem {
   private thresholds: Map<string, number> = new Map();
   private monitoring: boolean = false;
   private monitoringInterval: NodeJS.Timeout | null = null;
+  private frameTimestamps: number[] = [];
 
   constructor() {
     this.initializeThresholds();
@@ -97,9 +98,31 @@ export class PerformanceMonitoringSystem {
   }
 
   private estimateFrameRate(): number {
-    // Simplified frame rate estimation
-    // In a real implementation, this would measure actual frame drops
-    return 60; // Placeholder
+    // Advanced frame rate estimation using performance timing
+    const now = performance.now();
+    const timeWindow = 1000; // 1 second window
+
+    // Remove old timestamps
+    this.frameTimestamps = this.frameTimestamps.filter(timestamp => now - timestamp < timeWindow);
+
+    // Add current timestamp
+    this.frameTimestamps.push(now);
+
+    // Calculate frame rate based on recent frames
+    if (this.frameTimestamps.length < 2) {
+      return 60; // Default fallback
+    }
+
+    const timeSpan = now - this.frameTimestamps[0];
+    const frameCount = this.frameTimestamps.length - 1;
+
+    if (timeSpan > 0) {
+      const fps = (frameCount / timeSpan) * 1000;
+      // Clamp to reasonable range
+      return Math.max(1, Math.min(120, Math.round(fps)));
+    }
+
+    return 60; // Fallback
   }
 
   recordMetric(name: string, value: number, unit: string, severity?: 'low' | 'medium' | 'high' | 'critical') {
@@ -151,7 +174,11 @@ export class PerformanceMonitoringSystem {
   generateReport(): PerformanceReport {
     const allMetrics: PerformanceMetric[] = [];
     const recommendations: string[] = [];
-    const trends = { improving: [], degrading: [], stable: [] };
+    const trends: { improving: string[]; degrading: string[]; stable: string[] } = {
+      improving: [],
+      degrading: [],
+      stable: []
+    };
 
     // Collect latest metrics and analyze trends
     for (const [name, metricHistory] of this.metrics.entries()) {

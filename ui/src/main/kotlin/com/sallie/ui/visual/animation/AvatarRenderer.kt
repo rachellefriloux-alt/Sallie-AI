@@ -195,7 +195,147 @@ class AvatarRenderer(
     
     private fun drawFacialExpression(surface: RenderSurface, frame: AnimationFrame) {
         // Face is drawn using a combination of eyes and mouth
-        // This is a placeholder for any additional facial elements
+        // Additional facial elements for enhanced expression
+
+        // Draw eyebrows based on expression
+        drawEyebrows(surface, frame)
+
+        // Draw nose
+        drawNose(surface, frame)
+
+        // Draw cheeks/blush for certain expressions
+        if (frame.eyeExpression == EyeExpression.HAPPY || frame.mouthExpression == MouthExpression.SMILE) {
+            drawCheeks(surface, frame)
+        }
+
+        // Draw sweat drops for nervous/anxious expressions
+        if (frame.eyeExpression == EyeExpression.WORRIED || frame.mouthExpression == MouthExpression.FROWN) {
+            drawSweatDrops(surface, frame)
+        }
+    }
+
+    private fun drawEyebrows(surface: RenderSurface, frame: AnimationFrame) {
+        val eyebrowAsset = getEyebrowAsset(frame.eyeExpression)
+        val eyebrowPosition = calculateEyebrowPosition(frame.position, frame.bodyPose)
+
+        surface.drawImage(
+            image = eyebrowAsset,
+            position = eyebrowPosition,
+            scale = frame.scale * 0.8f,
+            color = frame.secondaryColor
+        )
+    }
+
+    private fun drawNose(surface: RenderSurface, frame: AnimationFrame) {
+        val noseAsset = getNoseAsset()
+        val nosePosition = calculateNosePosition(frame.position, frame.bodyPose)
+
+        surface.drawImage(
+            image = noseAsset,
+            position = nosePosition,
+            scale = frame.scale * 0.6f,
+            color = frame.primaryColor
+        )
+    }
+
+    private fun drawCheeks(surface: RenderSurface, frame: AnimationFrame) {
+        val cheekAsset = getCheekAsset()
+        val leftCheekPosition = calculateLeftCheekPosition(frame.position, frame.bodyPose)
+        val rightCheekPosition = calculateRightCheekPosition(frame.position, frame.bodyPose)
+
+        // Draw both cheeks
+        surface.drawImage(
+            image = cheekAsset,
+            position = leftCheekPosition,
+            scale = frame.scale * 0.5f,
+            color = Color(255, 182, 193, 150) // Light pink with transparency
+        )
+
+        surface.drawImage(
+            image = cheekAsset,
+            position = rightCheekPosition,
+            scale = frame.scale * 0.5f,
+            color = Color(255, 182, 193, 150) // Light pink with transparency
+        )
+    }
+
+    private fun drawSweatDrops(surface: RenderSurface, frame: AnimationFrame) {
+        val sweatAsset = getSweatDropAsset()
+        val sweatPositions = calculateSweatPositions(frame.position, frame.bodyPose)
+
+        sweatPositions.forEach { position ->
+            surface.drawImage(
+                image = sweatAsset,
+                position = position,
+                scale = frame.scale * 0.3f,
+                color = Color(173, 216, 230, 180) // Light blue with transparency
+            )
+        }
+    }
+
+    private fun getEyebrowAsset(expression: EyeExpression): ImageAsset {
+        return assets["eyebrows_${expression.name.toLowerCase()}"] ?: PlaceholderAsset("eyebrows_placeholder")
+    }
+
+    private fun getNoseAsset(): ImageAsset {
+        return assets["nose"] ?: PlaceholderAsset("nose_placeholder")
+    }
+
+    private fun getCheekAsset(): ImageAsset {
+        return assets["cheek_blush"] ?: PlaceholderAsset("cheek_placeholder")
+    }
+
+    private fun getSweatDropAsset(): ImageAsset {
+        return assets["sweat_drop"] ?: PlaceholderAsset("sweat_placeholder")
+    }
+
+    private fun calculateEyebrowPosition(position: Vector2, bodyPose: BodyPose): Vector2 {
+        return when (bodyPose) {
+            BodyPose.STANDING -> Vector2(position.x, position.y - 15f)
+            BodyPose.SITTING -> Vector2(position.x, position.y - 12f)
+            BodyPose.WALKING -> Vector2(position.x, position.y - 14f)
+        }
+    }
+
+    private fun calculateNosePosition(position: Vector2, bodyPose: BodyPose): Vector2 {
+        return when (bodyPose) {
+            BodyPose.STANDING -> Vector2(position.x, position.y + 5f)
+            BodyPose.SITTING -> Vector2(position.x, position.y + 4f)
+            BodyPose.WALKING -> Vector2(position.x, position.y + 5f)
+        }
+    }
+
+    private fun calculateLeftCheekPosition(position: Vector2, bodyPose: BodyPose): Vector2 {
+        return when (bodyPose) {
+            BodyPose.STANDING -> Vector2(position.x - 8f, position.y + 8f)
+            BodyPose.SITTING -> Vector2(position.x - 7f, position.y + 6f)
+            BodyPose.WALKING -> Vector2(position.x - 8f, position.y + 7f)
+        }
+    }
+
+    private fun calculateRightCheekPosition(position: Vector2, bodyPose: BodyPose): Vector2 {
+        return when (bodyPose) {
+            BodyPose.STANDING -> Vector2(position.x + 8f, position.y + 8f)
+            BodyPose.SITTING -> Vector2(position.x + 7f, position.y + 6f)
+            BodyPose.WALKING -> Vector2(position.x + 8f, position.y + 7f)
+        }
+    }
+
+    private fun calculateSweatPositions(position: Vector2, bodyPose: BodyPose): List<Vector2> {
+        return when (bodyPose) {
+            BodyPose.STANDING -> listOf(
+                Vector2(position.x - 12f, position.y - 8f),
+                Vector2(position.x + 10f, position.y - 5f)
+            )
+            BodyPose.SITTING -> listOf(
+                Vector2(position.x - 10f, position.y - 6f),
+                Vector2(position.x + 8f, position.y - 3f)
+            )
+            BodyPose.WALKING -> listOf(
+                Vector2(position.x - 11f, position.y - 7f),
+                Vector2(position.x + 9f, position.y - 4f)
+            )
+        }
     }
     
     private fun drawEyeExpression(surface: RenderSurface, frame: AnimationFrame) {
