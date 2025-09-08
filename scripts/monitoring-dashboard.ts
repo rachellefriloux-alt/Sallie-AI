@@ -513,7 +513,7 @@ export class ProductionMonitoringDashboard extends EventEmitter {
    */
   private triggerAlert(rule: AlertRule, value: number): void {
     const alert: Alert = {
-      id: `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `alert_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
       ruleId: rule.id,
       timestamp: new Date(),
       severity: rule.severity,

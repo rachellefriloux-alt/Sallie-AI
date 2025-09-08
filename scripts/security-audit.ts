@@ -10,6 +10,8 @@
 
 import { EventEmitter } from 'events';
 import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export interface SecurityEvent {
   id: string;
@@ -111,6 +113,16 @@ export interface SecurityMetrics {
   encryptionCoverage: number;
 }
 
+// Add a configuration interface
+export interface SecurityAuditConfig {
+  dataStoragePath?: string;
+  enablePersistence?: boolean;
+  auditFrequency?: number; // in milliseconds
+  complianceFrequency?: number; // in milliseconds
+  vulnerabilityScanFrequency?: number; // in milliseconds
+  maxEventRetention?: number; // number of events to retain
+}
+
 /**
  * Security Audit and Compliance Manager
  */
@@ -124,12 +136,119 @@ export class SecurityAuditComplianceManager extends EventEmitter {
   private auditInterval: NodeJS.Timeout | null = null;
   private complianceInterval: NodeJS.Timeout | null = null;
   private vulnerabilityScanInterval: NodeJS.Timeout | null = null;
+  
+  private config: SecurityAuditConfig = {
+    dataStoragePath: path.join(process.cwd(), 'security-data'),
+    enablePersistence: true,
+    auditFrequency: 60000, // Every minute
+    complianceFrequency: 3600000, // Every hour
+    vulnerabilityScanFrequency: 86400000, // Daily
+    maxEventRetention: 10000 // Maximum events to retain
+  };
 
-  constructor() {
+  constructor(config?: Partial<SecurityAuditConfig>) {
     super();
+    if (config) {
+      this.config = { ...this.config, ...config };
+    }
+    
     this.initializeDefaultComplianceChecks();
     this.initializeDefaultSecurityPolicies();
     this.initializeMetrics();
+    
+    // Create data directory if persistence is enabled
+    if (this.config.enablePersistence && this.config.dataStoragePath) {
+      try {
+        if (!fs.existsSync(this.config.dataStoragePath)) {
+          fs.mkdirSync(this.config.dataStoragePath, { recursive: true });
+        }
+        this.loadPersistedData();
+      } catch (error) {
+        console.error('Failed to initialize data storage:', error);
+      }
+    }
+  }
+
+  /**
+   * Load persisted security data
+   */
+  private loadPersistedData(): void {
+    try {
+      const dataPath = this.config.dataStoragePath!;
+      
+      // Load security events
+      if (fs.existsSync(path.join(dataPath, 'security-events.json'))) {
+        const eventsData = fs.readFileSync(path.join(dataPath, 'security-events.json'), 'utf8');
+        const events = JSON.parse(eventsData);
+        this.securityEvents = events.map((e: any) => ({
+          ...e,
+          timestamp: new Date(e.timestamp)
+        }));
+      }
+      
+      // Load compliance checks
+      if (fs.existsSync(path.join(dataPath, 'compliance-checks.json'))) {
+        const checksData = fs.readFileSync(path.join(dataPath, 'compliance-checks.json'), 'utf8');
+        const checks = JSON.parse(checksData);
+        this.complianceChecks = new Map(checks.map((c: any) => [c.id, {
+          ...c,
+          lastRun: c.lastRun ? new Date(c.lastRun) : undefined,
+          findings: c.findings.map((f: any) => ({
+            ...f,
+            dueDate: f.dueDate ? new Date(f.dueDate) : undefined,
+            resolvedAt: f.resolvedAt ? new Date(f.resolvedAt) : undefined
+          }))
+        }]));
+      }
+      
+      // Load vulnerability scans
+      if (fs.existsSync(path.join(dataPath, 'vulnerability-scans.json'))) {
+        const scansData = fs.readFileSync(path.join(dataPath, 'vulnerability-scans.json'), 'utf8');
+        const scans = JSON.parse(scansData);
+        this.vulnerabilityScans = scans.map((s: any) => ({
+          ...s,
+          timestamp: new Date(s.timestamp)
+        }));
+      }
+      
+      console.log('Successfully loaded persisted security data');
+    } catch (error) {
+      console.error('Error loading persisted data:', error);
+    }
+  }
+  
+  /**
+   * Persist security data to disk
+   */
+  private persistData(): void {
+    if (!this.config.enablePersistence || !this.config.dataStoragePath) return;
+    
+    try {
+      const dataPath = this.config.dataStoragePath;
+      
+      // Save security events
+      fs.writeFileSync(
+        path.join(dataPath, 'security-events.json'),
+        JSON.stringify(this.securityEvents),
+        'utf8'
+      );
+      
+      // Save compliance checks
+      fs.writeFileSync(
+        path.join(dataPath, 'compliance-checks.json'),
+        JSON.stringify(Array.from(this.complianceChecks.values())),
+        'utf8'
+      );
+      
+      // Save vulnerability scans
+      fs.writeFileSync(
+        path.join(dataPath, 'vulnerability-scans.json'),
+        JSON.stringify(this.vulnerabilityScans),
+        'utf8'
+      );
+    } catch (error) {
+      console.error('Error persisting security data:', error);
+    }
   }
 
   /**
@@ -328,17 +447,17 @@ export class SecurityAuditComplianceManager extends EventEmitter {
     // Continuous audit logging
     this.auditInterval = setInterval(() => {
       this.performSecurityAudit();
-    }, 60000); // Every minute
+    }, this.config.auditFrequency);
 
     // Compliance checks
     this.complianceInterval = setInterval(() => {
       this.runComplianceChecks();
-    }, 3600000); // Every hour
+    }, this.config.complianceFrequency);
 
     // Vulnerability scanning
     this.vulnerabilityScanInterval = setInterval(() => {
       this.performVulnerabilityScan();
-    }, 86400000); // Daily
+    }, this.config.vulnerabilityScanFrequency);
 
     this.emit('monitoring-started');
   }
@@ -362,6 +481,11 @@ export class SecurityAuditComplianceManager extends EventEmitter {
       this.vulnerabilityScanInterval = null;
     }
 
+    // Persist data when stopping
+    if (this.config.enablePersistence) {
+      this.persistData();
+    }
+
     this.emit('monitoring-stopped');
   }
 
@@ -370,16 +494,16 @@ export class SecurityAuditComplianceManager extends EventEmitter {
    */
   public logSecurityEvent(event: Omit<SecurityEvent, 'id' | 'timestamp'>): void {
     const securityEvent: SecurityEvent = {
-      id: `sec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `sec_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
       timestamp: new Date(),
       ...event
     };
 
     this.securityEvents.push(securityEvent);
 
-    // Keep only last 10,000 events
-    if (this.securityEvents.length > 10000) {
-      this.securityEvents = this.securityEvents.slice(-10000);
+    // Keep only the configured number of events
+    if (this.securityEvents.length > this.config.maxEventRetention!) {
+      this.securityEvents = this.securityEvents.slice(-this.config.maxEventRetention!);
     }
 
     // Update metrics
@@ -390,6 +514,11 @@ export class SecurityAuditComplianceManager extends EventEmitter {
 
     // Check for alerts
     this.checkSecurityAlerts(securityEvent);
+    
+    // Periodically persist data after events
+    if (this.config.enablePersistence && this.securityEvents.length % 100 === 0) {
+      this.persistData();
+    }
   }
 
   /**
@@ -415,33 +544,55 @@ export class SecurityAuditComplianceManager extends EventEmitter {
    * Check for security alerts
    */
   private checkSecurityAlerts(event: SecurityEvent): void {
-    // Check for brute force attacks
-    if (event.type === 'authentication' && event.result === 'failure') {
-      const recentFailures = this.securityEvents
-        .filter(e => e.type === 'authentication' && e.result === 'failure' && e.user === event.user)
-        .filter(e => (Date.now() - e.timestamp.getTime()) < 3600000) // Last hour
-        .length;
+    try {
+      // Check for brute force attacks
+      if (event.type === 'authentication' && event.result === 'failure') {
+        const recentFailures = this.securityEvents
+          .filter(e => e.type === 'authentication' && e.result === 'failure' && e.user === event.user)
+          .filter(e => (Date.now() - e.timestamp.getTime()) < 3600000) // Last hour
+          .length;
 
-      if (recentFailures >= 5) {
+        if (recentFailures >= 5) {
+          this.emit('security-alert', {
+            type: 'brute_force_attempt',
+            severity: 'high',
+            user: event.user,
+            attempts: recentFailures,
+            timeWindow: '1h'
+          });
+        }
+      }
+
+      // Check for unusual access patterns
+      if (event.type === 'data_access' && event.severity === 'high') {
         this.emit('security-alert', {
-          type: 'brute_force_attempt',
+          type: 'suspicious_data_access',
           severity: 'high',
           user: event.user,
-          attempts: recentFailures,
-          timeWindow: '1h'
+          resource: event.resource,
+          action: event.action
         });
       }
-    }
-
-    // Check for unusual access patterns
-    if (event.type === 'data_access' && event.severity === 'high') {
-      this.emit('security-alert', {
-        type: 'suspicious_data_access',
-        severity: 'high',
-        user: event.user,
-        resource: event.resource,
-        action: event.action
-      });
+      
+      // Check for suspicious geo-location access
+      if (event.ip && event.user) {
+        const userEvents = this.securityEvents
+          .filter(e => e.user === event.user)
+          .filter(e => e.timestamp.getTime() > Date.now() - 86400000); // Last 24 hours
+          
+        const uniqueIPs = new Set(userEvents.map(e => e.ip).filter(Boolean));
+        if (uniqueIPs.size > 3) {
+          this.emit('security-alert', {
+            type: 'multiple_location_access',
+            severity: 'medium',
+            user: event.user,
+            ipAddresses: Array.from(uniqueIPs),
+            timeWindow: '24h'
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error in security alert processing:', error);
     }
   }
 
@@ -459,8 +610,20 @@ export class SecurityAuditComplianceManager extends EventEmitter {
       // Audit system configuration
       await this.auditSystemConfiguration();
 
+      // Audit network security
+      await this.auditNetworkSecurity();
+
     } catch (error) {
       console.error('Security audit error:', error);
+      this.logSecurityEvent({
+        type: 'anomaly',
+        severity: 'medium',
+        source: 'security_audit',
+        action: 'audit_failure',
+        result: 'failure',
+        details: { error: error instanceof Error ? error.message : String(error) },
+        complianceTags: ['monitoring']
+      });
     }
   }
 
@@ -524,6 +687,26 @@ export class SecurityAuditComplianceManager extends EventEmitter {
       });
     }
   }
+  
+  /**
+   * Audit network security
+   */
+  private async auditNetworkSecurity(): Promise<void> {
+    // In a real implementation, this would check network security settings
+    const networkIssues = Math.floor(Math.random() * 2);
+    
+    if (networkIssues > 0) {
+      this.logSecurityEvent({
+        type: 'security_config',
+        severity: 'medium',
+        source: 'network_audit',
+        action: 'suspicious_network_traffic',
+        result: 'success',
+        details: { issuesFound: networkIssues },
+        complianceTags: ['NIST']
+      });
+    }
+  }
 
   /**
    * Run compliance checks
@@ -534,7 +717,24 @@ export class SecurityAuditComplianceManager extends EventEmitter {
         await this.runComplianceCheck(check);
       } catch (error) {
         console.error(`Compliance check ${id} failed:`, error);
+        this.logSecurityEvent({
+          type: 'anomaly',
+          severity: 'medium',
+          source: 'compliance_check',
+          action: 'check_failure',
+          result: 'failure',
+          details: { 
+            checkId: id, 
+            error: error instanceof Error ? error.message : String(error) 
+          },
+          complianceTags: ['monitoring']
+        });
       }
+    }
+    
+    // Persist after running all checks
+    if (this.config.enablePersistence) {
+      this.persistData();
     }
   }
 
@@ -567,7 +767,7 @@ export class SecurityAuditComplianceManager extends EventEmitter {
     // Simulate random findings based on check type
     if (Math.random() > 0.7) { // 30% chance of findings
       findings.push({
-        id: `finding_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `finding_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
         severity: Math.random() > 0.8 ? 'high' : 'medium',
         title: `Compliance issue in ${check.name}`,
         description: `Automated check detected a potential compliance violation in ${check.category}`,
@@ -588,7 +788,7 @@ export class SecurityAuditComplianceManager extends EventEmitter {
     console.log('🔍 Performing vulnerability scan...');
 
     const scan: VulnerabilityScan = {
-      id: `scan_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `scan_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
       timestamp: new Date(),
       target: 'production_system',
       scanner: 'automated_scanner',
@@ -608,11 +808,46 @@ export class SecurityAuditComplianceManager extends EventEmitter {
       this.metrics.activeVulnerabilities = scan.vulnerabilities.filter(v => v.status === 'open').length;
 
       this.emit('vulnerability-scan-completed', scan);
+      
+      // Log critical vulnerabilities as security events
+      scan.vulnerabilities
+        .filter(v => v.severity === 'critical' && v.status === 'open')
+        .forEach(v => {
+          this.logSecurityEvent({
+            type: 'anomaly',
+            severity: 'critical',
+            source: 'vulnerability_scan',
+            action: 'critical_vulnerability_detected',
+            result: 'success',
+            details: { 
+              vulnerabilityId: v.id,
+              title: v.title,
+              cve: v.cve,
+              affectedPackage: v.affectedPackage
+            },
+            complianceTags: ['NIST']
+          });
+        });
+      
+      // Persist scan results
+      if (this.config.enablePersistence) {
+        this.persistData();
+      }
 
     } catch (error) {
       scan.status = 'failed';
       this.vulnerabilityScans.push(scan);
       console.error('Vulnerability scan failed:', error);
+      
+      this.logSecurityEvent({
+        type: 'anomaly',
+        severity: 'medium',
+        source: 'vulnerability_scan',
+        action: 'scan_failure',
+        result: 'failure',
+        details: { error: error instanceof Error ? error.message : String(error) },
+        complianceTags: ['monitoring']
+      });
     }
   }
 
@@ -683,6 +918,9 @@ export class SecurityAuditComplianceManager extends EventEmitter {
     const passedChecks = checks.filter(c => c.status === 'passed').length;
     this.metrics.complianceScore = checks.length > 0 ? (passedChecks / checks.length) * 100 : 100;
 
+    // Calculate encryption coverage (simulated)
+    this.metrics.encryptionCoverage = Math.min(100, 50 + Math.random() * 50);
+
     return { ...this.metrics };
   }
 
@@ -719,7 +957,7 @@ export class SecurityAuditComplianceManager extends EventEmitter {
    * Get vulnerability scans
    */
   public getVulnerabilityScans(limit: number = 10): VulnerabilityScan[] {
-    return this.vulnerabilityScans.slice(-limit);
+    return [...this.vulnerabilityScans].reverse().slice(0, limit);
   }
 
   /**
@@ -744,6 +982,11 @@ export class SecurityAuditComplianceManager extends EventEmitter {
 
     this.complianceChecks.set(checkId, check);
     this.emit('compliance-finding-updated', { check, finding });
+    
+    // Persist after update
+    if (this.config.enablePersistence) {
+      this.persistData();
+    }
   }
 
   /**
@@ -823,6 +1066,66 @@ export class SecurityAuditComplianceManager extends EventEmitter {
 
     return report;
   }
+  
+  /**
+   * Export security data as JSON
+   */
+  public exportSecurityData(): string {
+    const data = {
+      metrics: this.getSecurityMetrics(),
+      events: this.securityEvents,
+      complianceChecks: Array.from(this.complianceChecks.values()),
+      securityPolicies: Array.from(this.securityPolicies.values()),
+      vulnerabilityScans: this.vulnerabilityScans
+    };
+    
+    return JSON.stringify(data, null, 2);
+  }
+  
+  /**
+   * Import security data from JSON
+   */
+  public importSecurityData(jsonData: string): void {
+    try {
+      const data = JSON.parse(jsonData);
+      
+      if (data.events) {
+        this.securityEvents = data.events.map((e: any) => ({
+          ...e,
+          timestamp: new Date(e.timestamp)
+        }));
+      }
+      
+      if (data.complianceChecks) {
+        this.complianceChecks = new Map(data.complianceChecks.map((c: any) => [c.id, {
+          ...c,
+          lastRun: c.lastRun ? new Date(c.lastRun) : undefined,
+          findings: c.findings.map((f: any) => ({
+            ...f,
+            dueDate: f.dueDate ? new Date(f.dueDate) : undefined,
+            resolvedAt: f.resolvedAt ? new Date(f.resolvedAt) : undefined
+          }))
+        }]));
+      }
+      
+      if (data.securityPolicies) {
+        this.securityPolicies = new Map(data.securityPolicies.map((p: any) => [p.id, p]));
+      }
+      
+      if (data.vulnerabilityScans) {
+        this.vulnerabilityScans = data.vulnerabilityScans.map((s: any) => ({
+          ...s,
+          timestamp: new Date(s.timestamp)
+        }));
+      }
+      
+      console.log('Successfully imported security data');
+      this.emit('data-imported');
+    } catch (error) {
+      console.error('Error importing security data:', error);
+      throw new Error('Failed to import security data: ' + (error instanceof Error ? error.message : String(error)));
+    }
+  }
 }
 
 // Export singleton instance
@@ -835,30 +1138,38 @@ export class SecurityUtils {
   }
 
   static hashPassword(password: string): string {
+    // Use stronger password hashing with Argon2 recommendation
     const salt = crypto.randomBytes(16).toString('hex');
-    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+    // Using pbkdf2 with higher iterations for better security
+    const hash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
     return `${salt}:${hash}`;
   }
 
   static verifyPassword(password: string, hashedPassword: string): boolean {
     const [salt, hash] = hashedPassword.split(':');
-    const verifyHash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+    const verifyHash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
     return hash === verifyHash;
   }
 
   static encryptData(data: string, key: string): string {
+    // Using a more secure approach with authenticated encryption
     const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key, 'hex'), iv);
+    const keyBuffer = Buffer.from(key, 'hex');
+    const cipher = crypto.createCipheriv('aes-256-gcm', keyBuffer, iv);
     let encrypted = cipher.update(data, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    return iv.toString('hex') + ':' + encrypted;
+    const authTag = cipher.getAuthTag().toString('hex');
+    return iv.toString('hex') + ':' + authTag + ':' + encrypted;
   }
 
   static decryptData(encryptedData: string, key: string): string {
     const parts = encryptedData.split(':');
-    const iv = Buffer.from(parts.shift()!, 'hex');
-    const encrypted = parts.join(':');
-    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key, 'hex'), iv);
+    const iv = Buffer.from(parts[0], 'hex');
+    const authTag = Buffer.from(parts[1], 'hex');
+    const encrypted = parts[2];
+    const keyBuffer = Buffer.from(key, 'hex');
+    const decipher = crypto.createDecipheriv('aes-256-gcm', keyBuffer, iv);
+    decipher.setAuthTag(authTag);
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
     return decrypted;
@@ -886,16 +1197,22 @@ export class SecurityUtils {
   }
 
   static sanitizeInput(input: string): string {
-    // Basic input sanitization
+    // Enhanced input sanitization
     return input
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+      .replace(/<img[^>]*>/gi, '')
       .replace(/<[^>]*>/g, '')
+      .replace(/javascript:/gi, '')
+      .replace(/on\w+=/gi, '')
       .trim();
   }
 
   static isValidIP(ip: string): boolean {
-    const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-    return ipRegex.test(ip);
+    const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    const ipv6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
+    
+    return ipv4Regex.test(ip) || ipv6Regex.test(ip);
   }
 
   static detectSuspiciousActivity(events: SecurityEvent[], timeWindow: number = 3600000): {
@@ -924,11 +1241,45 @@ export class SecurityUtils {
     if (privilegeEscalations.length > 3) {
       reasons.push('Multiple privilege escalation attempts');
     }
+    
+    // Check for sensitive data access
+    const sensitiveDataAccess = recentEvents.filter(e => 
+      e.type === 'data_access' && 
+      (e.details.sensitive === true || e.details.dataType === 'PII' || e.details.dataType === 'financial')
+    );
+    
+    if (sensitiveDataAccess.length > 5) {
+      reasons.push('High volume of sensitive data access');
+    }
 
     return {
       isSuspicious: reasons.length > 0,
       reasons
     };
+  }
+  
+  static generateSecurePassword(length: number = 16): string {
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numbers = '0123456789';
+    const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+    
+    const allChars = lowercase + uppercase + numbers + symbols;
+    let password = '';
+    
+    // Ensure at least one of each character type
+    password += lowercase.charAt(Math.floor(Math.random() * lowercase.length));
+    password += uppercase.charAt(Math.floor(Math.random() * uppercase.length));
+    password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+    password += symbols.charAt(Math.floor(Math.random() * symbols.length));
+    
+    // Fill the rest with random characters
+    for (let i = 4; i < length; i++) {
+      password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+    }
+    
+    // Shuffle the password to avoid predictable pattern
+    return password.split('').sort(() => 0.5 - Math.random()).join('');
   }
 }
 
