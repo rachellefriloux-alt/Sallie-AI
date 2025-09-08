@@ -372,18 +372,18 @@ export class SalleMasterIntegrationSystem {
     // Automatically optimize feature flags based on context
     
     if (context.deviceInfo?.lowMemory) {
-      FeatureFlagManager.disable('PERFORMANCE_PROFILING');
-      FeatureFlagManager.disable('REAL_TIME_ANALYTICS');
+      setFlag('PERFORMANCE_PROFILING', false);
+      setFlag('REAL_TIME_ANALYTICS', false);
     }
 
     if (context.userPreferences?.accessibility) {
-      FeatureFlagManager.enable('ACCESSIBILITY_ENHANCED');
-      FeatureFlagManager.enable('HAPTIC_FEEDBACK');
+      setFlag('ACCESSIBILITY_ENHANCED', true);
+      setFlag('HAPTIC_FEEDBACK', true);
     }
 
     if (context.deviceInfo?.highPerformance) {
-      FeatureFlagManager.enable('ADVANCED_VOICE_COMMANDS');
-      FeatureFlagManager.enable('PREDICTIVE_ASSISTANCE');
+      setFlag('ADVANCED_VOICE_COMMANDS', true);
+      setFlag('PREDICTIVE_ASSISTANCE', true);
     }
   }
 
@@ -442,7 +442,7 @@ export class SalleMasterIntegrationSystem {
     return {
       timestamp: Date.now(),
       lastHealthCheck: this.lastHealthCheck,
-      featureFlags: FeatureFlagManager.getAllFlags(),
+      featureFlags: getAllFlags(),
       errorHistory: this.errorHandler.getErrorHistory().slice(-10),
       performanceMetrics: this.performanceMonitor.getCurrentMetrics(),
       systemInsights: this.getSystemInsights()
