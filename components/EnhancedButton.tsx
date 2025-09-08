@@ -1,22 +1,7 @@
 /*
  * Salle 1.0 Module
  * Persona: Tough love meets soul care.
- * Function: Advanced animated button with multiple visu    c    c    const pressAnimationConfig = {
-        scale: 0.98,
-        duration: theme.animation.durations.fast,
-        haptic: !!haptic,
-        enabled: !disabled && !loading,
-    };ressAnimationConfig = {
-        scale: 0.98,
-        duration: theme.animation.durations.fast,
-        haptic: !!haptic,
-        enabled: !disabled && !loading,
-    };ressAnimationConfig = {
-        scale: 0.98,
-        duration: theme.animation.durations.fast,
-        haptic: (haptic === true || (typeof haptic === 'string' && ['light', 'medium', 'heavy', 'success', 'warning', 'error', 'selection'].includes(haptic))) ? (haptic === true ? 'light' : haptic as 'light' | 'medium' | 'heavy' | 'success' | 'warning' | 'error' | 'selection') : undefined,
-        enabled: !disabled && !loading,
-    };tes and interactions
+ * Function: Advanced animated button with multiple visual states and interactions
  * Got it, love.
  */
 
@@ -112,8 +97,8 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
     rightIcon,
     variant = 'primary',
     size = 'medium',
-    fullWidth = false,
-    rounded = false,
+    /** Whether to animate button on mount (to be implemented) */
+    animate?: boolean;
     disabled = false,
     loading = false,
     elevated = false,
@@ -157,330 +142,333 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
         if (animateOut) animateOut();
         if (onPressOut) onPressOut(event);
     }, [onPressOut, animateOut]);
-
-    const handlePress = useCallback((event: GestureResponderEvent) => {
-        if (!disabled && !loading && onPress) {
-            if (typeof haptic === 'string') {
-                triggerHaptic(haptic);
-            } else if (haptic) {
-                triggerHaptic('light');
-            }
-            onPress(event);
+    // Use animation effect with optional mount animation
+    const { style: pressAnimationStyle, onPressIn: animateIn, onPressOut: animateOut } =
+        usePressAnimation({
+            ...pressAnimationConfig,
+            animateOnMount: animate,
+        });
+    if (!disabled && !loading && onPress) {
+        if (typeof haptic === 'string') {
+            triggerHaptic(haptic);
+        } else if (haptic) {
+            triggerHaptic('light');
         }
-    }, [disabled, loading, onPress, haptic]);
+        onPress(event);
+    }
+}, [disabled, loading, onPress, haptic]);
 
-    // Determine colors based on variant
-    const getColors = () => {
-        const isDark = theme.dark;
+// Determine colors based on variant
+const getColors = () => {
+    const isDark = theme.dark;
 
-        switch (variant) {
-            case 'primary':
-                return {
-                    background: disabled ? theme.colors.elevation.level3 : theme.colors.primary,
-                    text: disabled ? theme.colors.text.disabled : theme.colors.onPrimary,
-                    border: 'transparent',
-                };
-            case 'secondary':
-                return {
-                    background: disabled ? theme.colors.elevation.level3 : theme.colors.secondary,
-                    text: disabled ? theme.colors.text.disabled : theme.colors.onSecondary,
-                    border: 'transparent',
+    switch (variant) {
+        case 'primary':
+            return {
+                background: disabled ? theme.colors.elevation.level3 : theme.colors.primary,
+                text: disabled ? theme.colors.text.disabled : theme.colors.onPrimary,
+                border: 'transparent',
+            };
+            // Determine colors based on variant
+            const getColors = () => {
+                // Theme darkness is handled in individual variant cases as needed
+                switch (variant) {
                 };
             case 'outline':
-                return {
-                    background: 'transparent',
-                    text: disabled ? theme.colors.text.disabled : theme.colors.primary,
-                    border: disabled ? theme.colors.border.light : theme.colors.primary,
-                };
-            case 'ghost':
-                return {
-                    background: isPressed ? theme.colors.intensity.low : 'transparent',
-                    text: disabled ? theme.colors.text.disabled : theme.colors.primary,
-                    border: 'transparent',
-                };
-            case 'subtle':
-                return {
-                    background: disabled ? theme.colors.elevation.level1 : theme.colors.subtle,
-                    text: disabled ? theme.colors.text.disabled : theme.colors.primary,
-                    border: 'transparent',
-                };
-            case 'success':
-                return {
-                    background: disabled ? theme.colors.elevation.level3 : theme.colors.success,
-                    text: disabled ? theme.colors.text.disabled : '#FFFFFF',
-                    border: 'transparent',
-                };
-            case 'warning':
-                return {
-                    background: disabled ? theme.colors.elevation.level3 : theme.colors.warning,
-                    text: disabled ? theme.colors.text.disabled : '#000000',
-                    border: 'transparent',
-                };
-            case 'danger':
-                return {
-                    background: disabled ? theme.colors.elevation.level3 : theme.colors.error,
-                    text: disabled ? theme.colors.text.disabled : theme.colors.onError,
-                    border: 'transparent',
-                };
-            case 'glass':
-                return {
-                    background: 'transparent',
-                    text: disabled ? theme.colors.text.disabled : theme.colors.onBackground,
-                    border: disabled ? theme.colors.border.light : 'rgba(255, 255, 255, 0.2)',
-                };
-            case 'text':
-            default:
-                return {
-                    background: 'transparent',
-                    text: disabled ? theme.colors.text.disabled : theme.colors.primary,
-                    border: 'transparent',
-                };
-        }
+            return {
+                background: 'transparent',
+                text: disabled ? theme.colors.text.disabled : theme.colors.primary,
+                border: disabled ? theme.colors.border.light : theme.colors.primary,
+            };
+        case 'ghost':
+            return {
+                background: isPressed ? theme.colors.intensity.low : 'transparent',
+                text: disabled ? theme.colors.text.disabled : theme.colors.primary,
+                border: 'transparent',
+            };
+        case 'subtle':
+            return {
+                background: disabled ? theme.colors.elevation.level1 : theme.colors.subtle,
+                text: disabled ? theme.colors.text.disabled : theme.colors.primary,
+                border: 'transparent',
+            };
+        case 'success':
+            return {
+                background: disabled ? theme.colors.elevation.level3 : theme.colors.success,
+                text: disabled ? theme.colors.text.disabled : '#FFFFFF',
+                border: 'transparent',
+            };
+        case 'warning':
+            return {
+                background: disabled ? theme.colors.elevation.level3 : theme.colors.warning,
+                text: disabled ? theme.colors.text.disabled : '#000000',
+                border: 'transparent',
+            };
+        case 'danger':
+            return {
+                background: disabled ? theme.colors.elevation.level3 : theme.colors.error,
+                text: disabled ? theme.colors.text.disabled : theme.colors.onError,
+                border: 'transparent',
+            };
+        case 'glass':
+            return {
+                background: 'transparent',
+                text: disabled ? theme.colors.text.disabled : theme.colors.onBackground,
+                border: disabled ? theme.colors.border.light : 'rgba(255, 255, 255, 0.2)',
+            };
+        case 'text':
+        default:
+            return {
+                background: 'transparent',
+                text: disabled ? theme.colors.text.disabled : theme.colors.primary,
+                border: 'transparent',
+            };
+    }
+};
+
+const colors = getColors();
+
+// Determine sizing based on button size
+const getPadding = () => {
+    switch (size) {
+        case 'small':
+            return {
+                paddingVertical: theme.spacing.xs,
+                paddingHorizontal: theme.spacing.m,
+                minWidth: 70,
+            };
+        case 'large':
+            return {
+                paddingVertical: theme.spacing.m,
+                paddingHorizontal: theme.spacing.xl,
+                minWidth: 120,
+            };
+        case 'medium':
+        default:
+            return {
+                paddingVertical: theme.spacing.s,
+                paddingHorizontal: theme.spacing.l,
+                minWidth: 90,
+            };
+    }
+};
+
+const padding = getPadding();
+
+// Determine text size based on button size
+const getTextSize = () => {
+    switch (size) {
+        case 'small':
+            return theme.typography.sizes.body2;
+        case 'large':
+            return theme.typography.sizes.subtitle;
+        case 'medium':
+        default:
+            return theme.typography.sizes.body1;
+    }
+};
+
+const fontSize = getTextSize();
+
+// Determine border radius based on button size and rounded prop
+const getBorderRadius = () => {
+    if (rounded) {
+        return theme.borderRadius.pill;
+    }
+
+    switch (size) {
+        case 'small':
+            return theme.borderRadius.small;
+        case 'large':
+            return theme.borderRadius.large;
+        case 'medium':
+        default:
+            return theme.borderRadius.medium;
+    }
+};
+
+const borderRadius = getBorderRadius();
+
+// Generate shadow style if elevated
+const getShadowStyle = () => {
+    if (!elevated || disabled) {
+        return {};
+    }
+
+    return variant === 'glass'
+        ? theme.shadows.subtle
+        : isPressed
+            ? theme.shadows.small
+            : theme.shadows.medium;
+};
+
+const shadowStyle = getShadowStyle();
+
+// Generate glow effect if enabled
+const getGlowStyle = () => {
+    if (!glow || disabled) {
+        return {};
+    }
+
+    return {
+        shadowColor: colors.background,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.6,
+        shadowRadius: 15,
+        elevation: 8,
     };
+};
 
-    const colors = getColors();
+const glowStyle = getGlowStyle();
 
-    // Determine sizing based on button size
-    const getPadding = () => {
-        switch (size) {
-            case 'small':
-                return {
-                    paddingVertical: theme.spacing.xs,
-                    paddingHorizontal: theme.spacing.m,
-                    minWidth: 70,
-                };
-            case 'large':
-                return {
-                    paddingVertical: theme.spacing.m,
-                    paddingHorizontal: theme.spacing.xl,
-                    minWidth: 120,
-                };
-            case 'medium':
-            default:
-                return {
-                    paddingVertical: theme.spacing.s,
-                    paddingHorizontal: theme.spacing.l,
-                    minWidth: 90,
-                };
-        }
-    };
+// Determine if we should use a gradient background
+const useGradient = gradientColors || variant === 'primary' || variant === 'secondary';
 
-    const padding = getPadding();
+// Generate gradient colors if none provided
+const getGradientColors = (): [string, string, ...string[]] => {
+    if (gradientColors && gradientColors.length >= 2) {
+        return gradientColors as [string, string, ...string[]];
+    }
 
-    // Determine text size based on button size
-    const getTextSize = () => {
-        switch (size) {
-            case 'small':
-                return theme.typography.sizes.body2;
-            case 'large':
-                return theme.typography.sizes.subtitle;
-            case 'medium':
-            default:
-                return theme.typography.sizes.body1;
-        }
-    };
+    if (variant === 'primary') {
+        return [theme.colors.primaryVariant, theme.colors.primary];
+    }
 
-    const fontSize = getTextSize();
+    if (variant === 'secondary') {
+        return [theme.colors.secondary, theme.colors.secondaryVariant];
+    }
 
-    // Determine border radius based on button size and rounded prop
-    const getBorderRadius = () => {
-        if (rounded) {
-            return theme.borderRadius.pill;
-        }
+    // Fallback
+    return ['transparent', 'transparent'];
+};
 
-        switch (size) {
-            case 'small':
-                return theme.borderRadius.small;
-            case 'large':
-                return theme.borderRadius.large;
-            case 'medium':
-            default:
-                return theme.borderRadius.medium;
-        }
-    };
+// Get icon size based on button size
+const getIconSize = () => {
+    switch (size) {
+        case 'small':
+            return 16;
+        case 'large':
+            return 24;
+        case 'medium':
+        default:
+            return 20;
+    }
+};
 
-    const borderRadius = getBorderRadius();
+const iconSize = getIconSize();
 
-    // Generate shadow style if elevated
-    const getShadowStyle = () => {
-        if (!elevated || disabled) {
-            return {};
-        }
+// Render the button content
+const renderContent = () => {
+    if (children) {
+        return children;
+    }
 
-        return variant === 'glass'
-            ? theme.shadows.subtle
-            : isPressed
-                ? theme.shadows.small
-                : theme.shadows.medium;
-    };
+    return (
+        <View style={styles.contentContainer}>
+            {leftIcon && (
+                <Feather
+                    name={leftIcon}
+                    size={iconSize}
+                    color={colors.text}
+                    style={styles.leftIcon}
+                />
+            )}
 
-    const shadowStyle = getShadowStyle();
+            {label && (
+                <Text
+                    style={[
+                        styles.label,
+                        {
+                            fontSize,
+                            color: colors.text,
+                            fontWeight: variant === 'text' ? '400' : '500',
+                        },
+                        labelStyle,
+                    ]}
+                    numberOfLines={1}
+                >
+                    {label}
+                </Text>
+            )}
 
-    // Generate glow effect if enabled
-    const getGlowStyle = () => {
-        if (!glow || disabled) {
-            return {};
-        }
-
-        return {
-            shadowColor: colors.background,
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.6,
-            shadowRadius: 15,
-            elevation: 8,
-        };
-    };
-
-    const glowStyle = getGlowStyle();
-
-    // Determine if we should use a gradient background
-    const useGradient = gradientColors || variant === 'primary' || variant === 'secondary';
-
-    // Generate gradient colors if none provided
-    const getGradientColors = (): [string, string, ...string[]] => {
-        if (gradientColors && gradientColors.length >= 2) {
-            return gradientColors as [string, string, ...string[]];
-        }
-
-        if (variant === 'primary') {
-            return [theme.colors.primaryVariant, theme.colors.primary];
-        }
-
-        if (variant === 'secondary') {
-            return [theme.colors.secondary, theme.colors.secondaryVariant];
-        }
-
-        // Fallback
-        return ['transparent', 'transparent'];
-    };
-
-    // Get icon size based on button size
-    const getIconSize = () => {
-        switch (size) {
-            case 'small':
-                return 16;
-            case 'large':
-                return 24;
-            case 'medium':
-            default:
-                return 20;
-        }
-    };
-
-    const iconSize = getIconSize();
-
-    // Render the button content
-    const renderContent = () => {
-        if (children) {
-            return children;
-        }
-
-        return (
-            <View style={styles.contentContainer}>
-                {leftIcon && (
+            {loading ? (
+                <ActivityIndicator
+                    size={iconSize}
+                    color={colors.text}
+                    style={styles.rightIcon}
+                />
+            ) : (
+                rightIcon && (
                     <Feather
-                        name={leftIcon}
-                        size={iconSize}
-                        color={colors.text}
-                        style={styles.leftIcon}
-                    />
-                )}
-
-                {label && (
-                    <Text
-                        style={[
-                            styles.label,
-                            {
-                                fontSize,
-                                color: colors.text,
-                                fontWeight: variant === 'text' ? '400' : '500',
-                            },
-                            labelStyle,
-                        ]}
-                        numberOfLines={1}
-                    >
-                        {label}
-                    </Text>
-                )}
-
-                {loading ? (
-                    <ActivityIndicator
+                        name={rightIcon}
                         size={iconSize}
                         color={colors.text}
                         style={styles.rightIcon}
                     />
-                ) : (
-                    rightIcon && (
-                        <Feather
-                            name={rightIcon}
-                            size={iconSize}
-                            color={colors.text}
-                            style={styles.rightIcon}
-                        />
-                    )
-                )}
-            </View>
-        );
-    };
-
-    // Build the button component
-    const buttonContent = (
-        <Animated.View
-            style={[
-                styles.container,
-                {
-                    ...padding,
-                    borderRadius,
-                    backgroundColor: variant !== 'glass' ? colors.background : undefined,
-                    borderWidth: variant === 'outline' || variant === 'glass' ? 1 : 0,
-                    borderColor: colors.border,
-                    opacity: disabled ? 0.6 : 1,
-                    width: fullWidth ? '100%' : undefined,
-                },
-                shadowStyle,
-                glowStyle,
-                pressAnimationStyle,
-                style,
-            ]}
-        >
-            {variant === 'glass' && (
-                <BlurView
-                    intensity={isPressed ? 30 : 20}
-                    tint={theme.dark ? 'dark' : 'light'}
-                    style={styles.blurContainer}
-                />
+                )
             )}
-
-            {useGradient && !disabled && variant !== 'glass' ? (
-                <LinearGradient
-                    colors={getGradientColors()}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.gradientContainer}
-                >
-                    {renderContent()}
-                </LinearGradient>
-            ) : (
-                renderContent()
-            )}
-        </Animated.View>
+        </View>
     );
+};
 
-    return (
-        <TouchableWithoutFeedback
-            onPress={handlePress}
-            onLongPress={onLongPress}
-            onPressIn={handlePressIn}
-            onPressOut={handlePressOut}
-            disabled={disabled || loading}
-            accessibilityLabel={accessibilityLabel || label}
-            accessibilityRole="button"
-            accessibilityState={{ disabled, busy: loading }}
-            testID={testID}
-        >
-            {buttonContent}
-        </TouchableWithoutFeedback>
-    );
+// Build the button component
+const buttonContent = (
+    <Animated.View
+        style={[
+            styles.container,
+            {
+                ...padding,
+                borderRadius,
+                backgroundColor: variant !== 'glass' ? colors.background : undefined,
+                borderWidth: variant === 'outline' || variant === 'glass' ? 1 : 0,
+                borderColor: colors.border,
+                opacity: disabled ? 0.6 : 1,
+                width: fullWidth ? '100%' : undefined,
+            },
+            shadowStyle,
+            glowStyle,
+            pressAnimationStyle,
+            style,
+        ]}
+    >
+        {variant === 'glass' && (
+            <BlurView
+                intensity={isPressed ? 30 : 20}
+                tint={theme.dark ? 'dark' : 'light'}
+                style={styles.blurContainer}
+            />
+        )}
+
+        {useGradient && !disabled && variant !== 'glass' ? (
+            <LinearGradient
+                colors={getGradientColors()}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.gradientContainer}
+            >
+                {renderContent()}
+            </LinearGradient>
+        ) : (
+            renderContent()
+        )}
+    </Animated.View>
+);
+
+return (
+    <TouchableWithoutFeedback
+        onPress={handlePress}
+        onLongPress={onLongPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={disabled || loading}
+        accessibilityLabel={accessibilityLabel || label}
+        accessibilityRole="button"
+        accessibilityState={{ disabled, busy: loading }}
+        testID={testID}
+    >
+        {buttonContent}
+    </TouchableWithoutFeedback>
+);
 };
 
 const styles = StyleSheet.create({

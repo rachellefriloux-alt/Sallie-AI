@@ -86,7 +86,7 @@ export class EnhancedErrorHandler {
 
     // Promise rejection handler
     if (typeof process !== 'undefined' && process.on) {
-      process.on('unhandledRejection', (reason, promise) => {
+      process.on('unhandledRejection', (reason, _promise) => {
         this.handleError(new Error(`Unhandled Promise Rejection: ${reason}`), {
           component: 'Promise',
           timestamp: Date.now(),
@@ -111,7 +111,7 @@ export class EnhancedErrorHandler {
         ...context
       },
       recoverable: this.isRecoverable(error, severity),
-      recoveryActions: this.getRecoveryActions(error, severity),
+      recoveryActions: this.getRecoveryActions(error),
       userMessage: this.generateUserMessage(error, severity)
     };
 
@@ -139,7 +139,7 @@ export class EnhancedErrorHandler {
   }
 
   private generateErrorId(): string {
-    return `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `err_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
 
   private isRecoverable(error: Error, severity: string): boolean {
@@ -174,7 +174,7 @@ export class EnhancedErrorHandler {
     return 'UNKNOWN_ERROR';
   }
 
-  private getRecoveryActions(error: Error, severity: string): string[] {
+  private getRecoveryActions(error: Error): string[] {
     const errorType = this.classifyError(error);
     
     const actions: { [key: string]: string[] } = {
@@ -345,7 +345,7 @@ export class EnhancedErrorHandler {
 
   // Integration with React Error Boundaries
   static createErrorBoundary(component: string) {
-    return (error: Error, errorInfo: any) => {
+    return (error: Error, _errorInfo: any) => {
       const handler = new EnhancedErrorHandler();
       return handler.handleError(error, {
         component,
