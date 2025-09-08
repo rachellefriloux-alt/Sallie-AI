@@ -138,7 +138,7 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
     const pressAnimationConfig = {
         scale: 0.97,
         duration: theme.animation.durations.fast,
-        haptic: haptic ? 'light' : undefined,
+        haptic: !!haptic,
         enabled: !disabled && !loading,
     };
 
