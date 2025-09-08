@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { OnboardingButton } from './OnboardingButton';
 import { useUserStore } from '@/app/store/user';
 
-type OnboardingAnswerKey = keyof NonNullable<ReturnType<typeof useUserStore>['profile']>['onboarding']['answers'];
+type OnboardingAnswerKey = 'name' | 'title' | 'location' | 'season' | 'mission' | 'decisionStyle' | 'dare' | 'aesthetics' | 'rhythm' | 'nonnegotiable';
 
 const qaQuestions = [
   { q: "What name should I call you in our space?", key: "name" as OnboardingAnswerKey },
@@ -29,7 +29,7 @@ export function QASystem({ onComplete }: QASystemProps) {
 
   const handleNext = () => {
     if (currentAnswer.trim()) {
-      setOnboardingAnswer(qaQuestions[currentQuestionIndex].key as OnboardingAnswerKey, currentAnswer.trim());
+      setOnboardingAnswer(qaQuestions[currentQuestionIndex].key, currentAnswer.trim());
     }
 
     if (currentQuestionIndex < qaQuestions.length - 1) {

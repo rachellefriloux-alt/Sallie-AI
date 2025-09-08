@@ -28,6 +28,7 @@ interface ContentItem {
     difficulty: 'beginner' | 'intermediate' | 'advanced';
     estimatedTime: number; // in minutes
     prerequisites?: string[];
+    recommendation?: Recommendation;
 }
 
 interface UserPreference {
@@ -291,13 +292,15 @@ export function ContentPersonalization() {
         return filtered;
     }, [contentItems, searchQuery, selectedCategory, sortBy, userPreferences]);
 
-    const getRecommendedContent = () => {
-        return recommendations
-            .map(rec => {
-                const content = contentItems.find(item => item.id === rec.contentId);
-                return content ? { ...content, recommendation: rec } : null;
-            })
-            .filter(Boolean);
+    const getRecommendedContent = (): ContentItem[] => {
+        const result: ContentItem[] = [];
+        recommendations.forEach(rec => {
+            const content = contentItems.find(item => item.id === rec.contentId);
+            if (content) {
+                result.push({ ...content, recommendation: rec });
+            }
+        });
+        return result;
     };
 
     const renderContentItem = ({ item }: { item: ContentItem }) => (

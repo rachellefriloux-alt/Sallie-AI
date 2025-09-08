@@ -294,7 +294,7 @@ export class LocationService {
   }
 
   private async checkGeofences(location: LocationInfo): Promise<void> {
-    this.geofences.forEach(async (geofence) => {
+    const geofenceChecks = Array.from(this.geofences.values()).map(async (geofence) => {
       if (!geofence.isActive) return;
 
       const distance = await this.calculateDistance(
@@ -316,6 +316,8 @@ export class LocationService {
         }
       }
     });
+
+    await Promise.all(geofenceChecks);
   }
 
   getCachedLocation(): LocationInfo | null {
