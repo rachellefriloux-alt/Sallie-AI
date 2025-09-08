@@ -332,6 +332,7 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({
                 return {
                     success: true,
                     url: file.uri,
+                    uri: file.uri,
                     metadata: {
                         name: file.name,
                         type: file.type,
@@ -371,6 +372,7 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({
             return {
                 success: true,
                 url: result.url,
+                uri: result.url,
                 metadata: result.metadata,
             };
 
@@ -378,6 +380,7 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({
             console.error('File upload error:', error);
             return {
                 success: false,
+                uri: undefined,
                 error: error instanceof Error ? error.message : 'Upload failed',
             };
         }

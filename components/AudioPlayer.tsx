@@ -10,11 +10,13 @@ import {
     TouchableOpacity,
     StyleSheet,
     Dimensions,
+} from 'react-native';
+import {
     PanGestureHandler,
     PanGestureHandlerGestureEvent,
     PanGestureHandlerStateChangeEvent,
     State,
-} from 'react-native';
+} from 'react-native-gesture-handler';
 import { Audio } from 'expo-av';
 import { useTheme } from './ThemeSystem';
 import { getFontStyle } from './FontManager';

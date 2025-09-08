@@ -107,15 +107,15 @@ export const LazyDataManagementScreen = withLazyLoading(
 export const LAZY_LOAD_CONFIG = {
     // Critical components loaded immediately
     critical: [
-        () => import('./ThemeSystem'),
-        () => import('./FontManager'),
+        () => import('./ThemeSystem.js'),
+        () => import('./FontManager.js'),
     ],
 
     // Heavy components loaded on demand
     heavy: [
-        () => import('./UserProfileManager'),
-        () => import('./AppSettingsManager'),
-        () => import('./DataExportImportManager'),
+        () => import('./UserProfileManager.js'),
+        () => import('./AppSettingsManager.js'),
+        () => import('./DataExportImportManager.js'),
     ],
 
     // Screens loaded on navigation
