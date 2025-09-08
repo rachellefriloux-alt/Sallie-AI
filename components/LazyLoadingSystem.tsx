@@ -80,7 +80,7 @@ export const LazyUserProfileManager = withLazyLoading(
 
 // Lazy load AppSettingsManager
 export const LazyAppSettingsManager = withLazyLoading(
-    () => import('./AppSettingsManager.js'),
+    () => import('./AppSettingsManager'),
     undefined
 );
 

@@ -36,8 +36,8 @@ export class AudioManager {
         playsInSilentModeIOS: true,
         shouldDuckAndroid: true,
         playThroughEarpieceAndroid: false,
-        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS.DO_NOT_MIX,
-        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID.DO_NOT_MIX,
+        interruptionModeIOS: 'doNotMix' as any,
+        interruptionModeAndroid: 'doNotMix' as any,
       });
     } catch (error) {
       console.error('Failed to initialize audio mode:', error);

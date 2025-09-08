@@ -28,7 +28,7 @@ const VisualShowcaseScreen: React.FC = () => {
             if (nextProgress > 100) return 0;
             return nextProgress;
         });
-        triggerHaptic('MEDIUM');
+        triggerHaptic('medium');
     };
 
     // Switch between themes for demo
@@ -37,7 +37,7 @@ const VisualShowcaseScreen: React.FC = () => {
         const currentIndex = themes.indexOf(themeType);
         const nextIndex = (currentIndex + 1) % themes.length;
         changeTheme(themes[nextIndex]);
-        triggerHaptic('SUCCESS');
+        triggerHaptic('success');
     };
 
     // Toast demonstration functions
@@ -65,7 +65,7 @@ const VisualShowcaseScreen: React.FC = () => {
             duration: 5000,
             action: {
                 text: 'Action',
-                onPress: () => triggerHaptic('SUCCESS'),
+                onPress: () => triggerHaptic('success'),
             },
         });
     };
@@ -111,13 +111,8 @@ const VisualShowcaseScreen: React.FC = () => {
                     <ProgressBarAnimated
                         progress={progress}
                         height={10}
-                        borderRadius={5}
-                        fillColor={theme.colors.primary}
-                        trackColor={theme.colors.elevation.level2}
-                        showPercentage
-                        percentageStyle={{ color: theme.colors.text.primary, ...getFontStyle(theme.type, 'medium') }}
-                        milestones={[25, 50, 75, 100]}
-                        showGlow
+                        color={theme.colors.primary}
+                        backgroundColor={theme.colors.elevation.level2}
                     />
 
                     <View style={styles.progressButton}>
@@ -133,9 +128,7 @@ const VisualShowcaseScreen: React.FC = () => {
                     <ProgressBarAnimated
                         progress={75}
                         height={6}
-                        borderRadius={3}
-                        fillColor={theme.colors.success}
-                        showPulse
+                        color={theme.colors.success}
                     />
                 </View>
 
@@ -285,7 +278,7 @@ const VisualShowcaseScreen: React.FC = () => {
                     actions={[
                         {
                             icon: 'more-horizontal',
-                            onPress: () => triggerHaptic('LIGHT')
+                            onPress: () => triggerHaptic('light')
                         }
                     ]}
                 >
@@ -312,7 +305,7 @@ const VisualShowcaseScreen: React.FC = () => {
                             label="Action"
                             variant="glass"
                             size="small"
-                            onPress={() => triggerHaptic('SUCCESS')}
+                            onPress={() => triggerHaptic('success')}
                         />
                     </View>
                 </EnhancedCard>
@@ -322,7 +315,7 @@ const VisualShowcaseScreen: React.FC = () => {
                         title="Interactive"
                         variant="subtle"
                         pressable
-                        onPress={() => triggerHaptic('MEDIUM')}
+                        onPress={() => triggerHaptic('medium')}
                         style={styles.halfCard}
                         elevation="low"
                     >

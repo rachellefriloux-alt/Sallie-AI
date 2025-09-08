@@ -7,7 +7,7 @@ import React from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useThemeStore } from '../store/theme';
-import { LazyUserProfileManager } from '../../components/LazyLoadingSystem';
+import UserProfileManager from '../../components/UserProfileManager';
 
 export default function ProfileScreen() {
     const { currentTheme } = useThemeStore();
@@ -29,7 +29,7 @@ export default function ProfileScreen() {
                 backgroundColor={currentTheme.colors.background}
             />
 
-            <LazyUserProfileManager
+            <UserProfileManager
                 onProfileUpdate={handleProfileUpdate}
                 onAvatarUpdate={handleAvatarUpdate}
                 style={styles.profileManager}

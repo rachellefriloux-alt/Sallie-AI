@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -8,10 +7,46 @@ import { Colors } from '@/constants/Colors';
 import EnhancedAvatar from '@/components/EnhancedAvatar';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
-export function CustomDrawerContent(props: any) {
+interface CustomDrawerContentProps {
+    [key: string]: any;
+}
+
+export default function CustomDrawerContent(props: CustomDrawerContentProps) {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
     const insets = useSafeAreaInsets();
+    const [drawerComponents, setDrawerComponents] = useState<{
+        DrawerContentScrollView: any;
+        DrawerItemList: any;
+    } | null>(null);
+
+    useEffect(() => {
+        // Dynamic import for drawer navigation to avoid CommonJS/ESM conflicts
+        const loadDrawerComponents = async () => {
+            try {
+                const drawerModule = await import('@react-navigation/drawer');
+                setDrawerComponents({
+                    DrawerContentScrollView: drawerModule.DrawerContentScrollView,
+                    DrawerItemList: drawerModule.DrawerItemList,
+                });
+            } catch (error) {
+                console.error('Failed to load drawer components:', error);
+            }
+        };
+
+        loadDrawerComponents();
+    }, []);
+
+    // Show loading while drawer components are being loaded
+    if (!drawerComponents) {
+        return (
+            <View style={{ flex: 1, backgroundColor: colors.surface, paddingTop: insets.top }}>
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
+
+    const { DrawerContentScrollView, DrawerItemList } = drawerComponents;
 
     return (
         <DrawerContentScrollView

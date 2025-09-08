@@ -9,7 +9,18 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+// Dynamic import for navigation to avoid CommonJS/ESM conflicts
+const useNavigation = () => {
+  const [navigation, setNavigation] = useState<any>(null);
+
+  useEffect(() => {
+    import('@react-navigation/native').then(({ useNavigation: navHook }) => {
+      setNavigation(() => navHook());
+    });
+  }, []);
+
+  return navigation;
+};
 import { usePersonaStore } from '../store/persona';
 import { useMemoryStore } from '../store/memory';
 import { useDeviceStore } from '../store/device';
@@ -27,7 +38,7 @@ export default function DebugConsoleScreen() {
   const persona = usePersonaStore();
   const memory = useMemoryStore();
   const device = useDeviceStore();
-  
+
   const [logs, setLogs] = useState<LogEntry[]>([
     {
       id: '1',
@@ -47,7 +58,7 @@ export default function DebugConsoleScreen() {
       timestamp: Date.now() - 1000,
       level: 'info',
       message: 'Memory system operational',
-      data: { 
+      data: {
         shortTerm: memory.shortTerm.length,
         episodic: memory.episodic.length,
         semantic: memory.semantic.length,
@@ -55,11 +66,11 @@ export default function DebugConsoleScreen() {
       },
     },
   ]);
-  
+
   const [command, setCommand] = useState('');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  
+
   const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -90,58 +101,58 @@ export default function DebugConsoleScreen() {
     // Add command to history
     setCommandHistory(prev => [...prev, trimmedCmd]);
     setHistoryIndex(-1);
-    
+
     // Log the command
     addLog('debug', `> ${trimmedCmd}`);
-    
+
     // Parse and execute command
     const [action, ...args] = trimmedCmd.split(' ');
-    
+
     try {
       switch (action.toLowerCase()) {
         case 'help':
           showHelp();
           break;
-          
+
         case 'clear':
           clearLogs();
           break;
-          
+
         case 'status':
           showStatus();
           break;
-          
+
         case 'emotion':
           handleEmotionCommand(args);
           break;
-          
+
         case 'memory':
           handleMemoryCommand(args);
           break;
-          
+
         case 'device':
           handleDeviceCommand(args);
           break;
-          
+
         case 'export':
           exportData(args[0]);
           break;
-          
+
         case 'simulate':
           simulateCommand(args);
           break;
-          
+
         case 'test':
           runTests();
           break;
-          
+
         default:
           addLog('error', `Unknown command: ${action}. Type 'help' for available commands.`);
       }
     } catch (error) {
       addLog('error', `Command error: ${error}`);
     }
-    
+
     setCommand('');
   };
 
@@ -186,7 +197,7 @@ Available Commands:
         permissions: Object.values(device.permissions).filter(Boolean).length,
       },
     };
-    
+
     addLog('info', 'System Status:', status);
   };
 
@@ -195,7 +206,7 @@ Available Commands:
       addLog('info', `Current emotion: ${persona.emotion} (intensity: ${persona.intensity})`);
       return;
     }
-    
+
     if (args[0] === 'set' && args[1]) {
       persona.setEmotion(args[1], parseFloat(args[2]) || 0.5, 'debug_console');
       addLog('info', `Emotion set to: ${args[1]}`);
@@ -215,7 +226,7 @@ Available Commands:
       addLog('info', 'Memory Statistics:', stats);
       return;
     }
-    
+
     const type = args[0];
     const memories = memory.getMemoriesByType(type as any);
     addLog('info', `${type} memories (${memories.length}):`, memories.slice(0, 5));
@@ -243,13 +254,13 @@ Available Commands:
       persona: type === 'persona' ? { persona: persona } : undefined,
       all: type === 'all' ? { logs, memory, persona, device } : undefined,
     };
-    
+
     addLog('info', `Export ${type} data:`, data[type as keyof typeof data]);
   };
 
   const simulateCommand = (args: string[]) => {
     const action = args[0];
-    
+
     switch (action) {
       case 'interaction':
         memory.addShortTerm({
@@ -264,14 +275,14 @@ Available Commands:
         });
         addLog('info', 'Simulated user interaction');
         break;
-        
+
       case 'emotion':
         const emotions = ['happy', 'sad', 'excited', 'calm', 'thoughtful'];
         const randomEmotion = emotions[Math.floor(Math.random() * emotions.length)];
         persona.setEmotion(randomEmotion, Math.random(), 'simulation');
         addLog('info', `Simulated emotion change: ${randomEmotion}`);
         break;
-        
+
       default:
         addLog('error', `Unknown simulation: ${action}`);
     }
@@ -279,13 +290,13 @@ Available Commands:
 
   const runTests = () => {
     addLog('info', 'Running system diagnostics...');
-    
+
     // Test persona system
     const originalEmotion = persona.emotion;
     persona.setEmotion('test', 1.0, 'diagnostic');
     const testResult1 = persona.emotion === 'test';
     persona.setEmotion(originalEmotion, persona.intensity, 'diagnostic_restore');
-    
+
     // Test memory system
     const initialCount = memory.shortTerm.length;
     memory.addShortTerm({
@@ -299,18 +310,18 @@ Available Commands:
       sha256: 'test_entry',
     });
     const testResult2 = memory.shortTerm.length === initialCount + 1;
-    
+
     // Test device system
     const testResult3 = typeof device.isLauncher === 'boolean';
-    
+
     const results = {
       persona: testResult1 ? 'PASS' : 'FAIL',
       memory: testResult2 ? 'PASS' : 'FAIL',
       device: testResult3 ? 'PASS' : 'FAIL',
     };
-    
+
     addLog('info', 'Diagnostic Results:', results);
-    
+
     const allPassed = Object.values(results).every(result => result === 'PASS');
     addLog(allPassed ? 'info' : 'warning', `Overall Status: ${allPassed ? 'HEALTHY' : 'ISSUES DETECTED'}`);
   };

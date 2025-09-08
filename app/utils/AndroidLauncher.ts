@@ -155,7 +155,7 @@ export class AndroidLauncher {
       await IntentLauncher.startActivityAsync('android.intent.action.MAIN', {
         className: `${packageName}.MainActivity`,
         packageName: packageName,
-        flags: IntentLauncher.ActivityFlags.NEW_TASK | IntentLauncher.ActivityFlags.RESET_TASK_IF_NEEDED,
+        flags: 0x10000000 | 0x02000000, // NEW_TASK | RESET_TASK_IF_NEEDED
       });
 
       return true;

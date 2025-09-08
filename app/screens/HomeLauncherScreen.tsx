@@ -11,7 +11,18 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+// Dynamic import for navigation to avoid CommonJS/ESM conflicts
+const useNavigation = () => {
+  const [navigation, setNavigation] = useState<any>(null);
+
+  useEffect(() => {
+    import('@react-navigation/native').then(({ useNavigation: navHook }) => {
+      setNavigation(() => navHook());
+    });
+  }, []);
+
+  return navigation;
+};
 import { usePersonaStore } from '../store/persona';
 import { useMemoryStore } from '../store/memory';
 import { useDeviceStore } from '../store/device';
@@ -30,7 +41,7 @@ export default function HomeLauncherScreen() {
   const { shortTerm, episodic } = useMemoryStore();
   const { isLauncher, settings } = useDeviceStore();
   const { currentTheme, animations } = useThemeStore();
-  
+
   const [currentTime, setCurrentTime] = useState(new Date());
   const [greeting, setGreeting] = useState('');
   const [showVoicePanel, setShowVoicePanel] = useState(false);
@@ -97,7 +108,7 @@ export default function HomeLauncherScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: currentTheme.colors.background }]}>
       <StatusBar barStyle="light-content" backgroundColor={currentTheme.colors.background} />
-      
+
       {/* Background Gradient */}
       <LinearGradient
         colors={currentTheme.gradients.background}
@@ -115,23 +126,23 @@ export default function HomeLauncherScreen() {
           <View style={styles.header}>
             <View style={styles.timeSection}>
               <Text style={[styles.time, { color: currentTheme.colors.text }]}>
-                {currentTime.toLocaleTimeString('en-US', { 
-                  hour: '2-digit', 
+                {currentTime.toLocaleTimeString('en-US', {
+                  hour: '2-digit',
                   minute: '2-digit',
-                  hour12: true 
+                  hour12: true
                 })}
               </Text>
               <Text style={[styles.date, { color: currentTheme.colors.textSecondary }]}>
-                {currentTime.toLocaleDateString('en-US', { 
+                {currentTime.toLocaleDateString('en-US', {
                   weekday: 'long',
                   month: 'long',
                   day: 'numeric'
                 })}
               </Text>
             </View>
-            
+
             <TouchableOpacity onPress={handleSalliePress} style={styles.sallieButton}>
-              <EnhancedSallieAvatar 
+              <EnhancedSallieAvatar
                 size={80}
                 animated={animations}
                 interactive={true}

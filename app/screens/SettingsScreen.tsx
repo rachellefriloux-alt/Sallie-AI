@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -10,17 +10,25 @@ import {
     Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import { useDeviceStore } from '../store/device';
 import { usePersonaStore } from '../store/persona';
 import { useMemoryStore } from '../store/memory';
 import { useThemeStore } from '../store/theme';
 import SettingsSection from '../components/SettingsSection';
 import SettingsItem from '../components/SettingsItem';
-import { LazyAppSettingsManager } from '../../components/LazyLoadingSystem';
+import AppSettingsManager from '../../components/AppSettingsManager';
 
 export default function SettingsScreen() {
-    const navigation = useNavigation();
+    const [navigation, setNavigation] = useState<any>(null);
+
+    useEffect(() => {
+        const loadNavigation = async () => {
+            const { useNavigation } = await import('@react-navigation/native');
+            setNavigation(useNavigation());
+        };
+        loadNavigation();
+    }, []);
+
     const {
         settings,
         permissions,
@@ -147,14 +155,14 @@ export default function SettingsScreen() {
                         title="User Profile"
                         subtitle="Manage your personal information and avatar"
                         type="button"
-                        onPress={() => navigation.navigate('Profile' as never)}
+                        onPress={() => navigation?.navigate('Profile' as never)}
                     />
 
                     <SettingsItem
                         title="Data Management"
                         subtitle="Export, import, and backup your data"
                         type="button"
-                        onPress={() => navigation.navigate('DataManagement' as never)}
+                        onPress={() => navigation?.navigate('DataManagement' as never)}
                     />
                 </SettingsSection>
 
@@ -329,8 +337,8 @@ export default function SettingsScreen() {
                 {/* Advanced Settings */}
                 <SettingsSection title="Advanced Settings" icon="⚙️">
                     <View style={styles.advancedSettingsContainer}>
-                        <LazyAppSettingsManager
-                            onSettingsUpdate={(settings) => {
+                        <AppSettingsManager
+                            onSettingsUpdate={(settings: any) => {
                                 console.log('Advanced settings updated:', settings);
                                 // Here you could sync with existing stores or make API calls
                             }}

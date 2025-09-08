@@ -148,7 +148,7 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
             if (typeof haptic === 'string') {
                 triggerHaptic(haptic);
             } else if (haptic) {
-                triggerHaptic('LIGHT');
+                triggerHaptic('light');
             }
             onPress(event);
         }

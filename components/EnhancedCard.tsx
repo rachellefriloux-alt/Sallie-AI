@@ -258,7 +258,7 @@ const EnhancedCard: React.FC<EnhancedCardProps> = ({
         scale: 0.98,
         duration: 150,
         enabled: pressable,
-        haptic: pressable ? 'LIGHT' : undefined,
+        haptic: pressable ? 'light' : undefined,
     });
 
     // Configure entrance animation

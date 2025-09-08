@@ -9,7 +9,18 @@ import {
   PanResponder,
 } from 'react-native';
 import { LinearGradient } from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+// Dynamic import for navigation to avoid CommonJS/ESM conflicts
+const useNavigation = () => {
+  const [navigation, setNavigation] = useState<any>(null);
+
+  useEffect(() => {
+    import('@react-navigation/native').then(({ useNavigation: navHook }) => {
+      setNavigation(() => navHook());
+    });
+  }, []);
+
+  return navigation;
+};
 import { usePersonaStore } from '../store/persona';
 import { useMemoryStore } from '../store/memory';
 import { useThemeStore } from '../store/theme';
@@ -27,12 +38,12 @@ export default function EnhancedSallieOverlay() {
   const { emotion, setEmotion, intensity } = usePersonaStore();
   const { addShortTerm } = useMemoryStore();
   const { currentTheme, animations } = useThemeStore();
-  
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState<Position>({ x: width - 100, y: height - 200 });
-  
+
   const translateX = useRef(new Animated.Value(position.x)).current;
   const translateY = useRef(new Animated.Value(position.y)).current;
   const scale = useRef(new Animated.Value(1)).current;
@@ -56,21 +67,21 @@ export default function EnhancedSallieOverlay() {
       onPanResponderMove: (_, gestureState) => {
         const newX = Math.max(0, Math.min(width - 80, position.x + gestureState.dx));
         const newY = Math.max(50, Math.min(height - 150, position.y + gestureState.dy));
-        
+
         translateX.setValue(newX);
         translateY.setValue(newY);
       },
       onPanResponderRelease: (_, gestureState) => {
         setIsDragging(false);
-        
+
         const newX = Math.max(0, Math.min(width - 80, position.x + gestureState.dx));
         const newY = Math.max(50, Math.min(height - 150, position.y + gestureState.dy));
-        
+
         // Snap to edge if close enough
         const snapX = newX < width / 2 ? 20 : width - 100;
-        
+
         setPosition({ x: snapX, y: newY });
-        
+
         if (animations) {
           Animated.parallel([
             Animated.spring(translateX, {
@@ -118,7 +129,7 @@ export default function EnhancedSallieOverlay() {
 
   const handlePress = () => {
     if (isDragging) return;
-    
+
     if (isExpanded) {
       // Collapse and navigate to Sallie panel
       setIsExpanded(false);
@@ -132,11 +143,11 @@ export default function EnhancedSallieOverlay() {
 
   const handleLongPress = () => {
     if (isDragging) return;
-    
+
     // Start voice interaction
     setIsListening(true);
     setEmotion('excited', 0.9, 'voice_activation');
-    
+
     addShortTerm({
       type: 'episodic',
       content: 'User initiated voice interaction with Sallie via floating overlay',
@@ -147,7 +158,7 @@ export default function EnhancedSallieOverlay() {
       source: 'floating_overlay',
       sha256: 'overlay_voice_' + Date.now(),
     });
-    
+
     // Simulate voice processing
     setTimeout(() => {
       setIsListening(false);
@@ -157,7 +168,7 @@ export default function EnhancedSallieOverlay() {
 
   const animateExpand = () => {
     if (!animations) return;
-    
+
     Animated.parallel([
       Animated.timing(scale, {
         toValue: 1.3,
@@ -170,7 +181,7 @@ export default function EnhancedSallieOverlay() {
         useNativeDriver: true,
       }),
     ]).start();
-    
+
     // Auto-collapse after 3 seconds
     setTimeout(() => {
       if (isExpanded) {
@@ -182,7 +193,7 @@ export default function EnhancedSallieOverlay() {
 
   const animateCollapse = () => {
     if (!animations) return;
-    
+
     Animated.parallel([
       Animated.timing(scale, {
         toValue: 1,
@@ -235,7 +246,7 @@ export default function EnhancedSallieOverlay() {
               width: getOverlaySize() + 20,
               height: getOverlaySize() + 20,
               borderRadius: (getOverlaySize() + 20) / 2,
-              backgroundColor: isListening 
+              backgroundColor: isListening
                 ? currentTheme.colors.error + '30'
                 : currentTheme.colors.primary + '30',
             },
@@ -310,7 +321,7 @@ export default function EnhancedSallieOverlay() {
           >
             <Text style={styles.quickActionText}>💬</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={[styles.quickAction, { backgroundColor: currentTheme.colors.secondary }]}
             onPress={() => {
@@ -320,7 +331,7 @@ export default function EnhancedSallieOverlay() {
           >
             <Text style={styles.quickActionText}>🎤</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={[styles.quickAction, { backgroundColor: currentTheme.colors.accent }]}
             onPress={() => {
