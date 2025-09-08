@@ -10,7 +10,7 @@ Follows Salle architecture, modularity, and privacy rules.
 // Follows Salle architecture, modularity, and privacy rules.
 
 export class EmotionalIntelligenceModule {
-  // Basic sentiment analysis (stub)
+  // Basic sentiment analysis using keyword matching
   detectMood(input: string): string {
     const lower = input.toLowerCase();
     if (lower.includes("happy") || lower.includes(":)")) return "happy";

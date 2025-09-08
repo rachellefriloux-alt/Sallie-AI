@@ -370,46 +370,117 @@ class OnDeviceTextToSpeech : BaseTextToSpeech() {
     }
     
     override suspend fun getAvailableVoices(): List<VoiceInfo> {
-        // Get available on-device voices
-        TODO("Implement on-device voice listing")
+        // A simplified implementation of on-device voice listing
+        return listOf(
+            VoiceInfo(
+                id = "ondevice-en-us-female-1",
+                name = "Samantha",
+                gender = VoiceGender.FEMALE,
+                age = VoiceAge.ADULT,
+                languageCodes = listOf(LanguageCode.EN_US),
+                sampleRateHertz = 22050,
+                naturalness = 0.7f,
+                isNeural = false,
+                requiresNetwork = false,
+                customizationSupport = false
+            ),
+            VoiceInfo(
+                id = "ondevice-en-us-male-1",
+                name = "David",
+                gender = VoiceGender.MALE,
+                age = VoiceAge.ADULT,
+                languageCodes = listOf(LanguageCode.EN_US),
+                sampleRateHertz = 22050,
+                naturalness = 0.7f,
+                isNeural = false,
+                requiresNetwork = false,
+                customizationSupport = false
+            )
+        )
     }
     
     override suspend fun speak(text: String, options: SpeechSynthesisOptions): SynthesisResult {
-        // Speak text using on-device TTS
-        TODO("Implement on-device speech synthesis")
+        // Simulate speaking with on-device TTS
+        val audioData = synthesize(text, options)
+        // Calculate duration based on text length and speaking rate
+        val duration = (text.length * 50 * (1.0f / options.speakingRate)).toLong()
+        
+        return SynthesisResult(
+            id = "ondevice-${System.currentTimeMillis()}",
+            audioData = audioData,
+            duration = duration,
+            wordBoundaries = generateWordBoundaries(text, duration)
+        )
     }
     
     override suspend fun speakSsml(ssml: String, options: SpeechSynthesisOptions): SynthesisResult {
-        // Speak SSML using on-device TTS
-        TODO("Implement on-device SSML synthesis")
+        // Extract plain text from SSML for simple implementation
+        val plainText = ssml.replace(Regex("<[^>]*>"), "")
+        return speak(plainText, options)
     }
     
     override suspend fun synthesize(text: String, options: SpeechSynthesisOptions): ByteArray {
-        // Synthesize text to audio data using on-device TTS
-        TODO("Implement on-device text synthesis")
+        // Simulate audio data generation
+        // In a real implementation, this would use the device's TTS engine
+        // For now, we're just creating dummy audio data
+        val dummyAudioData = ByteArray(text.length * 500) { 0 }
+        
+        // Apply voice, pitch and rate options to the synthesis
+        // (This is a placeholder - real implementation would use these settings)
+        println("Synthesizing with voice: ${options.voiceId}, pitch: ${options.pitch}, rate: ${options.speakingRate}")
+        
+        return dummyAudioData
     }
     
     override suspend fun synthesizeSsml(ssml: String, options: SpeechSynthesisOptions): ByteArray {
-        // Synthesize SSML to audio data using on-device TTS
-        TODO("Implement on-device SSML synthesis")
+        // Extract plain text from SSML for simple implementation
+        val plainText = ssml.replace(Regex("<[^>]*>"), "")
+        return synthesize(plainText, options)
     }
     
     override suspend fun synthesizeToStream(text: String, options: SpeechSynthesisOptions, outputStream: OutputStream) {
-        // Synthesize text to output stream using on-device TTS
-        TODO("Implement on-device stream synthesis")
+        val audioData = synthesize(text, options)
+        outputStream.write(audioData)
+        outputStream.flush()
     }
     
     override suspend fun synthesizeToFile(text: String, options: SpeechSynthesisOptions, outputFile: File): File {
-        // Synthesize text to file using on-device TTS
-        TODO("Implement on-device file synthesis")
+        val audioData = synthesize(text, options)
+        outputFile.writeBytes(audioData)
+        return outputFile
     }
     
     override suspend fun stop() {
-        // Stop on-device TTS
+        // Stop any ongoing on-device TTS playback
+        println("Stopping on-device TTS playback")
     }
     
     override suspend fun shutdown() {
         // Release on-device TTS resources
+        println("Shutting down on-device TTS engine and releasing resources")
+    }
+    
+    // Helper method to generate word boundaries for synchronization
+    private fun generateWordBoundaries(text: String, totalDuration: Long): List<SynthesisResult.WordBoundary> {
+        val words = text.split(Regex("\\s+"))
+        val boundaries = mutableListOf<SynthesisResult.WordBoundary>()
+        val wordDuration = totalDuration / words.size
+        
+        var currentTime = 0L
+        for (word in words) {
+            if (word.isNotEmpty()) {
+                boundaries.add(
+                    SynthesisResult.WordBoundary(
+                        word = word,
+                        startTimeMs = currentTime,
+                        endTimeMs = currentTime + wordDuration
+                    )
+                )
+                currentTime += wordDuration
+            }
+        }
+        
+        return boundaries
     }
 }
 
@@ -417,53 +488,164 @@ class OnDeviceTextToSpeech : BaseTextToSpeech() {
  * Cloud-based text-to-speech implementation
  */
 class CloudTextToSpeech : BaseTextToSpeech() {
-    // Implementation details for cloud-based TTS
-    // This would integrate with cloud TTS services
+    private val apiEndpoint = "https://api.tts.cloud.example.com/v1/synthesize"
+    private var apiKey = "simulated-api-key"
     
     override suspend fun initialize() {
         // Initialize cloud TTS resources
+        println("Initializing cloud TTS service connection")
+        // In a real implementation, this might fetch API keys from secure storage
     }
     
     override suspend fun getAvailableVoices(): List<VoiceInfo> {
-        // Get available cloud voices
-        TODO("Implement cloud voice listing")
+        // Simulated list of cloud-based voices
+        return listOf(
+            VoiceInfo(
+                id = "cloud-en-us-female-1",
+                name = "Claire",
+                gender = VoiceGender.FEMALE,
+                age = VoiceAge.ADULT,
+                languageCodes = listOf(LanguageCode.EN_US),
+                sampleRateHertz = 24000,
+                naturalness = 0.95f,
+                isNeural = true,
+                requiresNetwork = true,
+                customizationSupport = true
+            ),
+            VoiceInfo(
+                id = "cloud-en-us-male-1",
+                name = "James",
+                gender = VoiceGender.MALE,
+                age = VoiceAge.ADULT,
+                languageCodes = listOf(LanguageCode.EN_US),
+                sampleRateHertz = 24000,
+                naturalness = 0.95f,
+                isNeural = true,
+                requiresNetwork = true,
+                customizationSupport = true
+            ),
+            VoiceInfo(
+                id = "cloud-en-gb-female-1",
+                name = "Emma",
+                gender = VoiceGender.FEMALE,
+                age = VoiceAge.ADULT,
+                languageCodes = listOf(LanguageCode.EN_GB),
+                sampleRateHertz = 24000,
+                naturalness = 0.92f,
+                isNeural = true,
+                requiresNetwork = true,
+                customizationSupport = true
+            )
+        )
     }
     
     override suspend fun speak(text: String, options: SpeechSynthesisOptions): SynthesisResult {
-        // Speak text using cloud TTS
-        TODO("Implement cloud speech synthesis")
+        // Simulate API call for speech synthesis
+        println("Cloud TTS API call: $apiEndpoint")
+        println("Text: $text")
+        println("Voice: ${options.voiceId}")
+        
+        // Simulate network delay
+        kotlinx.coroutines.delay(300)
+        
+        val audioData = synthesize(text, options)
+        val duration = (text.length * 60 * (1.0f / options.speakingRate)).toLong()
+        
+        return SynthesisResult(
+            id = "cloud-${System.currentTimeMillis()}",
+            audioData = audioData,
+            duration = duration,
+            wordBoundaries = generateDetailedWordBoundaries(text, duration)
+        )
     }
     
     override suspend fun speakSsml(ssml: String, options: SpeechSynthesisOptions): SynthesisResult {
-        // Speak SSML using cloud TTS
-        TODO("Implement cloud SSML synthesis")
+        println("Cloud TTS API call with SSML: $apiEndpoint")
+        println("SSML: $ssml")
+        println("Voice: ${options.voiceId}")
+        
+        // Simulate network delay
+        kotlinx.coroutines.delay(350)
+        
+        val audioData = synthesizeSsml(ssml, options)
+        // Extract plain text to estimate duration
+        val plainText = ssml.replace(Regex("<[^>]*>"), "")
+        val duration = (plainText.length * 60 * (1.0f / options.speakingRate)).toLong()
+        
+        return SynthesisResult(
+            id = "cloud-ssml-${System.currentTimeMillis()}",
+            audioData = audioData,
+            duration = duration,
+            wordBoundaries = generateDetailedWordBoundaries(plainText, duration)
+        )
     }
     
     override suspend fun synthesize(text: String, options: SpeechSynthesisOptions): ByteArray {
-        // Synthesize text to audio data using cloud TTS
-        TODO("Implement cloud text synthesis")
+        // Simulate cloud API call for synthesis
+        println("Cloud TTS synthesis request for text: ${text.take(50)}${if (text.length > 50) "..." else ""}")
+        
+        // Simulate network delay
+        kotlinx.coroutines.delay(text.length / 5L)
+        
+        // Create mock audio data with higher quality than on-device
+        return ByteArray(text.length * 800) { (it % 256).toByte() }
     }
     
     override suspend fun synthesizeSsml(ssml: String, options: SpeechSynthesisOptions): ByteArray {
-        // Synthesize SSML to audio data using cloud TTS
-        TODO("Implement cloud SSML synthesis")
+        // Simulate cloud API call for SSML synthesis
+        println("Cloud TTS synthesis request for SSML: ${ssml.take(50)}${if (ssml.length > 50) "..." else ""}")
+        
+        // Simulate network delay
+        kotlinx.coroutines.delay(ssml.length / 5L)
+        
+        // Create mock audio data
+        return ByteArray(ssml.length * 800) { (it % 256).toByte() }
     }
     
     override suspend fun synthesizeToStream(text: String, options: SpeechSynthesisOptions, outputStream: OutputStream) {
-        // Synthesize text to output stream using cloud TTS
-        TODO("Implement cloud stream synthesis")
+        val audioData = synthesize(text, options)
+        outputStream.write(audioData)
+        outputStream.flush()
     }
     
     override suspend fun synthesizeToFile(text: String, options: SpeechSynthesisOptions, outputFile: File): File {
-        // Synthesize text to file using cloud TTS
-        TODO("Implement cloud file synthesis")
+        val audioData = synthesize(text, options)
+        outputFile.writeBytes(audioData)
+        return outputFile
     }
     
     override suspend fun stop() {
-        // Stop cloud TTS
+        // Stop any ongoing cloud TTS synthesis or playback
+        println("Cancelling cloud TTS requests")
     }
     
     override suspend fun shutdown() {
         // Release cloud TTS resources
+        println("Closing cloud TTS connections and releasing resources")
+        apiKey = ""
+    }
+    
+    // Helper method to generate more detailed word boundaries for neural voices
+    private fun generateDetailedWordBoundaries(text: String, totalDuration: Long): List<SynthesisResult.WordBoundary> {
+        val words = text.split(Regex("\\s+"))
+        val boundaries = mutableListOf<SynthesisResult.WordBoundary>()
+        
+        var currentTime = 0L
+        for (word in words) {
+            if (word.isNotEmpty()) {
+                // Make word durations proportional to length for more realistic timing
+                val wordDuration = (word.length * 75 + 50).toLong()
+                boundaries.add(
+                    SynthesisResult.WordBoundary(
+                        word = word,
+                        startTimeMs = currentTime,
+                        endTimeMs = currentTime + wordDuration
+                    )
+                )
+                currentTime += wordDuration
+            }
+        }
+        
+        return boundaries
     }
 }

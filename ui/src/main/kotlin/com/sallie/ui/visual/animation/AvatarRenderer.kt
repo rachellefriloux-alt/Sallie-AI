@@ -274,19 +274,43 @@ class AvatarRenderer(
     }
 
     private fun getEyebrowAsset(expression: EyeExpression): ImageAsset {
-        return assets["eyebrows_${expression.name.toLowerCase()}"] ?: PlaceholderAsset("eyebrows_placeholder")
+        // Try to get expression-specific eyebrows first
+        val expressionAsset = assets["eyebrows_${expression.name.toLowerCase()}"]
+        if (expressionAsset != null) return expressionAsset
+
+        // Fallback to default eyebrows
+        val defaultAsset = assets["eyebrows_default"]
+        if (defaultAsset != null) return defaultAsset
+
+        // Generate programmatic eyebrows if no assets available
+        return GeneratedFacialAsset("eyebrows_${expression.name.toLowerCase()}", FacialFeature.EYEBROWS, expression)
     }
 
     private fun getNoseAsset(): ImageAsset {
-        return assets["nose"] ?: PlaceholderAsset("nose_placeholder")
+        // Try to get nose asset
+        val noseAsset = assets["nose"]
+        if (noseAsset != null) return noseAsset
+
+        // Generate programmatic nose if no asset available
+        return GeneratedFacialAsset("nose", FacialFeature.NOSE, null)
     }
 
     private fun getCheekAsset(): ImageAsset {
-        return assets["cheek_blush"] ?: PlaceholderAsset("cheek_placeholder")
+        // Try to get cheek blush asset
+        val cheekAsset = assets["cheek_blush"]
+        if (cheekAsset != null) return cheekAsset
+
+        // Generate programmatic cheeks if no asset available
+        return GeneratedFacialAsset("cheek_blush", FacialFeature.CHEEKS, null)
     }
 
     private fun getSweatDropAsset(): ImageAsset {
-        return assets["sweat_drop"] ?: PlaceholderAsset("sweat_placeholder")
+        // Try to get sweat drop asset
+        val sweatAsset = assets["sweat_drop"]
+        if (sweatAsset != null) return sweatAsset
+
+        // Generate programmatic sweat drops if no asset available
+        return GeneratedFacialAsset("sweat_drop", FacialFeature.SWEAT_DROP, null)
     }
 
     private fun calculateEyebrowPosition(position: Vector2, bodyPose: BodyPose): Vector2 {
@@ -928,35 +952,315 @@ class AnimationAssetManager {
     }
     
     fun getBodyPoseAsset(pose: BodyPose): ImageAsset {
-        // Return the appropriate asset for this pose
-        return assets["body_${pose.name.toLowerCase()}"] ?: PlaceholderAsset("body_placeholder")
+        // Try to get pose-specific body asset
+        val poseAsset = assets["body_${pose.name.toLowerCase()}"]
+        if (poseAsset != null) return poseAsset
+
+        // Fallback to default body
+        val defaultAsset = assets["body_default"]
+        if (defaultAsset != null) return defaultAsset
+
+        // Generate programmatic body if no assets available
+        return GeneratedFacialAsset("body_${pose.name.toLowerCase()}", FacialFeature.BODY, pose)
     }
-    
+
     fun getEyeExpressionAsset(expression: EyeExpression): ImageAsset {
-        return assets["eyes_${expression.name.toLowerCase()}"] ?: PlaceholderAsset("eyes_placeholder")
+        // Try to get expression-specific eyes
+        val expressionAsset = assets["eyes_${expression.name.toLowerCase()}"]
+        if (expressionAsset != null) return expressionAsset
+
+        // Fallback to default eyes
+        val defaultAsset = assets["eyes_default"]
+        if (defaultAsset != null) return defaultAsset
+
+        // Generate programmatic eyes if no assets available
+        return GeneratedFacialAsset("eyes_${expression.name.toLowerCase()}", FacialFeature.EYES, expression)
     }
-    
+
     fun getMouthExpressionAsset(expression: MouthExpression): ImageAsset {
-        return assets["mouth_${expression.name.toLowerCase()}"] ?: PlaceholderAsset("mouth_placeholder")
+        // Try to get expression-specific mouth
+        val expressionAsset = assets["mouth_${expression.name.toLowerCase()}"]
+        if (expressionAsset != null) return expressionAsset
+
+        // Fallback to default mouth
+        val defaultAsset = assets["mouth_default"]
+        if (defaultAsset != null) return defaultAsset
+
+        // Generate programmatic mouth if no assets available
+        return GeneratedFacialAsset("mouth_${expression.name.toLowerCase()}", FacialFeature.MOUTH, expression)
     }
-    
+
     fun getAccessoryAsset(accessoryId: String): ImageAsset {
-        return assets[accessoryId] ?: PlaceholderAsset("accessory_placeholder")
+        // Try to get specific accessory
+        val accessoryAsset = assets[accessoryId]
+        if (accessoryAsset != null) return accessoryAsset
+
+        // Generate programmatic accessory if no asset available
+        return GeneratedFacialAsset(accessoryId, FacialFeature.ACCESSORY, null)
     }
-    
-    private class PlaceholderAsset(override val id: String) : ImageAsset {
+
+    /**
+     * Enum for different facial features
+     */
+    enum class FacialFeature {
+        EYEBROWS,
+        NOSE,
+        CHEEKS,
+        SWEAT_DROP,
+        EYES,
+        MOUTH,
+        BODY,
+        ACCESSORY
+    }
+
+    /**
+     * Generated facial asset for when specific assets aren't available
+     */
+    private class GeneratedFacialAsset(
+        override val id: String,
+        private val feature: FacialFeature,
+        private val expression: Any? = null
+    ) : ImageAsset {
         override val width: Int = 100
         override val height: Int = 100
-        
+        private var isAssetLoaded = false
+
         override fun load() {
-            // Do nothing for placeholder
+            // Generate the asset programmatically based on the feature type
+            isAssetLoaded = true
         }
-        
+
         override fun unload() {
-            // Do nothing for placeholder
+            isAssetLoaded = false
         }
-        
-        override fun isLoaded(): Boolean = true
+
+        override fun isLoaded(): Boolean = isAssetLoaded
+
+        /**
+         * Get the generated drawable for this facial feature
+         */
+        fun getGeneratedDrawable(): android.graphics.drawable.Drawable {
+            return when (feature) {
+                FacialFeature.EYEBROWS -> generateEyebrows()
+                FacialFeature.NOSE -> generateNose()
+                FacialFeature.CHEEKS -> generateCheeks()
+                FacialFeature.SWEAT_DROP -> generateSweatDrop()
+                FacialFeature.EYES -> generateEyes()
+                FacialFeature.MOUTH -> generateMouth()
+                FacialFeature.BODY -> generateBody()
+                FacialFeature.ACCESSORY -> generateAccessory()
+            }
+        }
+
+        private fun generateEyebrows(): android.graphics.drawable.Drawable {
+            return object : android.graphics.drawable.Drawable() {
+                override fun draw(canvas: android.graphics.Canvas) {
+                    val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+                        color = android.graphics.Color.BLACK
+                        style = android.graphics.Paint.Style.STROKE
+                        strokeWidth = 3f
+                    }
+
+                    val bounds = bounds
+                    val centerX = bounds.centerX().toFloat()
+                    val centerY = bounds.centerY().toFloat()
+
+                    // Draw simple eyebrow arcs
+                    val path = android.graphics.Path()
+                    path.moveTo(centerX - 25f, centerY - 10f)
+                    path.quadTo(centerX, centerY - 15f, centerX + 25f, centerY - 10f)
+                    canvas.drawPath(path, paint)
+                }
+
+                override fun setAlpha(alpha: Int) {}
+                override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {}
+                override fun getOpacity(): Int = android.graphics.PixelFormat.OPAQUE
+            }
+        }
+
+        private fun generateNose(): android.graphics.drawable.Drawable {
+            return object : android.graphics.drawable.Drawable() {
+                override fun draw(canvas: android.graphics.Canvas) {
+                    val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+                        color = android.graphics.Color.parseColor("#FFDBB4") // Skin tone
+                        style = android.graphics.Paint.Style.FILL
+                    }
+
+                    val bounds = bounds
+                    val centerX = bounds.centerX().toFloat()
+                    val centerY = bounds.centerY().toFloat()
+
+                    // Draw simple nose triangle
+                    val path = android.graphics.Path()
+                    path.moveTo(centerX, centerY - 15f)
+                    path.lineTo(centerX - 8f, centerY + 10f)
+                    path.lineTo(centerX + 8f, centerY + 10f)
+                    path.close()
+                    canvas.drawPath(path, paint)
+                }
+
+                override fun setAlpha(alpha: Int) {}
+                override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {}
+                override fun getOpacity(): Int = android.graphics.PixelFormat.OPAQUE
+            }
+        }
+
+        private fun generateCheeks(): android.graphics.drawable.Drawable {
+            return object : android.graphics.drawable.Drawable() {
+                override fun draw(canvas: android.graphics.Canvas) {
+                    val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+                        color = android.graphics.Color.parseColor("#FFB6C1") // Light pink blush
+                        style = android.graphics.Paint.Style.FILL
+                    }
+
+                    val bounds = bounds
+                    val centerX = bounds.centerX().toFloat()
+                    val centerY = bounds.centerY().toFloat()
+
+                    // Draw circular blush on cheeks
+                    canvas.drawCircle(centerX - 20f, centerY, 12f, paint)
+                    canvas.drawCircle(centerX + 20f, centerY, 12f, paint)
+                }
+
+                override fun setAlpha(alpha: Int) {}
+                override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {}
+                override fun getOpacity(): Int = android.graphics.PixelFormat.OPAQUE
+            }
+        }
+
+        private fun generateSweatDrop(): android.graphics.drawable.Drawable {
+            return object : android.graphics.drawable.Drawable() {
+                override fun draw(canvas: android.graphics.Canvas) {
+                    val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+                        color = android.graphics.Color.parseColor("#87CEEB") // Light blue
+                        style = android.graphics.Paint.Style.FILL
+                    }
+
+                    val bounds = bounds
+                    val centerX = bounds.centerX().toFloat()
+                    val centerY = bounds.centerY().toFloat()
+
+                    // Draw teardrop-shaped sweat drop
+                    val path = android.graphics.Path()
+                    path.moveTo(centerX, centerY - 15f)
+                    path.quadTo(centerX - 8f, centerY - 5f, centerX - 5f, centerY + 10f)
+                    path.quadTo(centerX, centerY + 15f, centerX + 5f, centerY + 10f)
+                    path.quadTo(centerX + 8f, centerY - 5f, centerX, centerY - 15f)
+                    canvas.drawPath(path, paint)
+                }
+
+                override fun setAlpha(alpha: Int) {}
+                override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {}
+                override fun getOpacity(): Int = android.graphics.PixelFormat.OPAQUE
+            }
+        }
+
+        private fun generateEyes(): android.graphics.drawable.Drawable {
+            return object : android.graphics.drawable.Drawable() {
+                override fun draw(canvas: android.graphics.Canvas) {
+                    val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+
+                    val bounds = bounds
+                    val centerX = bounds.centerX().toFloat()
+                    val centerY = bounds.centerY().toFloat()
+
+                    // Draw eye whites
+                    paint.color = android.graphics.Color.WHITE
+                    paint.style = android.graphics.Paint.Style.FILL
+                    canvas.drawOval(android.graphics.RectF(centerX - 35f, centerY - 10f, centerX - 15f, centerY + 10f), paint)
+                    canvas.drawOval(android.graphics.RectF(centerX + 15f, centerY - 10f, centerX + 35f, centerY + 10f), paint)
+
+                    // Draw pupils
+                    paint.color = android.graphics.Color.BLACK
+                    canvas.drawCircle(centerX - 25f, centerY, 4f, paint)
+                    canvas.drawCircle(centerX + 25f, centerY, 4f, paint)
+                }
+
+                override fun setAlpha(alpha: Int) {}
+                override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {}
+                override fun getOpacity(): Int = android.graphics.PixelFormat.OPAQUE
+            }
+        }
+
+        private fun generateMouth(): android.graphics.drawable.Drawable {
+            return object : android.graphics.drawable.Drawable() {
+                override fun draw(canvas: android.graphics.Canvas) {
+                    val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+                        color = android.graphics.Color.parseColor("#FFB6C1") // Light pink
+                        style = android.graphics.Paint.Style.STROKE
+                        strokeWidth = 3f
+                        strokeCap = android.graphics.Paint.Cap.ROUND
+                    }
+
+                    val bounds = bounds
+                    val centerX = bounds.centerX().toFloat()
+                    val centerY = bounds.centerY().toFloat()
+
+                    // Draw simple smile
+                    val path = android.graphics.Path()
+                    path.moveTo(centerX - 15f, centerY)
+                    path.quadTo(centerX, centerY + 8f, centerX + 15f, centerY)
+                    canvas.drawPath(path, paint)
+                }
+
+                override fun setAlpha(alpha: Int) {}
+                override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {}
+                override fun getOpacity(): Int = android.graphics.PixelFormat.OPAQUE
+            }
+        }
+
+        private fun generateBody(): android.graphics.drawable.Drawable {
+            return object : android.graphics.drawable.Drawable() {
+                override fun draw(canvas: android.graphics.Canvas) {
+                    val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+                        color = android.graphics.Color.parseColor("#FFDBB4") // Skin tone
+                        style = android.graphics.Paint.Style.FILL
+                    }
+
+                    val bounds = bounds
+                    val centerX = bounds.centerX().toFloat()
+                    val centerY = bounds.centerY().toFloat()
+
+                    // Draw simple body shape
+                    canvas.drawOval(android.graphics.RectF(centerX - 30f, centerY - 40f, centerX + 30f, centerY + 40f), paint)
+                }
+
+                override fun setAlpha(alpha: Int) {}
+                override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {}
+                override fun getOpacity(): Int = android.graphics.PixelFormat.OPAQUE
+            }
+        }
+
+        private fun generateAccessory(): android.graphics.drawable.Drawable {
+            return object : android.graphics.drawable.Drawable() {
+                override fun draw(canvas: android.graphics.Canvas) {
+                    val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+                        color = android.graphics.Color.YELLOW
+                        style = android.graphics.Paint.Style.FILL
+                    }
+
+                    val bounds = bounds
+                    val centerX = bounds.centerX().toFloat()
+                    val centerY = bounds.centerY().toFloat()
+
+                    // Draw simple accessory (star shape)
+                    val path = android.graphics.Path()
+                    for (i in 0..4) {
+                        val angle = (i * 72).toDouble()
+                        val radius = if (i % 2 == 0) 15.0 else 8.0
+                        val x = centerX + radius * Math.cos(Math.toRadians(angle))
+                        val y = centerY + radius * Math.sin(Math.toRadians(angle))
+                        if (i == 0) path.moveTo(x.toFloat(), y.toFloat()) else path.lineTo(x.toFloat(), y.toFloat())
+                    }
+                    path.close()
+                    canvas.drawPath(path, paint)
+                }
+
+                override fun setAlpha(alpha: Int) {}
+                override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {}
+                override fun getOpacity(): Int = android.graphics.PixelFormat.OPAQUE
+            }
+        }
     }
 }
 

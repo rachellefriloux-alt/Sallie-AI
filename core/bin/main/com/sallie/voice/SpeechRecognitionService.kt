@@ -233,7 +233,52 @@ class OnDeviceSpeechRecognizer : BaseSpeechRecognizer() {
     override suspend fun startListening(config: RecognitionConfig): Flow<RecognitionResult> {
         // Start on-device recognition
         // Return flow of recognition results
-        TODO("Implement on-device speech recognition")
+        // Create a flow to emit recognition results
+        return kotlinx.coroutines.flow.flow {
+            try {
+                // Set up on-device recognition
+                val recognizer = initializeLocalRecognizer(config)
+                
+                // Start audio capture
+                val audioCapture = AudioCaptureManager.startCapture(config.audioFormat)
+                
+                // Process audio frames
+                audioCapture.collect { audioFrame ->
+                    // Process the audio frame through the recognizer
+                    val result = processAudioFrame(recognizer, audioFrame, config)
+                    
+                    // Emit the result if speech was detected
+                    if (result.isNotEmpty()) {
+                        emit(RecognitionResult(
+                            text = result,
+                            confidence = 0.85f,
+                            isFinal = !config.enableInterimResults,
+                            alternatives = emptyList(),
+                            timestamps = emptyMap()
+                        ))
+                    }
+                    
+                    // Check for silence to handle end of speech
+                    if (detectEndOfSpeech(audioFrame, config.vadSensitivity)) {
+                        emit(RecognitionResult(
+                            text = result,
+                            confidence = 0.95f,
+                            isFinal = true,
+                            alternatives = emptyList(),
+                            timestamps = emptyMap()
+                        ))
+                        break
+                    }
+                }
+            } catch (e: Exception) {
+                emit(RecognitionResult(
+                    text = "",
+                    confidence = 0.0f,
+                    isFinal = true,
+                    error = e.message ?: "Unknown recognition error"
+                ))
+            }
+        }
     }
     
     override suspend fun stopListening() {
@@ -242,17 +287,142 @@ class OnDeviceSpeechRecognizer : BaseSpeechRecognizer() {
     
     override suspend fun recognizeAudio(audioData: ByteArray, config: RecognitionConfig): RecognitionResult {
         // Recognize speech from audio data on-device
-        TODO("Implement on-device audio recognition")
+        try {
+            // Initialize the on-device recognizer with configuration
+            val recognizer = initializeLocalRecognizer(config)
+            
+            // Process the audio data
+            val recognitionText = processAudioBytes(recognizer, audioData, config)
+            
+            // Return the recognition result
+            return RecognitionResult(
+            text = recognitionText,
+            confidence = calculateConfidence(recognitionText),
+            isFinal = true,
+            alternatives = generateAlternatives(recognizer, audioData, config),
+            timestamps = if (config.enableWordTimestamps) extractWordTimestamps(recognizer, audioData) else emptyMap()
+            )
+        } catch (e: Exception) {
+            return RecognitionResult(
+            text = "",
+            confidence = 0.0f,
+            isFinal = true,
+            error = e.message ?: "On-device audio recognition failed"
+            )
+        }
     }
     
     override suspend fun recognizeFile(file: File, config: RecognitionConfig): RecognitionResult {
         // Recognize speech from audio file on-device
-        TODO("Implement on-device file recognition")
+        try {
+            // Read the audio data from file
+            val audioData = file.readBytes()
+            
+            // Initialize the on-device recognizer with configuration
+            val recognizer = initializeLocalRecognizer(config)
+            
+            // Process the audio data
+            val recognitionText = processAudioBytes(recognizer, audioData, config)
+            
+            // Return the recognition result
+            return RecognitionResult(
+            text = recognitionText,
+            confidence = calculateConfidence(recognitionText),
+            isFinal = true,
+            alternatives = generateAlternatives(recognizer, audioData, config),
+            timestamps = if (config.enableWordTimestamps) extractWordTimestamps(recognizer, audioData) else emptyMap()
+            )
+        } catch (e: Exception) {
+            return RecognitionResult(
+            text = "",
+            confidence = 0.0f,
+            isFinal = true,
+            error = e.message ?: "On-device file recognition failed"
+            )
+        }
     }
     
     override suspend fun recognizeStream(audioStream: InputStream, config: RecognitionConfig): Flow<RecognitionResult> {
         // Recognize speech from audio stream on-device
-        TODO("Implement on-device stream recognition")
+        return kotlinx.coroutines.flow.flow {
+            try {
+                // Initialize the on-device recognizer with configuration
+                val recognizer = initializeLocalRecognizer(config)
+                
+                // Buffer for reading audio data
+                val buffer = ByteArray(4096)  // 4KB buffer size
+                var bytesRead: Int
+                var currentText = ""
+                var silenceCounter = 0
+                
+                // Read from stream in chunks
+                while (audioStream.read(buffer).also { bytesRead = it } != -1) {
+                    if (bytesRead > 0) {
+                        // Process the audio chunk
+                        val chunkResult = processAudioBytes(recognizer, buffer.copyOf(bytesRead), config)
+                        
+                        // Update current recognition text
+                        if (chunkResult.isNotEmpty()) {
+                            currentText = chunkResult
+                            silenceCounter = 0
+                            
+                            // Emit interim result if enabled
+                            if (config.enableInterimResults) {
+                                emit(RecognitionResult(
+                                    text = currentText,
+                                    confidence = calculateConfidence(currentText),
+                                    isFinal = false,
+                                    alternatives = emptyList(),
+                                    timestamps = emptyMap()
+                                ))
+                            }
+                        } else {
+                            // Count silence chunks to detect end of speech
+                            silenceCounter++
+                        }
+                        
+                        // If we detect enough silence, consider it end of utterance
+                        if (silenceCounter > 5 && currentText.isNotEmpty()) {
+                            emit(RecognitionResult(
+                                text = currentText,
+                                confidence = calculateConfidence(currentText),
+                                isFinal = true,
+                                alternatives = generateAlternatives(recognizer, buffer, config),
+                                timestamps = if (config.enableWordTimestamps) 
+                                               extractWordTimestamps(recognizer, buffer) 
+                                            else emptyMap()
+                            ))
+                            currentText = ""
+                            silenceCounter = 0
+                        }
+                    }
+                }
+                
+                // Emit final result if there's pending text
+                if (currentText.isNotEmpty()) {
+                    emit(RecognitionResult(
+                        text = currentText,
+                        confidence = calculateConfidence(currentText),
+                        isFinal = true,
+                        alternatives = emptyList(),
+                        timestamps = emptyMap()
+                    ))
+                }
+            } catch (e: Exception) {
+                emit(RecognitionResult(
+                    text = "",
+                    confidence = 0.0f,
+                    isFinal = true,
+                    error = e.message ?: "On-device stream recognition failed"
+                ))
+            } finally {
+                try {
+                    audioStream.close()
+                } catch (e: Exception) {
+                    // Ignore close errors
+                }
+            }
+        }
     }
     
     override suspend fun cancel() {
@@ -278,7 +448,85 @@ class CloudSpeechRecognizer : BaseSpeechRecognizer() {
     override suspend fun startListening(config: RecognitionConfig): Flow<RecognitionResult> {
         // Start cloud recognition
         // Return flow of recognition results
-        TODO("Implement cloud speech recognition")
+        // Start cloud recognition
+        return kotlinx.coroutines.flow.flow {
+            try {
+                // Initialize cloud connection with API credentials
+                val cloudService = initializeCloudService(config)
+                
+                // Create an audio capture session with configured format
+                val audioCapture = AudioCaptureManager.startCapture(config.audioFormat)
+                
+                // Establish streaming connection to cloud service
+                val streamSession = cloudService.createStreamingSession(
+                    languageCode = config.languageCode,
+                    enableInterimResults = config.enableInterimResults,
+                    enablePunctuation = config.enablePunctuation,
+                    maxAlternatives = config.maxAlternatives,
+                    profanityFilter = config.profanityFilter,
+                    speechContext = config.speechContext
+                )
+                
+                // Buffer for collecting enough audio before sending
+                val audioBuffer = AudioBuffer(OPTIMAL_CHUNK_SIZE_MS)
+                
+                // Process incoming audio and send to cloud
+                audioCapture.collect { audioFrame ->
+                    // Add to buffer and check if we have enough to send
+                    audioBuffer.add(audioFrame)
+                    
+                    if (audioBuffer.isReadyToSend()) {
+                        // Send audio chunk to cloud
+                        streamSession.sendAudio(audioBuffer.getAndClear())
+                        
+                        // Check for any available results
+                        val cloudResults = streamSession.getAvailableResults()
+                        
+                        cloudResults.forEach { cloudResult ->
+                            emit(RecognitionResult(
+                                text = cloudResult.transcript,
+                                confidence = cloudResult.confidence,
+                                isFinal = cloudResult.isFinal,
+                                alternatives = cloudResult.alternatives.map { 
+                                    Alternative(text = it.transcript, confidence = it.confidence) 
+                                },
+                                timestamps = cloudResult.wordTimings
+                            ))
+                            
+                            // If we got a final result, we can stop if not waiting for more speech
+                            if (cloudResult.isFinal && !config.enableInterimResults) {
+                                break
+                            }
+                        }
+                    }
+                }
+                
+                // Send final audio and get final results
+                streamSession.finishAudio()
+                val finalResults = streamSession.getFinalResults()
+                
+                if (finalResults.isNotEmpty()) {
+                    val bestResult = finalResults.first()
+                    emit(RecognitionResult(
+                        text = bestResult.transcript,
+                        confidence = bestResult.confidence,
+                        isFinal = true,
+                        alternatives = bestResult.alternatives.map { 
+                            Alternative(text = it.transcript, confidence = it.confidence) 
+                        },
+                        timestamps = bestResult.wordTimings
+                    ))
+                }
+                
+            } catch (e: Exception) {
+                emit(RecognitionResult(
+                    text = "",
+                    confidence = 0.0f,
+                    isFinal = true,
+                    error = e.message ?: "Cloud recognition failed: Unknown error"
+                ))
+            }
+        }
     }
     
     override suspend fun stopListening() {
@@ -335,12 +583,130 @@ class CloudSpeechRecognizer : BaseSpeechRecognizer() {
     
     override suspend fun recognizeFile(file: File, config: RecognitionConfig): RecognitionResult {
         // Recognize speech from audio file via cloud
-        TODO("Implement cloud file recognition")
+        try {
+            // Read file bytes
+            val audioData = file.readBytes()
+            
+            // Initialize cloud service with configuration
+            val cloudService = initializeCloudService(config)
+            
+            // Send audio data to cloud service
+            val cloudResponse = cloudService.recognizeSynchronous(
+                audioData = audioData,
+                languageCode = config.languageCode,
+                enablePunctuation = config.enablePunctuation,
+                maxAlternatives = config.maxAlternatives,
+                profanityFilter = config.profanityFilter,
+                speechContext = config.speechContext,
+                enableWordTimestamps = config.enableWordTimestamps
+            )
+            
+            // Process and return the result
+            return if (cloudResponse.isSuccessful && cloudResponse.results.isNotEmpty()) {
+                val bestResult = cloudResponse.results.first()
+                RecognitionResult(
+                    text = bestResult.transcript,
+                    confidence = bestResult.confidence,
+                    isFinal = true,
+                    alternatives = bestResult.alternatives.map { 
+                        Alternative(text = it.transcript, confidence = it.confidence) 
+                    },
+                    timestamps = if (config.enableWordTimestamps) bestResult.wordTimings else emptyMap()
+                )
+            } else {
+                RecognitionResult(
+                    text = "",
+                    confidence = 0.0f,
+                    isFinal = true,
+                    error = cloudResponse.errorMessage ?: "No results returned from cloud service"
+                )
+            }
+        } catch (e: Exception) {
+            return RecognitionResult(
+                text = "",
+                confidence = 0.0f,
+                isFinal = true,
+                error = e.message ?: "Cloud file recognition failed"
+            )
+        }
     }
     
     override suspend fun recognizeStream(audioStream: InputStream, config: RecognitionConfig): Flow<RecognitionResult> {
         // Recognize speech from audio stream via cloud
-        TODO("Implement cloud stream recognition")
+        return kotlinx.coroutines.flow.flow {
+            try {
+                // Initialize cloud service with configuration
+                val cloudService = initializeCloudService(config)
+                
+                // Create streaming session with cloud service
+                val streamSession = cloudService.createStreamingSession(
+                    languageCode = config.languageCode,
+                    enableInterimResults = config.enableInterimResults,
+                    enablePunctuation = config.enablePunctuation,
+                    maxAlternatives = config.maxAlternatives,
+                    profanityFilter = config.profanityFilter,
+                    speechContext = config.speechContext,
+                    enableWordTimestamps = config.enableWordTimestamps
+                )
+                
+                // Buffer for reading audio data
+                val buffer = ByteArray(8192)  // 8KB buffer
+                var bytesRead: Int
+                
+                // Read from stream in chunks and send to cloud
+                while (audioStream.read(buffer).also { bytesRead = it } != -1) {
+                    if (bytesRead > 0) {
+                        // Send audio chunk to cloud
+                        streamSession.sendAudio(buffer.copyOf(bytesRead))
+                        
+                        // Check for any available results
+                        val cloudResults = streamSession.getAvailableResults()
+                        
+                        cloudResults.forEach { cloudResult ->
+                            emit(RecognitionResult(
+                                text = cloudResult.transcript,
+                                confidence = cloudResult.confidence,
+                                isFinal = cloudResult.isFinal,
+                                alternatives = cloudResult.alternatives.map { 
+                                    Alternative(text = it.transcript, confidence = it.confidence) 
+                                },
+                                timestamps = if (config.enableWordTimestamps) cloudResult.wordTimings else emptyMap()
+                            ))
+                        }
+                    }
+                }
+                
+                // Send final audio and get final results
+                streamSession.finishAudio()
+                val finalResults = streamSession.getFinalResults()
+                
+                if (finalResults.isNotEmpty()) {
+                    val bestResult = finalResults.first()
+                    emit(RecognitionResult(
+                        text = bestResult.transcript,
+                        confidence = bestResult.confidence,
+                        isFinal = true,
+                        alternatives = bestResult.alternatives.map { 
+                            Alternative(text = it.transcript, confidence = it.confidence) 
+                        },
+                        timestamps = if (config.enableWordTimestamps) bestResult.wordTimings else emptyMap()
+                    ))
+                }
+            } catch (e: Exception) {
+                emit(RecognitionResult(
+                    text = "",
+                    confidence = 0.0f,
+                    isFinal = true,
+                    error = e.message ?: "Cloud stream recognition failed"
+                ))
+            } finally {
+                try {
+                    audioStream.close()
+                } catch (e: Exception) {
+                    // Ignore close errors
+                }
+            }
+        }
     }
     
     override suspend fun cancel() {
