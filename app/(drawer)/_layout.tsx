@@ -6,28 +6,28 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import CustomDrawerContent from '@/components/CustomDrawerContent';
-import ThemeProvider from '@/components/ThemeSystem';
+import { useTheme } from '@/components/ThemeSystem';
 import { ToastProvider } from '@/components/ToastNotification';
 
 export default function DrawerLayout() {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
+    const { theme } = useTheme();
 
     return (
-        <ThemeProvider>
-            <ToastProvider>
-                <Drawer
-                    screenOptions={{
-                        headerStyle: {
-                            backgroundColor: colors.surface,
-                            borderBottomWidth: 1,
-                            borderBottomColor: colors.border,
-                        },
-                        headerTintColor: colors.text,
-                        headerTitleStyle: {
-                            fontFamily: 'SpaceMono',
-                            fontSize: 18,
-                            fontWeight: '600',
+        <ToastProvider>
+            <Drawer
+                screenOptions={{
+                    headerStyle: {
+                        backgroundColor: theme.colors.surface,
+                        borderBottomWidth: 1,
+                        borderBottomColor: theme.colors.border.medium,
+                    },
+                    headerTintColor: theme.colors.text.primary,
+                    headerTitleStyle: {
+                        fontFamily: 'SpaceMono',
+                        fontSize: 18,
+                        fontWeight: '600',
                         },
                         drawerStyle: {
                             backgroundColor: colors.surface,
