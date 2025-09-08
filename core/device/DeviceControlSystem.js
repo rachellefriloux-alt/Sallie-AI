@@ -34,9 +34,9 @@ class DeviceControlSystem {
       }
 
       this.isInitialized = true;
-      console.log('DeviceControlSystem initialized');
+      // DeviceControlSystem initialized successfully
     } catch (error) {
-      console.error('Failed to initialize DeviceControlSystem:', error);
+      // Failed to initialize DeviceControlSystem: ${error.message}
       throw error;
     }
   }
@@ -67,7 +67,7 @@ class DeviceControlSystem {
 
       return discoveredDevices;
     } catch (error) {
-      console.error('Error discovering devices:', error);
+      // Error discovering devices: ${error.message}
       return [];
     }
   }
@@ -104,7 +104,7 @@ class DeviceControlSystem {
       const result = await connector.executeCommand(device, command);
       return result;
     } catch (error) {
-      console.error(`Error executing command on device ${deviceId}:`, error);
+      // Error executing command on device ${deviceId}: ${error.message}
       throw error;
     }
   }
@@ -140,7 +140,7 @@ class DeviceControlSystem {
       }
       return { success: true, results };
     } catch (error) {
-      console.error(`Error executing scene ${sceneId}:`, error);
+      // Error executing scene ${sceneId}: ${error.message}
       return { success: false, error: error.message };
     }
   }
@@ -169,7 +169,7 @@ class DeviceControlSystem {
         return { success: false, reason: 'Conditions not met' };
       }
     } catch (error) {
-      console.error(`Error triggering rule ${ruleId}:`, error);
+      // Error triggering rule ${ruleId}: ${error.message}
       return { success: false, error: error.message };
     }
   }
@@ -207,9 +207,9 @@ class DeviceControlSystem {
   async shutdown() {
     try {
       this.isInitialized = false;
-      console.log('DeviceControlSystem shut down');
+      // DeviceControlSystem shut down successfully
     } catch (error) {
-      console.error('Error shutting down DeviceControlSystem:', error);
+      // Error shutting down DeviceControlSystem: ${error.message}
       throw error;
     }
   }

@@ -25,10 +25,10 @@ function getRuntimeFingerprint() {
         // Generate a hash of the fingerprint for easier comparison
         const fingerprintString = JSON.stringify(fingerprint);
         fingerprint.hash = crypto.createHash('sha256').update(fingerprintString).digest('hex');
-        
+
         return fingerprint;
     } catch (error) {
-        console.error('Error generating runtime fingerprint:', error);
+        // Error generating runtime fingerprint: ${error.message}
         return {
             error: 'Failed to generate complete fingerprint',
             timestamp: Date.now()

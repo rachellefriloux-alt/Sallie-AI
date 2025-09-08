@@ -535,7 +535,7 @@ class AdaptiveChallengeLadder {
      * Helper method to get appropriate difficulty range based on emotional state
      */
     getAppropriateDifficultyRange(emotionalArc) {
-        const { primaryEmotion, intensity, valence } = emotionalArc;
+        const { intensity, valence } = emotionalArc;
 
         // Base ranges
         let minDifficulty = 0.1;
