@@ -1,6 +1,17 @@
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import { StyleSheet } from 'react-native';
+
+// Dynamic imports for navigation components to avoid CommonJS/ESM conflicts
+let useBottomTabBarHeight: any;
+
+(async () => {
+  try {
+    const bottomTabs = await import('@react-navigation/bottom-tabs');
+    useBottomTabBarHeight = bottomTabs.useBottomTabBarHeight;
+  } catch (error) {
+    console.warn('Failed to load navigation components:', error);
+  }
+})();
 
 export default function BlurTabBarBackground() {
   return (
