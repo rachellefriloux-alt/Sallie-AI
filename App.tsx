@@ -1,8 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -29,8 +26,12 @@ import { useThemeStore } from './app/store/theme';
 // Import orchestrator
 import { systemOrchestrator } from './core/SystemOrchestrator';
 
-const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+// Dynamic imports for React Navigation to resolve CommonJS/ESM conflicts
+let NavigationContainer: any = null;
+let createNativeStackNavigator: any = null;
+let createBottomTabNavigator: any = null;
+let Stack: any = null;
+let Tab: any = null;
 
 interface TabBarIconProps {
   name: 'home' | 'brain' | 'cog';
@@ -39,6 +40,8 @@ interface TabBarIconProps {
 
 function TabNavigator() {
   const { currentTheme } = useThemeStore();
+
+  if (!Tab) return null;
 
   return (
     <Tab.Navigator
@@ -113,10 +116,37 @@ function TabBarIcon({ name, color }: TabBarIconProps) {
 }
 
 export default function App() {
+  const [navReady, setNavReady] = useState(false);
   const { emotion, tone } = usePersonaStore();
   const { shortTerm, episodic } = useMemoryStore();
   const { isLauncher } = useDeviceStore();
   const { currentTheme } = useThemeStore();
+
+  // Load navigation components dynamically
+  useEffect(() => {
+    const loadNavigation = async () => {
+      try {
+        const [navModule, stackModule, tabModule] = await Promise.all([
+          import('@react-navigation/native'),
+          import('@react-navigation/native-stack'),
+          import('@react-navigation/bottom-tabs')
+        ]);
+
+        NavigationContainer = navModule.NavigationContainer;
+        createNativeStackNavigator = stackModule.createNativeStackNavigator;
+        createBottomTabNavigator = tabModule.createBottomTabNavigator;
+
+        Stack = createNativeStackNavigator();
+        Tab = createBottomTabNavigator();
+
+        setNavReady(true);
+      } catch (error) {
+        console.error('Failed to load navigation components:', error);
+      }
+    };
+
+    loadNavigation();
+  }, []);
 
   // Preload critical components for better performance
   React.useEffect(() => {
@@ -127,6 +157,18 @@ export default function App() {
       console.error('Failed to initialize system orchestrator:', error);
     });
   }, []);
+
+  if (!navReady || !NavigationContainer || !Stack) {
+    return (
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: currentTheme.colors.background }}>
+            <Text style={{ color: currentTheme.colors.text }}>Loading Sallie AI...</Text>
+          </View>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    );
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

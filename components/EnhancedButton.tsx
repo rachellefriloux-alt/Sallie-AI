@@ -123,7 +123,7 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
     const pressAnimationConfig = {
         scale: 0.97,
         duration: theme.animation.durations.fast,
-        haptic: haptic ? 'LIGHT' : undefined,
+        haptic: haptic ? 'light' : undefined,
         enabled: !disabled && !loading,
     };
 
@@ -133,13 +133,13 @@ const EnhancedButton: React.FC<EnhancedButtonProps> = ({
     // Handle press events
     const handlePressIn = useCallback((event: GestureResponderEvent) => {
         setIsPressed(true);
-        animateIn();
+        if (animateIn) animateIn();
         if (onPressIn) onPressIn(event);
     }, [onPressIn, animateIn]);
 
     const handlePressOut = useCallback((event: GestureResponderEvent) => {
         setIsPressed(false);
-        animateOut();
+        if (animateOut) animateOut();
         if (onPressOut) onPressOut(event);
     }, [onPressOut, animateOut]);
 

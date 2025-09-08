@@ -27,3 +27,25 @@ export default function BlurTabBarBackground() {
 export function useBottomTabOverflow() {
   return useBottomTabBarHeight();
 }
+function useBottomTabBarHeight() {
+  const [height, setHeight] = React.useState(49); // Default iOS tab bar height
+
+  React.useEffect(() => {
+    // Try to get the actual height from the navigation package
+    import('@react-navigation/bottom-tabs').then(({ useBottomTabBarHeight }) => {
+      try {
+        const actualHeight = useBottomTabBarHeight();
+        if (actualHeight > 0) {
+          setHeight(actualHeight);
+        }
+      } catch (error) {
+        console.warn('Could not get bottom tab bar height:', error);
+      }
+    }).catch(() => {
+      console.warn('Could not import bottom-tabs package');
+    });
+  }, []);
+
+  return height;
+}
+

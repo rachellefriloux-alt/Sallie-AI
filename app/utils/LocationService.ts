@@ -294,7 +294,7 @@ export class LocationService {
   }
 
   private async checkGeofences(location: LocationInfo): Promise<void> {
-    this.geofences.forEach((geofence) => {
+    this.geofences.forEach(async (geofence) => {
       if (!geofence.isActive) return;
 
       const distance = await this.calculateDistance(

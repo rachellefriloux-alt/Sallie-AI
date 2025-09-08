@@ -301,7 +301,7 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({
     };
 
     // Get playback mode icon
-    const getPlaybackModeIcon = (): string => {
+    const getPlaybackModeIcon = (): React.ComponentProps<typeof Feather>['name'] => {
         switch (playbackMode) {
             case 'single': return 'minus';
             case 'loop': return 'repeat';
