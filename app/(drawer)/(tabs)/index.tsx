@@ -167,7 +167,7 @@ export default function SallieHomeScreen() {
                         >
                             <Text style={[
                                 styles.messageText,
-                                { color: msg.role === 'user' ? colors.background : colors.text }
+                                { color: msg.role === 'user' ? colors.background : colors.text.primary }
                             ]}>
                                 {msg.message}
                             </Text>
