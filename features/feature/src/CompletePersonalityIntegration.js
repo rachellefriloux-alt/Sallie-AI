@@ -57,7 +57,7 @@ class CompletePersonalityIntegration {
 
     createValuesIntegrator() {
         return {
-            processUserInput: async (message) => {
+            processUserInput: async (message, _context) => {
                 // Process through loyalty and pro-life systems
                 const loyaltyCheck = this.loyaltySystem.checkLoyaltyAlignment(message);
                 const proLifeCheck = this.proLifeSystem.checkContentAlignment(message);
@@ -80,7 +80,7 @@ class CompletePersonalityIntegration {
 
     createCreativeIntegrator() {
         return {
-            processUserInput: async (message) => {
+            processUserInput: async (message, _context) => {
                 let enhancedMessage = message;
 
                 // Add creative enhancement if message is long enough
