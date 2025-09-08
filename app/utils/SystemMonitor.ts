@@ -16,13 +16,6 @@ export interface NetworkInfo {
   isConnected: boolean;
   isInternetReachable: boolean;
   type: Network.NetworkStateType;
-  isConnected: boolean;
-  isInternetReachable: boolean;
-  type: Network.NetworkStateType;
-  details?: {
-    isConnectionExpensive?: boolean;
-    cellularGeneration?: Network.CellularGeneration;
-  };
 }
 
 export interface DeviceInfo {
@@ -35,13 +28,13 @@ export interface DeviceInfo {
   manufacturer: string;
   brand: string;
   isDevice: boolean;
-  isEmulator: boolean;
 }
 
 export interface PerformanceMetrics {
   memoryUsage: number;
   cpuUsage: number;
   batteryDrainRate: number;
+  batteryUsage: number;
   networkLatency: number;
   timestamp: number;
 }
@@ -57,7 +50,7 @@ export interface SystemHealth {
 export class SystemMonitor {
   private static instance: SystemMonitor;
   private batterySubscription: Battery.Subscription | null = null;
-  private networkSubscription: Network.Subscription | null = null;
+  private networkSubscription: any = null;
   private performanceInterval: NodeJS.Timeout | null = null;
   
   private currentBatteryInfo: BatteryInfo | null = null;
@@ -107,7 +100,7 @@ export class SystemMonitor {
       };
 
       // Subscribe to battery changes
-      this.batterySubscription = Battery.addBatteryStateListener(({ batteryState, batteryLevel }) => {
+      this.batterySubscription = Battery.addBatteryStateListener(({ batteryState }) => {
         this.currentBatteryInfo = {
           ...this.currentBatteryInfo!,
           batteryLevel,
@@ -128,25 +121,17 @@ export class SystemMonitor {
       const networkState = await Network.getNetworkStateAsync();
       
       this.currentNetworkInfo = {
-        isConnected: networkState.isConnected,
-        isInternetReachable: networkState.isInternetReachable,
-        type: networkState.type,
-        details: {
-          isConnectionExpensive: networkState.details?.isConnectionExpensive,
-          cellularGeneration: networkState.details?.cellularGeneration,
-        },
+        isConnected: networkState.isConnected ?? false,
+        isInternetReachable: networkState.isInternetReachable ?? false,
+        type: networkState.type ?? Network.NetworkStateType.UNKNOWN,
       };
 
       // Subscribe to network changes
-      this.networkSubscription = Network.addNetworkStateListener(({ isConnected, isInternetReachable, type, details }) => {
+      this.networkSubscription = Network.addNetworkStateListener(({ isConnected, isInternetReachable, type }) => {
         this.currentNetworkInfo = {
-          isConnected,
-          isInternetReachable,
-          type,
-          details: {
-            isConnectionExpensive: details?.isConnectionExpensive,
-            cellularGeneration: details?.cellularGeneration,
-          },
+          isConnected: isConnected ?? false,
+          isInternetReachable: isInternetReachable ?? false,
+          type: type ?? Network.NetworkStateType.UNKNOWN,
         };
       });
 
@@ -186,6 +171,7 @@ export class SystemMonitor {
         memoryUsage: await this.getMemoryUsage(),
         cpuUsage: await this.getCPUUsage(),
         batteryDrainRate: await this.getBatteryDrainRate(),
+        batteryUsage: await Battery.getBatteryLevelAsync(),
         networkLatency: await this.getNetworkLatency(),
         timestamp: Date.now(),
       };
@@ -311,7 +297,6 @@ export class SystemMonitor {
       manufacturer: Device.manufacturer || 'Unknown',
       brand: Device.brand || 'Unknown',
       isDevice: Device.isDevice,
-      isEmulator: Device.isEmulator,
     };
   }
 
@@ -427,8 +412,8 @@ export class SystemMonitor {
 
   async getInstallationTime(): Promise<Date | null> {
     try {
-      const installationTime = Application.installationTime;
-      return installationTime ? new Date(installationTime) : null;
+      // Installation time not available in expo-application
+      return null;
     } catch (error) {
       console.error('Error getting installation time:', error);
       return null;
@@ -437,8 +422,8 @@ export class SystemMonitor {
 
   async getLastUpdateTime(): Promise<Date | null> {
     try {
-      const lastUpdateTime = Application.lastUpdateTime;
-      return lastUpdateTime ? new Date(lastUpdateTime) : null;
+      // Last update time not available in expo-application
+      return null;
     } catch (error) {
       console.error('Error getting last update time:', error);
       return null;
@@ -487,7 +472,8 @@ export class SystemMonitor {
 
   async isConnectedAsync(): Promise<boolean> {
     try {
-      return await Network.isConnectedAsync();
+      const networkState = await Network.getNetworkStateAsync();
+      return networkState.isConnected ?? false;
     } catch (error) {
       console.error('Error checking network connection:', error);
       return false;
@@ -496,7 +482,8 @@ export class SystemMonitor {
 
   async isInternetReachableAsync(): Promise<boolean> {
     try {
-      return await Network.isInternetReachableAsync();
+      const networkState = await Network.getNetworkStateAsync();
+      return networkState.isInternetReachable ?? false;
     } catch (error) {
       console.error('Error checking internet reachability:', error);
       return false;

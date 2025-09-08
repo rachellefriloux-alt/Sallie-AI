@@ -47,6 +47,8 @@ export class NotificationSystem {
           shouldShowAlert: true,
           shouldPlaySound: true,
           shouldSetBadge: true,
+          shouldShowBanner: true,
+          shouldShowList: true,
         }),
       });
 
@@ -242,10 +244,11 @@ export class NotificationSystem {
       }
 
       const trigger = {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         date: notification.scheduledDate,
         repeats: !!notification.repeatInterval,
         seconds: notification.repeatInterval ? this.getRepeatIntervalSeconds(notification.repeatInterval) : undefined,
-      };
+      } as Notifications.TimeIntervalTriggerInput;
 
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
@@ -314,9 +317,10 @@ export class NotificationSystem {
     }
   }
 
-  async getNotificationPermissions(): Promise<Notifications.PermissionStatus> {
+  async getNotificationPermissions(): Promise<{ granted: boolean; status: string }> {
     try {
-      return await Notifications.getPermissionsAsync();
+      const result = await Notifications.getPermissionsAsync();
+      return { granted: result.granted, status: result.status };
     } catch (error) {
       console.error('Error getting notification permissions:', error);
       return { granted: false, status: 'denied' };
