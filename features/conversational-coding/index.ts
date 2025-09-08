@@ -17,7 +17,7 @@ export class ConversationalCoding {
     provenanceLogger;
     conversationHistory;
 
-    constructor(sallieBrain) {
+    constructor(sallieBrain: any) {
         this.brain = sallieBrain;
         this.adaptiveEngine = new AdaptivePersonaEngine();
         this.ai = new OpenAIIntegration();
@@ -25,7 +25,7 @@ export class ConversationalCoding {
         this.conversationHistory = new Map();
     }
 
-    async generateCode(description, language = 'javascript', context = {}) {
+    async generateCode(description: string, language: string = 'javascript', context: any = {}) {
         const provenanceId = this.provenanceLogger.logEvent('code_generation_start', { description, language, context });
 
         const prompt = `Generate ${language} code for: ${description}. 
@@ -51,7 +51,7 @@ export class ConversationalCoding {
         };
     }
 
-    async explainCode(code, language, userLevel = 'intermediate') {
+    async explainCode(code: string, language: string, userLevel: string = 'intermediate') {
         const provenanceId = this.provenanceLogger.logEvent('code_explanation_start', { 
             codeLength: code.length, 
             language, 
@@ -82,7 +82,7 @@ export class ConversationalCoding {
         };
     }
 
-    async refactorCode(code, language, improvement = 'readability') {
+    async refactorCode(code: string, language: string, improvement: string = 'readability') {
         const provenanceId = this.provenanceLogger.logEvent('code_refactor_start', { 
             codeLength: code.length, 
             language, 
@@ -116,7 +116,7 @@ export class ConversationalCoding {
         };
     }
 
-    async analyzeGeneratedCode(code, language) {
+    async analyzeGeneratedCode(code: string, language: string) {
         // Basic analysis - could be enhanced with actual linting
         const lines = code.split('\n').length;
         const functions = (code.match(/function\s+\w+|const\s+\w+\s*=\s*\(|class\s+\w+/g) || []).length;
@@ -132,7 +132,7 @@ export class ConversationalCoding {
         };
     }
 
-    async conversationalCodeSession(userId, initialQuery) {
+    async conversationalCodeSession(userId: string, initialQuery: string) {
         const sessionId = this.provenanceLogger.startSession(userId);
         
         const response = await this.processCodingQuery(initialQuery);
@@ -153,7 +153,7 @@ export class ConversationalCoding {
         };
     }
 
-    async processCodingQuery(query) {
+    async processCodingQuery(query: string) {
         // Determine intent from query
         if (query.includes('generate') || query.includes('create') || query.includes('write')) {
             return await this.generateCode(query);
