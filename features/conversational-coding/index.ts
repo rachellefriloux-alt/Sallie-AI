@@ -41,7 +41,7 @@ export class ConversationalCoding {
             language, 
             codeLength: response.length,
             analysis: codeAnalysis 
-        }, provenanceId);
+        });
 
         return {
             code: response,
@@ -72,7 +72,7 @@ export class ConversationalCoding {
             language, 
             userLevel,
             explanationLength: explanation.length 
-        }, provenanceId);
+        });
 
         return {
             explanation,
@@ -105,7 +105,7 @@ export class ConversationalCoding {
             improvement,
             originalLength: code.length,
             refactoredLength: refactoredCode.length 
-        }, provenanceId);
+        });
 
         return {
             originalCode: code,

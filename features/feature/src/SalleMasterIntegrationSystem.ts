@@ -9,7 +9,7 @@ import { PerformanceMonitoringSystem } from './PerformanceMonitoringSystem';
 import { EnhancedErrorHandler } from './EnhancedErrorHandler';
 import { AccessibilityEnhancementSystem } from './AccessibilityEnhancementSystem';
 import { CodeOptimizationSystem } from './CodeOptimizationSystem';
-import { FeatureFlagManager } from '../../core/featureFlags';
+import { isEnabled, setFlag, getAllFlags } from '../../../core/featureFlags';
 
 interface SystemHealthReport {
   overall: {
@@ -66,7 +66,7 @@ export class SalleMasterIntegrationSystem {
     });
 
     // Enable accessibility monitoring if feature flag is enabled
-    if (FeatureFlagManager.isEnabled('ACCESSIBILITY_ENHANCED')) {
+    if (isEnabled('ACCESSIBILITY_ENHANCED')) {
       this.accessibilitySystem.enableRealTimeMonitoring((report) => {
         this.handleAccessibilityUpdate(report);
       });
@@ -265,8 +265,8 @@ export class SalleMasterIntegrationSystem {
     }
 
     // Auto-enable features based on context
-    if (report.accessibility.criticalIssues > 0 && !FeatureFlagManager.isEnabled('ACCESSIBILITY_ENHANCED')) {
-      FeatureFlagManager.enable('ACCESSIBILITY_ENHANCED');
+    if (report.accessibility.criticalIssues > 0 && !isEnabled('ACCESSIBILITY_ENHANCED')) {
+      setFlag('ACCESSIBILITY_ENHANCED', true);
     }
   }
 
