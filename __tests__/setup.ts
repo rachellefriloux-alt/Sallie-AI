@@ -62,6 +62,12 @@ jest.mock('expo-file-system', () => ({
   readDirectoryAsync: jest.fn().mockResolvedValue([])
 }));
 
+// Mock React Native modules that might cause issues
+jest.mock('react-native/Libraries/Utilities/Platform', () => ({
+  OS: 'ios',
+  select: jest.fn()
+}));
+
 // Global test utilities
 global.console = {
   ...console,
@@ -71,3 +77,26 @@ global.console = {
 
 // Mock timers
 jest.useFakeTimers();
+
+// Mock React Navigation
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: () => ({
+    navigate: jest.fn(),
+    goBack: jest.fn()
+  }),
+  NavigationContainer: ({ children }: { children: React.ReactNode }) => children
+}));
+
+jest.mock('@react-navigation/native-stack', () => ({
+  createNativeStackNavigator: () => ({
+    Navigator: ({ children }: { children: React.ReactNode }) => children,
+    Screen: ({ children }: { children: React.ReactNode }) => children
+  })
+}));
+
+jest.mock('@react-navigation/bottom-tabs', () => ({
+  createBottomTabNavigator: () => ({
+    Navigator: ({ children }: { children: React.ReactNode }) => children,
+    Screen: ({ children }: { children: React.ReactNode }) => children
+  })
+}));
