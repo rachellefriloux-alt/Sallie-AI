@@ -1,8 +1,8 @@
 /*
-Salle Persona Module: HumanizedSalleOrchestrator
+Sallie Persona Module: HumanizedSallieOrchestrator
 Integrates all advanced human-like features (cognitive, emotional, technical, proactive, personalization)
 into a cohesive system that functions with human-like qualities and awareness.
-Follows Salle architecture, modularity, and privacy rules.
+Follows Sallie architecture, modularity, and privacy rules.
 */
 
 import { CognitiveModule } from './CognitiveModule';
@@ -11,7 +11,7 @@ import { TechnicalProwessModule } from './TechnicalProwessModule';
 import { ProactiveHelperModule } from './ProactiveHelperModule';
 import { PersonalizationModule } from './PersonalizationModule';
 
-export class HumanizedSalleOrchestrator {
+export class HumanizedSallieOrchestrator {
   private cognitive: CognitiveModule;
   private emotional: EmotionalIntelligenceModule;
   private technical: TechnicalProwessModule;

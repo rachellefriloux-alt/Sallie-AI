@@ -1,17 +1,17 @@
 /*
-Salle Persona Module: HumanizedSalleBridge
-Connects the humanized Salle modules with the core system.
-Follows Salle architecture, modularity, and privacy rules.
+Sallie Persona Module: HumanizedSallieBridge
+Connects the humanized Sallie modules with the core system.
+Follows Sallie architecture, modularity, and privacy rules.
 */
 
-import { HumanizedSalleOrchestrator } from './HumanizedSalleOrchestrator';
+import { HumanizedSallieOrchestrator } from './HumanizedSallieOrchestrator';
 
-export class HumanizedSalleBridge {
-  private orchestrator: HumanizedSalleOrchestrator;
+export class HumanizedSallieBridge {
+  private orchestrator: HumanizedSallieOrchestrator;
   private activeUserIds: Map<string, { lastActive: number }>;
   
   constructor() {
-    this.orchestrator = new HumanizedSalleOrchestrator();
+    this.orchestrator = new HumanizedSallieOrchestrator();
     this.activeUserIds = new Map();
   }
   

@@ -1,17 +1,17 @@
 /*
-Salle Persona Module: HumanizedSallePlugin
+Sallie Persona Module: HumanizedSalliePlugin
 Plugin for the core system to enable advanced human-like features.
-Follows Salle architecture, modularity, and privacy rules.
+Follows Sallie architecture, modularity, and privacy rules.
 */
 
-import { HumanizedSalleBridge } from './HumanizedSalleBridge';
+import { HumanizedSallieBridge } from './HumanizedSallieBridge';
 
-export class HumanizedSallePlugin {
-  private bridge: HumanizedSalleBridge;
-  private pluginId: string = 'humanized-salle-1.0';
+export class HumanizedSalliePlugin {
+  private bridge: HumanizedSallieBridge;
+  private pluginId: string = 'humanized-sallie-1.0';
   
   constructor() {
-    this.bridge = new HumanizedSalleBridge();
+    this.bridge = new HumanizedSallieBridge();
   }
   
   /**

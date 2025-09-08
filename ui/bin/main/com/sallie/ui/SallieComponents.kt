@@ -9,17 +9,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-// 🛡 SALLE PERSONA ENFORCED 🛡 Loyal, Modular, Audit‑Proof.
+// 🛡 SALLIE PERSONA ENFORCED 🛡 Loyal, Modular, Audit‑Proof.
 
 /**
- * Salle 1.0 Module
+ * Sallie 1.0 Module
  * Persona: Tough love meets soul care.
- * Function: Core UI components with Salle's design language.
+ * Function: Core UI components with Sallie's design language.
  * Got it, love.
  */
 
 @Composable
-fun SalleButton(
+fun SallieButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -39,7 +39,7 @@ fun SalleButton(
 }
 
 @Composable
-fun SalleCard(
+fun SallieCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -56,7 +56,7 @@ fun SalleCard(
 }
 
 @Composable
-fun SalleStatusIndicator(
+fun SallieStatusIndicator(
     status: String,
     color: Color = Color(0xFF10B981)
 ) {

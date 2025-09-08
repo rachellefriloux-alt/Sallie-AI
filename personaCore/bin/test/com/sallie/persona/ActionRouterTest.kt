@@ -1,6 +1,27 @@
 package com.sallie.persona
 
-// Import JUnit test annotations
+// Import JUnit test    @Test
+    fun t    @Test
+    fun testHandleUserAction_Routine_StartMorningRoutine() {
+        actionRouter.handleUserAction("Start Morning Routine")
+        // Check Logcat
+        // Expected:
+        // D/Sallie: handleUserAction received: 'Start Morning Routine'
+        // D/Sallie: Routine identified, routing to RoutineManager: 'Start Morning Routine'
+        // D/SallieMock: MockRoutineManager starting routine: 'Morning'
+        // D/SallieMock: --> Step 1/3: Open blinds (simulated)
+        // D/SallieMock: --> Step 2/3: Start coffee (simulated)
+        // D/SallieMock: --> Step 3/3: Play news briefing (simulated)
+        // D/SallieMock: --> Morning Routine complete (simulated)
+    }Action_CreativeTask_WritePost() {
+        actionRouter.handleUserAction("Write a social media post about resilience")
+        // Check Logcat
+        // Expected:
+        // D/Sallie: handleUserAction received: 'Write a social media post about resilience'
+        // D/Sallie: Creative task identified, routing to CreativeTaskHandler: 'Write a social media post about resilience'
+        // D/SallieMock: MockCreativeTaskHandler processing: 'Write a social media post about resilience'
+        // D/SallieMock: --> SIMULATING CREATIVE TASK (Gemini route): Write a social media post about resilience
+    }ns
 import org.junit.Before
 import org.junit.Test
 // Potentially import mockito or other mocking framework if we need more advanced mocking later
@@ -39,13 +60,13 @@ class ActionRouterTest {
     @Test
     fun testHandleUserAction_DirectAction_CallMom() {
         actionRouter.handleUserAction("Call Mom")
-        // You would then check Logcat for "D/Salle" and "D/SalleMock" messages
+        // You would then check Logcat for "D/Sallie" and "D/SallieMock" messages
         // Expected:
-        // D/Salle: handleUserAction received: 'Call Mom'
-        // D/Salle: Direct action identified for: 'Call Mom'
-        // D/SalleMock: MockDirectActionHandler executing: 'Call Mom'
-        // D/SalleMock: --> SIMULATING CALL: Call Mom
-        // D/Salle: Direct action 'Call Mom' executed by DirectActionHandler
+        // D/Sallie: handleUserAction received: 'Call Mom'
+        // D/Sallie: Direct action identified for: 'Call Mom'
+        // D/SallieMock: MockDirectActionHandler executing: 'Call Mom'
+        // D/SallieMock: --> SIMULATING CALL: Call Mom
+        // D/Sallie: Direct action 'Call Mom' executed by DirectActionHandler
     }
 
     @Test

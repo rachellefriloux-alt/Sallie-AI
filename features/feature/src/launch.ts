@@ -4,7 +4,7 @@ Entry point for launching the humanized Sallie system.
 Follows Salle architecture, modularity, and privacy rules.
 */
 
-import { HumanizedSalleDemo } from './HumanizedSalleDemo';
+import { HumanizedSalleDemo } from './HumanizedSallieDemo';
 import { EnhancedSalleDemo } from './EnhancedSalleDemo';
 
 // Launch the demo when this script is executed directly
@@ -38,11 +38,11 @@ if (require.main === module) {
 }
 
 // Export components for programmatic usage
-export * from './HumanizedSalleOrchestrator';
-export * from './HumanizedSalleBridge';
-export * from './HumanizedSallePlugin';
-export * from './HumanizedSalleInitializer';
-export * from './HumanizedSalleDemo';
+export * from './HumanizedSallieOrchestrator';
+export * from './HumanizedSallieBridge';
+export * from './HumanizedSalliePlugin';
+export * from './HumanizedSallieInitializer';
+export * from './HumanizedSallieDemo';
 export * from './EnhancedHumanizedOrchestrator';
 export * from './EnhancedSalleDemo';
 

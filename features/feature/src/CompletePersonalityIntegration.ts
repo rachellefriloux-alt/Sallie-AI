@@ -46,9 +46,7 @@ export class CompletePersonalityIntegration {
     );
     
     this.creativeIntegrator = new CreativeTraditionalIntegrator(
-      this.creativeSystem,
-      this.mainIntegrator,
-      this.valuesIntegrator
+      this.mainIntegrator
     );
   }
   
