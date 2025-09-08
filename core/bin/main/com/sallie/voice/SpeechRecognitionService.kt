@@ -287,7 +287,50 @@ class CloudSpeechRecognizer : BaseSpeechRecognizer() {
     
     override suspend fun recognizeAudio(audioData: ByteArray, config: RecognitionConfig): RecognitionResult {
         // Recognize speech from audio data via cloud
-        TODO("Implement cloud audio recognition")
+        // Recognize speech from audio data via cloud
+        try {
+            // Initialize cloud service with configuration
+            val cloudService = initializeCloudService(config)
+            
+            // Send audio data to cloud service
+            val cloudResponse = cloudService.recognizeSynchronous(
+                audioData = audioData,
+                languageCode = config.languageCode,
+                enablePunctuation = config.enablePunctuation,
+                maxAlternatives = config.maxAlternatives,
+                profanityFilter = config.profanityFilter,
+                speechContext = config.speechContext,
+                enableWordTimestamps = config.enableWordTimestamps
+            )
+            
+            // Process and return the result
+            return if (cloudResponse.isSuccessful && cloudResponse.results.isNotEmpty()) {
+                val bestResult = cloudResponse.results.first()
+                RecognitionResult(
+                    text = bestResult.transcript,
+                    confidence = bestResult.confidence,
+                    isFinal = true,
+                    alternatives = bestResult.alternatives.map { 
+                        Alternative(text = it.transcript, confidence = it.confidence) 
+                    },
+                    timestamps = if (config.enableWordTimestamps) bestResult.wordTimings else emptyMap()
+                )
+            } else {
+                RecognitionResult(
+                    text = "",
+                    confidence = 0.0f,
+                    isFinal = true,
+                    error = cloudResponse.errorMessage ?: "No results returned from cloud service"
+                )
+            }
+        } catch (e: Exception) {
+            return RecognitionResult(
+                text = "",
+                confidence = 0.0f,
+                isFinal = true,
+                error = e.message ?: "Cloud audio recognition failed"
+            )
+        }
     }
     
     override suspend fun recognizeFile(file: File, config: RecognitionConfig): RecognitionResult {
