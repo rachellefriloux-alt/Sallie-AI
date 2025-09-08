@@ -1,18 +1,8 @@
-// Dynamic import for navigation to avoid CommonJS/ESM conflicts
-import React from 'react';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import { StyleSheet } from 'react-native';
 
 export default function BlurTabBarBackground() {
-  const [bottomTabBarHeight, setBottomTabBarHeight] = React.useState(0);
-
-  React.useEffect(() => {
-    import('@react-navigation/bottom-tabs').then(({ useBottomTabBarHeight }) => {
-      const height = useBottomTabBarHeight();
-      setBottomTabBarHeight(height);
-    });
-  }, []);
-
   return (
     <BlurView
       // System chrome material automatically adapts to the system's theme
@@ -27,25 +17,3 @@ export default function BlurTabBarBackground() {
 export function useBottomTabOverflow() {
   return useBottomTabBarHeight();
 }
-function useBottomTabBarHeight() {
-  const [height, setHeight] = React.useState(49); // Default iOS tab bar height
-
-  React.useEffect(() => {
-    // Try to get the actual height from the navigation package
-    import('@react-navigation/bottom-tabs').then(({ useBottomTabBarHeight }) => {
-      try {
-        const actualHeight = useBottomTabBarHeight();
-        if (actualHeight > 0) {
-          setHeight(actualHeight);
-        }
-      } catch (error) {
-        console.warn('Could not get bottom tab bar height:', error);
-      }
-    }).catch(() => {
-      console.warn('Could not import bottom-tabs package');
-    });
-  }, []);
-
-  return height;
-}
-

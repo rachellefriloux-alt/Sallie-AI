@@ -86,7 +86,7 @@ export class EnhancedErrorHandler {
 
     // Promise rejection handler
     if (typeof process !== 'undefined' && process.on) {
-      process.on('unhandledRejection', (reason, _promise) => {
+      process.on('unhandledRejection', (reason, promise) => {
         this.handleError(new Error(`Unhandled Promise Rejection: ${reason}`), {
           component: 'Promise',
           timestamp: Date.now(),
@@ -111,7 +111,7 @@ export class EnhancedErrorHandler {
         ...context
       },
       recoverable: this.isRecoverable(error, severity),
-      recoveryActions: this.getRecoveryActions(error),
+      recoveryActions: this.getRecoveryActions(error, severity),
       userMessage: this.generateUserMessage(error, severity)
     };
 
@@ -139,7 +139,7 @@ export class EnhancedErrorHandler {
   }
 
   private generateErrorId(): string {
-    return `err_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+    return `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
   private isRecoverable(error: Error, severity: string): boolean {
@@ -174,7 +174,7 @@ export class EnhancedErrorHandler {
     return 'UNKNOWN_ERROR';
   }
 
-  private getRecoveryActions(error: Error): string[] {
+  private getRecoveryActions(error: Error, severity: string): string[] {
     const errorType = this.classifyError(error);
     
     const actions: { [key: string]: string[] } = {
@@ -253,7 +253,7 @@ export class EnhancedErrorHandler {
     } catch (recoveryError) {
       this.logError({
         ...errorReport,
-        message: `Recovery failed: ${recoveryError instanceof Error ? recoveryError.message : String(recoveryError)}`,
+        message: `Recovery failed: ${recoveryError.message}`,
         severity: 'high'
       });
       return false;
@@ -320,8 +320,8 @@ export class EnhancedErrorHandler {
   } {
     const stats = {
       total: this.errorHistory.length,
-      bySeverity: { low: 0, medium: 0, high: 0, critical: 0 } as { [key: string]: number },
-      byType: {} as { [key: string]: number },
+      bySeverity: { low: 0, medium: 0, high: 0, critical: 0 },
+      byType: {},
       recoveryRate: 0
     };
 
@@ -345,7 +345,7 @@ export class EnhancedErrorHandler {
 
   // Integration with React Error Boundaries
   static createErrorBoundary(component: string) {
-    return (error: Error, _errorInfo: any) => {
+    return (error: Error, errorInfo: any) => {
       const handler = new EnhancedErrorHandler();
       return handler.handleError(error, {
         component,

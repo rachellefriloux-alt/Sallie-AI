@@ -1,25 +1,12 @@
-// Dynamic import for navigation components to avoid CommonJS/ESM conflicts
-import React, { useState, useEffect } from 'react';
+import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
+import { PlatformPressable } from '@react-navigation/elements';
 import * as Haptics from 'expo-haptics';
 
-export function HapticTab(props: any) {
-  const [PlatformPressable, setPlatformPressable] = useState<any>(null);
-
-  useEffect(() => {
-    import('@react-navigation/elements').then(({ PlatformPressable: Pressable }) => {
-      setPlatformPressable(() => Pressable);
-    });
-  }, []);
-
-  if (!PlatformPressable) {
-    return null;
-  }
-
-  const PressableComponent = PlatformPressable;
+export function HapticTab(props: BottomTabBarButtonProps) {
   return (
-    <PressableComponent
+    <PlatformPressable
       {...props}
-      onPressIn={(ev: any) => {
+      onPressIn={(ev) => {
         if (process.env.EXPO_OS === 'ios') {
           // Add a soft haptic feedback when pressing down on the tabs.
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

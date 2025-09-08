@@ -12,6 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { usePersonaStore } from '../store/persona';
 import { useMemoryStore } from '../store/memory';
 import { useDeviceStore } from '../store/device';
@@ -30,20 +31,11 @@ interface Message {
 }
 
 export default function SalliePanelScreen() {
-  const [navigation, setNavigation] = useState<any>(null);
-
-  useEffect(() => {
-    const loadNavigation = async () => {
-      const { useNavigation } = await import('@react-navigation/native');
-      setNavigation(useNavigation());
-    };
-    loadNavigation();
-  }, []);
-
+  const navigation = useNavigation();
   const { emotion, setEmotion, personality, getEmotionalContext } = usePersonaStore();
   const { addShortTerm, addEpisodic } = useMemoryStore();
   const { settings } = useDeviceStore();
-
+  
   const [sallieBrain] = useState(() => new SallieBrain());
 
   const [messages, setMessages] = useState<Message[]>([
@@ -56,11 +48,11 @@ export default function SalliePanelScreen() {
       type: 'text',
     },
   ]);
-
+  
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
-
+  
   const scrollViewRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -165,7 +157,7 @@ export default function SalliePanelScreen() {
 
   const generateSallieResponse = (userInput: string): { text: string; emotion: string } => {
     const input = userInput.toLowerCase();
-
+    
     // Simple response logic - in real implementation, this would use AI
     if (input.includes('hello') || input.includes('hi')) {
       return {
@@ -173,28 +165,28 @@ export default function SalliePanelScreen() {
         emotion: 'happy',
       };
     }
-
+    
     if (input.includes('sad') || input.includes('down')) {
       return {
         text: "I'm sorry you're feeling down. Remember, it's okay to feel sad sometimes. Want to talk about what's bothering you?",
         emotion: 'concerned',
       };
     }
-
+    
     if (input.includes('angry') || input.includes('mad')) {
       return {
         text: "I can sense you're frustrated. Take a deep breath with me. What's making you feel this way?",
         emotion: 'calm',
       };
     }
-
+    
     if (input.includes('help') || input.includes('assist')) {
       return {
         text: "I'm here to help! Whether you need practical assistance, someone to talk to, or just want to explore ideas together, I've got you covered.",
         emotion: 'excited',
       };
     }
-
+    
     if (input.includes('love') || input.includes('care')) {
       return {
         text: "That's beautiful. Love and care are such powerful forces. I care about you too, and I'm grateful we can share this connection.",
@@ -211,7 +203,7 @@ export default function SalliePanelScreen() {
 
   const handleVoicePress = () => {
     setIsListening(!isListening);
-
+    
     if (!isListening) {
       // Start voice recording
       Alert.alert(
@@ -252,13 +244,13 @@ export default function SalliePanelScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
-
+        
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation?.goBack()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Text style={styles.backButtonText}>←</Text>
           </TouchableOpacity>
-
+          
           <View style={styles.headerCenter}>
             <SallieAvatar emotion={emotion} size={40} />
             <View style={styles.headerText}>
@@ -268,14 +260,14 @@ export default function SalliePanelScreen() {
               </Text>
             </View>
           </View>
-
+          
           <TouchableOpacity onPress={clearConversation} style={styles.clearButton}>
             <Text style={styles.clearButtonText}>🗑️</Text>
           </TouchableOpacity>
         </View>
 
         {/* Messages */}
-        <KeyboardAvoidingView
+        <KeyboardAvoidingView 
           style={styles.messagesContainer}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
@@ -292,7 +284,7 @@ export default function SalliePanelScreen() {
                 isUser={message.sender === 'user'}
               />
             ))}
-
+            
             {isTyping && (
               <View style={styles.typingIndicator}>
                 <SallieAvatar emotion="thoughtful" size={20} />
@@ -315,13 +307,13 @@ export default function SalliePanelScreen() {
                 onSubmitEditing={handleSendMessage}
                 blurOnSubmit={false}
               />
-
+              
               <View style={styles.inputButtons}>
                 <VoiceButton
                   isListening={isListening}
                   onPress={handleVoicePress}
                 />
-
+                
                 <TouchableOpacity
                   style={[
                     styles.sendButton,

@@ -164,7 +164,6 @@ class FeatureFlagsManager {
 
 const featureFlagsManager = new FeatureFlagsManager();
 
-export { FeatureFlagsManager };
 export function isEnabled(key: string): boolean {
   return featureFlagsManager.isEnabled(key);
 }

@@ -1,20 +1,6 @@
-// Dynamic import for navigation to avoid CommonJS/ESM conflicts
-const useBottomTabBarHeight = () => {
-  const [height, setHeight] = React.useState(0);
-
-  React.useEffect(() => {
-    import('@react-navigation/bottom-tabs').then(({ useBottomTabBarHeight: hook }) => {
-      const actualHook = hook();
-      setHeight(actualHook);
-    });
-  }, []);
-
-  return height;
-};
-
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import { StyleSheet } from 'react-native';
-import React from 'react';
 
 export default function BlurTabBarBackground() {
   return (
