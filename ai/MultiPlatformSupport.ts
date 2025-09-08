@@ -300,7 +300,7 @@ export class PlatformDetectionManager extends EventEmitter {
       touch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
       stylus: matchMedia('(pointer: fine)').matches && navigator.maxTouchPoints > 0,
       gamepad: 'getGamepads' in navigator,
-      voice: !!(window.SpeechRecognition || (window as any).webkitSpeechRecognition)
+      voice: !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)
     };
   }
 

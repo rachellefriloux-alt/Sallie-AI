@@ -67,6 +67,43 @@ export class MLPersonalizationEngine {
   }
 
   /**
+   * Initialize base machine learning models
+   */
+  private initializeBaseModels(): void {
+    // Initialize base recommendation model
+    const baseRecommendationModel: MLModel = {
+      weights: {
+        'timeOfDay': 0.1,
+        'emotionalState': 0.3,
+        'context': 0.2,
+        'activity': 0.4
+      },
+      bias: 0.0,
+      features: ['timeOfDay', 'emotionalState', 'context', 'activity'],
+      accuracy: 0.5,
+      lastTrained: new Date()
+    };
+
+    // Initialize base personalization model
+    const basePersonalizationModel: MLModel = {
+      weights: {
+        'userPreference': 0.4,
+        'behaviorPattern': 0.3,
+        'emotionalPattern': 0.2,
+        'contextRelevance': 0.1
+      },
+      bias: 0.0,
+      features: ['userPreference', 'behaviorPattern', 'emotionalPattern', 'contextRelevance'],
+      accuracy: 0.5,
+      lastTrained: new Date()
+    };
+
+    // Store base models
+    this.models.set('base_recommendation', baseRecommendationModel);
+    this.models.set('base_personalization', basePersonalizationModel);
+  }
+
+  /**
    * Update user profile with new behavior data
    */
   public updateUserProfile(userId: string, behavior: UserBehavior, emotion?: EmotionProfile): void {
