@@ -14,11 +14,11 @@ async function main() {
     
     if (demoType === 'enhanced') {
       console.log('Launching Enhanced Humanized Sallie System');
-      const enhancedDemo = new enhancedDemo();
+      const enhancedDemo = new EnhancedSalleDemo();
       await enhancedDemo.runDemo();
     } else {
       console.log('Launching Basic Humanized Sallie System');
-      const demo = new HumanizedSalieDemo();
+      const demo = new HumanizedSallieDemo();
       await demo.runDemo();
     }
     
