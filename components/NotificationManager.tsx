@@ -76,6 +76,8 @@ export class NotificationManager {
                 shouldShowAlert: this.settings.enabled && this.settings.showPreview,
                 shouldPlaySound: this.settings.sound,
                 shouldSetBadge: false,
+                shouldShowBanner: this.settings.enabled && this.settings.showPreview,
+                shouldShowList: this.settings.enabled,
             }),
         });
 

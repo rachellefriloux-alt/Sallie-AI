@@ -120,8 +120,8 @@ export const LAZY_LOAD_CONFIG = {
 
     // Screens loaded on navigation
     screens: [
-        () => import('../app/screens/ProfileScreen'),
-        () => import('../app/screens/DataManagementScreen'),
+        () => import('../app/screens/ProfileScreen.js'),
+        () => import('../app/screens/DataManagementScreen.js'),
     ],
 };
 

@@ -69,7 +69,12 @@ interface EntranceAnimationConfig {
 
 interface AnimationState {
     style: StyleProp<ViewStyle>;
+    pressStyle?: StyleProp<ViewStyle>;
     isAnimating: boolean;
+    onPressIn?: () => void;
+    onPressOut?: () => void;
+    handlePressIn?: () => void;
+    handlePressOut?: () => void;
 }
 
 /**
@@ -109,9 +114,17 @@ export function usePressAnimation(config: PressAnimationConfig = {}): AnimationS
         transform: [{ scale: scaleAnim }],
     };
 
+    const onPressIn = React.useCallback(() => animatePress(true), [animatePress]);
+    const onPressOut = React.useCallback(() => animatePress(false), [animatePress]);
+
     return {
         style,
+        pressStyle: style,
         isAnimating: isPressed,
+        onPressIn,
+        onPressOut,
+        handlePressIn: onPressIn,
+        handlePressOut: onPressOut,
     };
 }
 
