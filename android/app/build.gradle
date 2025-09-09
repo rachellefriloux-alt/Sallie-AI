@@ -81,29 +81,7 @@ def enableSeparateBuildPerCPUArchitecture = true
 def enableResourceOptimization = true
 
 // Apply path shortening for CMake to avoid Windows path length issues
-afterEvaluate {
-    android {
-        defaultConfig {
-            externalNativeBuild {
-                cmake {
-                    arguments "-DCMAKE_RULE_MESSAGES=OFF", "-DCMAKE_VERBOSE_MAKEFILE=ON", "-DPROJECT_PATH_SHORTER=1"
-                }
-            }
-        }
-        
-        dexOptions {
-            javaMaxHeapSize "4g"
-            jumboMode true
-            preDexLibraries true
-            threadCount 8
-        }
-        
-        aaptOptions {
-            cruncherEnabled true
-            cruncherProcesses 4
-        }
-    }
-}
+// Removed afterEvaluate block that was causing Android tasks conflict
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
