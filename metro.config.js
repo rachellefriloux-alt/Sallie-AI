@@ -40,6 +40,24 @@ config.resolver = {
         'png', 'jpg', 'jpeg', 'gif', 'svg', 'ttf', 'woff', 'woff2',
         'mp3', 'mp4', 'wav', 'aac', 'flac', 'ogg'
     ],
+    // Block list for better performance - ignore unnecessary files
+    blockList: [
+        /node_modules\/.*\/__tests__\/.*/,
+        /node_modules\/.*\/\.git\/.*/,
+        /node_modules\/.*\/docs\/.*/,
+        /.*\.log$/,
+        /.*\.lock$/,
+        /\.DS_Store$/,
+        /coverage\/.*/,
+        /\.nyc_output\/.*/,
+        /__tests__\/.*/,
+        /.*\.test\.js$/,
+        /.*\.test\.ts$/,
+        /.*\.test\.tsx$/,
+        /.*\.spec\.js$/,
+        /.*\.spec\.ts$/,
+        /.*\.spec\.tsx$/,
+    ],
     // Alias configuration for better imports
     alias: {
         '@': path.resolve(__dirname),

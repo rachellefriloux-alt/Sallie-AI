@@ -14,7 +14,7 @@
     "build:android": "expo run:android --variant release",
     "build:ios": "expo run:ios --configuration Release",
     "cache:clear": "expo r -c",
-    "metro:clear": "rm -rf node_modules/.cache/metro && mkdir -p node_modules/.cache/metro",
+    "metro:clear": "powershell -Command \"Remove-Item -Path 'node_modules/.cache/metro' -Recurse -Force -ErrorAction SilentlyContinue; New-Item -ItemType Directory -Path 'node_modules/.cache/metro' -Force\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
