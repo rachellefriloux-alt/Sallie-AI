@@ -139,6 +139,8 @@ android {
             }
         }
     }
+
+    flavorDimensions "mode"
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
