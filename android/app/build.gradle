@@ -14,6 +14,7 @@ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 react {
     entryFile = file("../../App.tsx")
     reactNativeDir = file("../../node_modules/react-native")
+    hermesCommand = "../../node_modules/react-native/sdks/hermesc/win64-bin/hermesc"
     codegenDir = file("../../node_modules/@react-native/codegen")
 
     // Use Expo CLI to bundle the app, this ensures the Metro config
@@ -140,6 +141,8 @@ android {
                     cppFlags "-Wno-dollar-in-identifier-extension"
                 }
             }
+            // Use no optimization for debug builds
+            hermesFlags = ["-O0"]
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
