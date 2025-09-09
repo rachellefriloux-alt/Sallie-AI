@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Alert } from 'react-native';
 import { ThemedText } from '../components/ThemedText';
 import { ThemedView } from '../components/ThemedView';
-import EnhancedButton from '../components/EnhancedButton';
-import EnhancedCard from '../components/EnhancedCard';
+import { EnhancedButton } from '../components/EnhancedButton';
+import { EnhancedCard } from '../components/EnhancedCard';
 import ProgressBarAnimated from '../components/ProgressBarAnimated';
 import { Goal, GoalCategory, GoalPriority, GoalStatus, Milestone } from '../types/goal';
 

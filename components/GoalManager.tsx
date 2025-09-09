@@ -402,11 +402,11 @@ export const GoalManager: React.FC<GoalManagerProps> = ({
                             <ThemedText style={styles.statValue}>{stats.completedGoals}</ThemedText>
                             <ThemedText style={styles.statLabel}>Completed</ThemedText>
                         </View>
-                        <View style={styles.statItem}></View>
+                        <View style={styles.statItem}>
                             <ThemedText style={styles.statValue}>{stats.averageProgress.toFixed(0)}%</ThemedText>
                             <ThemedText style={styles.statLabel}>Avg Progress</ThemedText>
                         </View>
-                        <View style={styles.statItem}></View>
+                        <View style={styles.statItem}>
                             <ThemedText style={styles.statValue}>{stats.overdueGoals}</ThemedText>
                             <ThemedText style={styles.statLabel}>Overdue</ThemedText>
                         </View>
@@ -417,7 +417,7 @@ export const GoalManager: React.FC<GoalManagerProps> = ({
                 <View style={styles.filters}>
                     <View style={styles.filterRow}>
                         <ThemedText style={styles.filterLabel}>Status:</ThemedText>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}></ScrollView>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
                             {(['all', 'not-started', 'in-progress', 'completed', 'paused'] as const).map(status => (
                                 <TouchableOpacity
                                     key={status}
@@ -440,7 +440,7 @@ export const GoalManager: React.FC<GoalManagerProps> = ({
 
                     <View style={styles.filterRow}>
                         <ThemedText style={styles.filterLabel}>Category:</ThemedText>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}></ScrollView>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
                             {(['all', 'health', 'career', 'personal', 'financial', 'learning', 'relationships', 'other'] as const).map(category => (
                                 <TouchableOpacity
                                     key={category}
@@ -486,10 +486,10 @@ export const GoalManager: React.FC<GoalManagerProps> = ({
                         <EnhancedCard key={goal.id} style={styles.goalCard}>
                             <View style={styles.goalHeader}>
                                 <View style={styles.goalInfo}>
-                                    <View style={styles.goalIcon}></View>
+                                    <View style={styles.goalIcon}>
                                         <ThemedText style={styles.iconText}>{getCategoryIcon(goal.category)}</ThemedText>
                                     </View>
-                                    <View style={styles.goalDetails}></View>
+                                    <View style={styles.goalDetails}>
                                         <ThemedText style={styles.goalTitle}>{goal.title}</ThemedText>
                                         <ThemedText style={styles.goalDescription}>{goal.description}</ThemedText>
                                     </View>
@@ -583,7 +583,7 @@ export const GoalManager: React.FC<GoalManagerProps> = ({
                                                 ]}>
                                                     {milestone.title}
                                                 </ThemedText>
-                                                <ThemedText style={styles.milestoneProgress}></ThemedText>
+                                                <ThemedText style={styles.milestoneProgress}>
                                                     {milestone.currentValue} / {milestone.targetValue}
                                                 </ThemedText>
                                             </View>
@@ -644,7 +644,7 @@ export const GoalManager: React.FC<GoalManagerProps> = ({
                                 keyboardType="numeric"
                                 placeholderTextColor="#666"
                             />
-                            <View style={styles.formActions}></View>
+                            <View style={styles.formActions}>
                                 <EnhancedButton label="Cancel" onPress={() => setProgressModalVisible(false)} style={styles.cancelButton} />
                                 <EnhancedButton label="Update" onPress={handleProgressModalSubmit} style={styles.submitButton} />
                             </View>
@@ -678,7 +678,7 @@ export const GoalManager: React.FC<GoalManagerProps> = ({
                     onRequestClose={() => setShowStats(false)}
                 >
                     <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}>
-                        <EnhancedCard style={styles.formModal}></EnhancedCard>
+                        <EnhancedCard style={styles.formModal}>
                             <ThemedText style={styles.formTitle}>Goal Stats</ThemedText>
                             <ThemedText style={styles.formSubtitle}>Total Goals: {stats.totalGoals}</ThemedText>
                             <ThemedText style={styles.formSubtitle}>Active Goals: {stats.activeGoals}</ThemedText>
@@ -693,7 +693,7 @@ export const GoalManager: React.FC<GoalManagerProps> = ({
                             ))}
                             <ThemedText style={styles.formSubtitle}>Goals by Priority:</ThemedText>
                             {Object.entries(stats.goalsByPriority).map(([pri, count]) => (
-                                <ThemedText key={pri} style={styles.statLabel}></ThemedText>
+                                <ThemedText key={pri} style={styles.statLabel}>
                                     {pri.charAt(0).toUpperCase() + pri.slice(1)}: {count}
                                 </ThemedText>
                             ))}
@@ -768,7 +768,7 @@ const GoalForm: React.FC<{
     };
 
     return (
-        <EnhancedCard style={styles.formModal}></EnhancedCard>
+        <EnhancedCard style={styles.formModal}>
             <ThemedText style={styles.formTitle}>{initialValues ? 'Edit Goal' : 'Create New Goal'}</ThemedText>
 
             <TextInput
@@ -1206,4 +1206,74 @@ const styles = StyleSheet.create({
     },
     typeOption: {
         paddingHorizontal: 12,
-        paddingVertical:
+        paddingVertical: 8,
+        borderRadius: 16,
+        backgroundColor: '#F0F0F0',
+        marginRight: 8,
+        marginBottom: 8,
+    },
+    selectedType: {
+        backgroundColor: '#007AFF',
+    },
+    typeOptionText: {
+        fontSize: 14,
+    },
+    priorityGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginBottom: 12,
+    },
+    priorityOption: {
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 16,
+        backgroundColor: '#F0F0F0',
+        marginRight: 8,
+        marginBottom: 8,
+    },
+    selectedPriority: {
+        backgroundColor: '#007AFF',
+    },
+    priorityOptionText: {
+        fontSize: 14,
+    },
+    targetSection: {
+        marginBottom: 16,
+    },
+    targetControls: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    targetInput: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: '#DDD',
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        marginRight: 8,
+        fontSize: 16,
+    },
+    unitInput: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: '#DDD',
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        fontSize: 16,
+    },
+    formActions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 24,
+    },
+    cancelButton: {
+        flex: 1,
+        marginRight: 8,
+    },
+    submitButton: {
+        flex: 1,
+        marginLeft: 8,
+    },
+});

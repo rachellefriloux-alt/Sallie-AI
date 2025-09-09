@@ -7,9 +7,9 @@
 
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, Switch, Platform } from 'react-native';
-import EnhancedButton from '../../components/EnhancedButton';
-import EnhancedCard from '../../components/EnhancedCard';
-import EnhancedAvatar from '../../components/EnhancedAvatar';
+import { EnhancedButton } from '../../components/EnhancedButton';
+import { EnhancedCard } from '../../components/EnhancedCard';
+import { EnhancedAvatar } from '../../components/EnhancedAvatar';
 import ProgressBarAnimated from '../../components/ProgressBarAnimated';
 import { ToastProvider, useToast } from '../../components/ToastNotification';
 import { useTheme, ThemeType } from '../../components/ThemeSystem';

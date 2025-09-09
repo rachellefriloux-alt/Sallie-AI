@@ -537,4 +537,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EnhancedAvatar;
+export { EnhancedAvatar };

@@ -489,4 +489,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EnhancedCard;
+export { EnhancedCard };

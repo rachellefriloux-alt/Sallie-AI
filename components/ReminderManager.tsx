@@ -4,8 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { ThemedText } from '../components/ThemedText';
 import { ThemedView } from '../components/ThemedView';
-import EnhancedButton from '../components/EnhancedButton';
-import EnhancedCard from '../components/EnhancedCard';
+import { EnhancedButton } from '../components/EnhancedButton';
+import { EnhancedCard } from '../components/EnhancedCard';
 
 export interface Reminder {
     id: string;

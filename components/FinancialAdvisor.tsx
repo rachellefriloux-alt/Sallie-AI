@@ -3,8 +3,8 @@ import { View, ScrollView, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemedText } from '../components/ThemedText';
 import { ThemedView } from '../components/ThemedView';
-import EnhancedButton from '../components/EnhancedButton';
-import EnhancedCard from '../components/EnhancedCard';
+import { EnhancedButton } from '../components/EnhancedButton';
+import { EnhancedCard } from '../components/EnhancedCard';
 import { EnhancedInput } from '../components/EnhancedInput';
 
 export interface FinancialTransaction {

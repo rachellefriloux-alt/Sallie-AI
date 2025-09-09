@@ -499,4 +499,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EnhancedButton;
+export { EnhancedButton };

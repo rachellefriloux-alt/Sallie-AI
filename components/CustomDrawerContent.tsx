@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
-import EnhancedAvatar from '@/components/EnhancedAvatar';
+import { EnhancedAvatar } from '@/components/EnhancedAvatar';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
 interface CustomDrawerContentProps {
