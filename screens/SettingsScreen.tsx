@@ -25,8 +25,6 @@ import { usePressAnimation } from '../components/AnimationSystem';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import MediaUpload, { UploadResult } from '../components/MediaUpload';
-import { profile } from 'console';
-import { title } from 'process';
 
 const { width, height } = Dimensions.get('window');
 
