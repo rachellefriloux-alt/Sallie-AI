@@ -3,15 +3,9 @@ const path = require('path');
 
 const config = getDefaultConfig(__dirname);
 
-// Enhanced caching configuration
-config.cacheStores = [
-    {
-        // Use a persistent cache directory
-        fileStore: {
-            root: path.join(__dirname, 'node_modules', '.cache', 'metro'),
-        },
-    },
-];
+// Enhanced caching configuration - use standard Metro cache
+config.cacheVersion = '1';
+config.resetCache = false;
 
 // Optimize transformer for better performance
 config.transformer = {
