@@ -14,7 +14,8 @@ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 react {
     entryFile = file("../../App.tsx")
     reactNativeDir = file("../../node_modules/react-native")
-    hermesCommand = "C:/Users/chell/Desktop/Sallie AI/android/hermes-debug.bat"
+    // Disable Hermes for debug builds to avoid compilation issues
+    // hermesCommand = "C:/Users/chell/Desktop/Sallie AI/android/hermes-debug.bat"
     codegenDir = file("../../node_modules/@react-native/codegen")
 
     // Use Expo CLI to bundle the app, this ensures the Metro config
