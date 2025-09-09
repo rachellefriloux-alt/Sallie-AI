@@ -4,7 +4,26 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ca4d973b-8133-4e17-a50c-f3bddac84e59" name="Changes" comment="aaaaaa" />
+    <list default="true" id="ca4d973b-8133-4e17-a50c-f3bddac84e59" name="Changes" comment="aaaaaa">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Personalized_Roadmap.md" beforeDir="false" afterPath="$PROJECT_DIR$/Personalized_Roadmap.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/__tests__/integration.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/__tests__/integration.test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/__tests__/setup.ts" beforeDir="false" afterPath="$PROJECT_DIR$/__tests__/setup.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/components/QuickActions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/QuickActions.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/screens/HomeLauncherScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/screens/HomeLauncherScreen.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onboarding/app/(tabs)/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/app/(tabs)/_layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onboarding/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/app/_layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onboarding/bin/main/com/sallie/onboarding/OnboardingManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/bin/main/com/sallie/onboarding/OnboardingManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onboarding/components/HapticTab.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/components/HapticTab.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onboarding/components/ThemedText.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/components/ThemedText.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onboarding/components/ThemedView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/components/ThemedView.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onboarding/components/ui/TabBarBackground.ios.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/components/ui/TabBarBackground.ios.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/onboarding/scripts/reset-project.js" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/scripts/reset-project.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,42 +40,62 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestState"><![CDATA[{
-  "prStates": [
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;rachellefriloux-alt&quot;
+  }
+}</component>
+  <component name="GitHubPullRequestState">{
+  &quot;prStates&quot;: [
     {
-      "id": {
-        "id": "PR_kwDOPoqJis6nJFmZ",
-        "number": 28
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOPoqJis6nJFmZ&quot;,
+        &quot;number&quot;: 28
       },
-      "lastSeen": 1757201536357
+      &quot;lastSeen&quot;: 1757201536357
     },
     {
-      "id": {
-        "id": "PR_kwDOPoqJis6nINpS",
-        "number": 13
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOPoqJis6nINpS&quot;,
+        &quot;number&quot;: 13
       },
-      "lastSeen": 1757201843544
+      &quot;lastSeen&quot;: 1757201843544
     },
     {
-      "id": {
-        "id": "PR_kwDOPoqJis6nJFSv",
-        "number": 27
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOPoqJis6nJFSv&quot;,
+        &quot;number&quot;: 27
       },
-      "lastSeen": 1757201898738
+      &quot;lastSeen&quot;: 1757201898738
     }
   ]
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/rachellefriloux-alt/Sallie-AI.git",
-    "accountId": "cd66dcc4-dda9-4c02-b1e1-4736bdeb5046"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/rachellefriloux-alt/Sallie-AI.git&quot;,
+    &quot;accountId&quot;: &quot;cd66dcc4-dda9-4c02-b1e1-4736bdeb5046&quot;
   }
-}]]></component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "git-widget-placeholder": "main"
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="32QpvWsjKWKTg4hcdNKG3V8VWD9" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;
   }
-}]]></component>
+}</component>
   <component name="TaskManager">
     <task id="LOCAL-00001" summary="aaaaaa">
       <option name="closed" value="true" />
@@ -65,6 +104,13 @@
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
       <updated>1757201503396</updated>
+    </task>
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ca4d973b-8133-4e17-a50c-f3bddac84e59" name="Changes" comment="aaaaaa" />
+      <created>1757362886309</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1757362886309</updated>
     </task>
     <option name="localTasksCounter" value="2" />
     <servers />

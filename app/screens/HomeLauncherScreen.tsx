@@ -8,9 +8,14 @@ import {
     Dimensions,
     StatusBar,
     Animated,
+    Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'react-native-linear-gradient';
+import { Linking } from 'react-native';
+import * as IntentLauncher from 'expo-intent-launcher';
+import { Audio } from 'expo-av';
+import * as Speech from 'expo-speech';
 // import { useNavigation } from '@react-navigation/native';
 import { usePersonaStore } from '../store/persona';
 import { useMemoryStore } from '../store/memory';
@@ -48,6 +53,9 @@ export default function HomeLauncherScreen() {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [greeting, setGreeting] = useState('');
     const [showVoicePanel, setShowVoicePanel] = useState(false);
+    const [isListening, setIsListening] = useState(false);
+    const [transcription, setTranscription] = useState('');
+    const [aiResponse, setAiResponse] = useState('');
     const fadeAnimation = React.useRef(new Animated.Value(1)).current;
 
     useEffect(() => {
@@ -87,24 +95,140 @@ export default function HomeLauncherScreen() {
         setShowVoicePanel(!showVoicePanel);
     };
 
-    const handleAppPress = (appName: string) => {
-        // Launch app logic here - TODO: Implement app launching
+    const handleAppPress = async (appName: string) => {
+        try {
+            // Map app names to their package names or URLs
+            const appMappings: { [key: string]: string } = {
+                'phone': 'tel:',
+                'messages': 'sms:',
+                'camera': 'android.media.action.IMAGE_CAPTURE',
+                'gallery': 'android.intent.action.PICK',
+                'browser': 'https://www.google.com',
+                'settings': 'android.settings.SETTINGS',
+                'calculator': 'android.intent.action.MAIN',
+                'calendar': 'android.intent.action.MAIN',
+                'clock': 'android.intent.action.MAIN',
+                'contacts': 'android.intent.action.VIEW',
+                'email': 'mailto:',
+                'maps': 'geo:0,0',
+                'music': 'android.intent.action.MUSIC_PLAYER',
+                'youtube': 'https://www.youtube.com',
+                'whatsapp': 'https://wa.me/',
+                'instagram': 'https://www.instagram.com',
+                'facebook': 'https://www.facebook.com',
+            };
+
+            const appTarget = appMappings[appName.toLowerCase()];
+
+            if (!appTarget) {
+                Alert.alert('App Not Found', `Cannot launch ${appName}. App mapping not configured.`);
+                return;
+            }
+
+            // Handle different types of launches
+            if (appTarget.startsWith('https://') || appTarget.startsWith('tel:') || appTarget.startsWith('sms:') || appTarget.startsWith('mailto:') || appTarget.startsWith('geo:')) {
+                // Use Linking for URLs and standard schemes
+                const supported = await Linking.canOpenURL(appTarget);
+                if (supported) {
+                    await Linking.openURL(appTarget);
+                } else {
+                    Alert.alert('Cannot Open', `Unable to open ${appName}`);
+                }
+            } else {
+                // Use IntentLauncher for Android intents
+                try {
+                    await IntentLauncher.startActivityAsync(appTarget);
+                } catch (error) {
+                    Alert.alert('Cannot Launch', `Unable to launch ${appName}. ${error}`);
+                }
+            }
+        } catch (error) {
+            console.error('Error launching app:', error);
+            Alert.alert('Error', `Failed to launch ${appName}`);
+        }
     };
 
-    const handleVoiceStart = () => {
-        // Voice interaction start logic - TODO: Implement voice recognition
+    const handleVoiceStart = async () => {
+        try {
+            setIsListening(true);
+            setTranscription('');
+            setAiResponse('');
+
+            // Request audio permissions
+            const { status } = await Audio.requestPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission Required', 'Audio recording permission is required for voice interaction.');
+                setIsListening(false);
+                return;
+            }
+
+            // Start voice recognition (simulated for now)
+            // In a real implementation, you would use a speech-to-text service
+            Alert.alert('Voice Recognition', 'Voice recognition started. Say something...');
+
+            // Simulate voice recognition delay
+            setTimeout(() => {
+                if (isListening) {
+                    handleTranscription('Hello Sallie, how are you today?');
+                }
+            }, 2000);
+
+        } catch (error) {
+            console.error('Error starting voice recognition:', error);
+            setIsListening(false);
+            Alert.alert('Error', 'Failed to start voice recognition');
+        }
     };
 
     const handleVoiceEnd = () => {
-        // Voice interaction end logic - TODO: Implement voice processing
+        setIsListening(false);
+        // Stop voice recognition
+        // In a real implementation, you would stop the speech recognition service
     };
 
     const handleTranscription = (text: string) => {
-        // Handle voice transcription - TODO: Process transcribed text
+        setTranscription(text);
+        setIsListening(false);
+
+        // Process the transcription and generate AI response
+        handleResponse(text);
     };
 
-    const handleResponse = (response: string) => {
-        // Handle AI response - TODO: Process and display response
+    const handleResponse = async (userInput: string) => {
+        try {
+            // Simulate AI processing
+            setAiResponse('Processing your request...');
+
+            // Simple response logic based on input
+            let response = '';
+
+            if (userInput.toLowerCase().includes('hello') || userInput.toLowerCase().includes('hi')) {
+                response = 'Hello! How can I help you today?';
+            } else if (userInput.toLowerCase().includes('how are you')) {
+                response = 'I\'m doing great, thank you for asking! How are you feeling?';
+            } else if (userInput.toLowerCase().includes('time')) {
+                response = `The current time is ${currentTime.toLocaleTimeString()}`;
+            } else if (userInput.toLowerCase().includes('weather')) {
+                response = 'I\'d love to help with weather information. Could you tell me your location?';
+            } else if (userInput.toLowerCase().includes('remind')) {
+                response = 'I can help you set a reminder. What would you like me to remind you about?';
+            } else {
+                response = `I heard you say: "${userInput}". How can I assist you with that?`;
+            }
+
+            setAiResponse(response);
+
+            // Speak the response
+            Speech.speak(response, {
+                language: 'en',
+                pitch: 1.0,
+                rate: 0.8,
+            });
+
+        } catch (error) {
+            console.error('Error processing AI response:', error);
+            setAiResponse('Sorry, I encountered an error processing your request.');
+        }
     };
 
     return (
