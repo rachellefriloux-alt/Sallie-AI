@@ -141,8 +141,6 @@ android {
                     cppFlags "-Wno-dollar-in-identifier-extension"
                 }
             }
-            // Use no optimization for debug builds
-            hermesFlags = ["-O0"]
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
