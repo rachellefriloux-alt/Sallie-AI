@@ -41,82 +41,82 @@ export type FontMapping = {
 
 // Font assets registry
 const fontAssets: FontAsset[] = [
-    // Default font (Inter)
+    // Default font (SpaceMono - using available font for all weights)
     {
         family: FontFamily.DEFAULT,
         weight: 'thin',
         style: 'normal',
-        asset: require('../assets/fonts/default/Inter-Thin.ttf'),
+        asset: require('../assets/fonts/SpaceMono-Regular.ttf'),
     },
     {
         family: FontFamily.DEFAULT,
         weight: 'light',
         style: 'normal',
-        asset: require('../assets/fonts/default/Inter-Light.ttf'),
+        asset: require('../assets/fonts/SpaceMono-Regular.ttf'),
     },
     {
         family: FontFamily.DEFAULT,
         weight: 'regular',
         style: 'normal',
-        asset: require('../assets/fonts/default/Inter-Regular.ttf'),
+        asset: require('../assets/fonts/SpaceMono-Regular.ttf'),
     },
     {
         family: FontFamily.DEFAULT,
         weight: 'medium',
         style: 'normal',
-        asset: require('../assets/fonts/default/Inter-Medium.ttf'),
+        asset: require('../assets/fonts/SpaceMono-Regular.ttf'),
     },
     {
         family: FontFamily.DEFAULT,
         weight: 'bold',
         style: 'normal',
-        asset: require('../assets/fonts/default/Inter-Bold.ttf'),
+        asset: require('../assets/fonts/SpaceMono-Regular.ttf'),
     },
     {
         family: FontFamily.DEFAULT,
         weight: 'black',
         style: 'normal',
-        asset: require('../assets/fonts/default/Inter-Black.ttf'),
+        asset: require('../assets/fonts/SpaceMono-Regular.ttf'),
     },
 
-    // Southern Grit font
+    // Southern Grit font (placeholder - using SpaceMono until fonts are added)
     {
         family: FontFamily.SOUTHERN_GRIT,
         weight: 'regular',
         style: 'normal',
-        asset: require('../assets/fonts/southern-grit/SouthernGrit-Regular.ttf'),
+        asset: require('../assets/fonts/SpaceMono-Regular.ttf'),
     },
     {
         family: FontFamily.SOUTHERN_GRIT,
         weight: 'bold',
         style: 'normal',
-        asset: require('../assets/fonts/southern-grit/SouthernGrit-Bold.ttf'),
+        asset: require('../assets/fonts/SpaceMono-Regular.ttf'),
     },
 
-    // Grace Grind font
+    // Grace Grind font (placeholder - using SpaceMono until fonts are added)
     {
         family: FontFamily.GRACE_GRIND,
         weight: 'light',
         style: 'normal',
-        asset: require('../assets/fonts/grace-grind/GraceGrind-Light.ttf'),
+        asset: require('../assets/fonts/SpaceMono-Regular.ttf'),
     },
     {
         family: FontFamily.GRACE_GRIND,
         weight: 'regular',
         style: 'normal',
-        asset: require('../assets/fonts/grace-grind/GraceGrind-Regular.ttf'),
+        asset: require('../assets/fonts/SpaceMono-Regular.ttf'),
     },
     {
         family: FontFamily.GRACE_GRIND,
         weight: 'medium',
         style: 'normal',
-        asset: require('../assets/fonts/grace-grind/GraceGrind-Medium.ttf'),
+        asset: require('../assets/fonts/SpaceMono-Regular.ttf'),
     },
     {
         family: FontFamily.GRACE_GRIND,
         weight: 'bold',
         style: 'normal',
-        asset: require('../assets/fonts/grace-grind/GraceGrind-Bold.ttf'),
+        asset: require('../assets/fonts/SpaceMono-Regular.ttf'),
     },
 ];
 
@@ -135,6 +135,10 @@ export const themeFontMapping: Record<ThemeType, FontFamily> = {
     southernGrit: FontFamily.SOUTHERN_GRIT,
     graceGrind: FontFamily.GRACE_GRIND,
     soulSweat: FontFamily.DEFAULT, // Soul Sweat uses default fonts
+    mysticForest: FontFamily.DEFAULT, // Mystic Forest uses default fonts
+    cyberNeon: FontFamily.DEFAULT, // Cyber Neon uses default fonts
+    desertOasis: FontFamily.DEFAULT, // Desert Oasis uses default fonts
+    aurora: FontFamily.DEFAULT, // Aurora uses default fonts
     system: FontFamily.DEFAULT, // System theme uses default fonts
 };
 
@@ -143,7 +147,7 @@ export const themeFontMapping: Record<ThemeType, FontFamily> = {
  * @returns Promise that resolves when fonts are loaded
  */
 export const loadAllFonts = async (): Promise<void> => {
-    const fontMap: Record<string, NodeRequire> = {};
+    const fontMap: Record<string, any> = {};
 
     // Create the font map for loading
     fontAssets.forEach(font => {
