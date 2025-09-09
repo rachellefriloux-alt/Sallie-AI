@@ -154,9 +154,6 @@ android {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            ndk {
-                abiFilters "armeabi-v7a", "arm64-v8a"
-            }
             buildFeatures {
                 buildConfig true
             }
@@ -180,9 +177,6 @@ android {
                     cppFlags "-Wno-dollar-in-identifier-extension"
                     arguments "-DANDROID_STL=c++_shared", "-DCMAKE_BUILD_TYPE=Release"
                 }
-            }
-            ndk {
-                abiFilters "armeabi-v7a", "arm64-v8a"
             }
             buildFeatures {
                 buildConfig true
