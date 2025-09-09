@@ -1,14 +1,14 @@
 apply plugin: "com.android.application"
-apply plugin: "org.jetbrains.kotlin.android"
+// apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 // apply plugin: 'com.google.gms.google-services'
 // apply plugin: 'com.google.firebase.crashlytics'
 // apply plugin: 'com.sallie.plugin-injection' // Removed - plugin not found
 
 // Configure Kotlin
-kotlin {
-    jvmToolchain(17)
-}
+// kotlin {
+//     jvmToolchain(17)
+// }
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
