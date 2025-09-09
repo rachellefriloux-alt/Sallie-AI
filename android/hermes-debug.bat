@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 set "args="
 for %%i in (%*) do (
-    if "%%i"=="%O3" (
+    if "%%i"=="-O3" (
         set "args=!args! -O0"
     ) else (
         set "args=!args! %%i"
