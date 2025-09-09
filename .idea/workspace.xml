@@ -5,15 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ca4d973b-8133-4e17-a50c-f3bddac84e59" name="Changes" comment="aaaaaa">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Personalized_Roadmap.md" beforeDir="false" afterPath="$PROJECT_DIR$/Personalized_Roadmap.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/__tests__/integration.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/__tests__/integration.test.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/__tests__/setup.ts" beforeDir="false" afterPath="$PROJECT_DIR$/__tests__/setup.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/components/QuickActions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/QuickActions.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/screens/HomeLauncherScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/screens/HomeLauncherScreen.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onboarding/app/(tabs)/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/app/(tabs)/_layout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onboarding/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/app/_layout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onboarding/bin/main/com/sallie/onboarding/OnboardingManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/bin/main/com/sallie/onboarding/OnboardingManager.kt" afterDir="false" />
@@ -22,7 +13,6 @@
       <change beforePath="$PROJECT_DIR$/onboarding/components/ThemedView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/components/ThemedView.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onboarding/components/ui/TabBarBackground.ios.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/components/ui/TabBarBackground.ios.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/onboarding/scripts/reset-project.js" beforeDir="false" afterPath="$PROJECT_DIR$/onboarding/scripts/reset-project.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
