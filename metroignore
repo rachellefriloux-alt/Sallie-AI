@@ -1,5 +1,7 @@
 # Metro ignore file for better performance
+
 # Ignore common unnecessary files
+
 *.log
 *.lock
 *.tmp
@@ -8,21 +10,25 @@
 Thumbs.db
 
 # Ignore build artifacts
+
 dist/
 build/
 android/app/build/
 ios/build/
 
 # Ignore node_modules (Metro handles this automatically, but explicit is better)
+
 node_modules/**/.*
 
 # Ignore documentation and non-source files
+
 *.md
 docs/
 coverage/
 .nyc_output/
 
 # Ignore test files in production builds
+
 __tests__/
 *.test.js
 *.test.ts
@@ -32,21 +38,25 @@ __tests__/
 *.spec.tsx
 
 # Ignore development tools
+
 .vscode/
 .idea/
 *.swp
 *.swo
 
 # Ignore package manager files
+
 yarn.lock
 pnpm-lock.yaml
 package-lock.json
 
 # Ignore Expo development files
+
 .expo/
 .expo-shared/
 
 # Ignore OS generated files
+
 .DS_Store
 .DS_Store?
 ._*
