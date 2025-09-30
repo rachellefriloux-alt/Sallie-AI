@@ -5,4 +5,23 @@
  * Got it, love.
  */
 
-...existing content migrated and adapted for Sallie app structure...
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+
+export default defineConfig({
+  plugins: [vue()],
+  server: {
+    port: 3001,
+    open: true
+  },
+  build: {
+    outDir: 'dist',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['vue']
+        }
+      }
+    }
+  }
+});
