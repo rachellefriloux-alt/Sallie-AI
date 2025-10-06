@@ -55,14 +55,14 @@ Sallie AI is a React Native + Expo hybrid application with Android launcher comp
 - **Test validation**: Run `npm test` - expect 4 passing test suites, 17 passing tests total
 - **Dependency validation**: If adding new React Native packages, use `npx expo install <package>` instead of `npm install`
 
-## Development Rules (Salle 1.0 Architecture)
+## Development Rules (Sallie 1.0 Architecture)
 
-### CRITICAL Salle 1.0 Requirements
+### CRITICAL Sallie 1.0 Requirements
 - **Persona Consistency**: All code must maintain "tough love meets soul care" persona
 - **Module Headers**: Every new module must include:
   ```kotlin
   /*
-   * Salle 1.0 Module
+   * Sallie 1.0 Module
    * Persona: Tough love meets soul care.
    * Function: [brief description]
    * Got it, love.

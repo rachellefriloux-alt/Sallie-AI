@@ -1,4 +1,4 @@
-# Salle 1.0 Persona Matrix
+# Sallie 1.0 Persona Matrix
 
 This matrix governs visual, tonal, and behavioral alignment.
 
