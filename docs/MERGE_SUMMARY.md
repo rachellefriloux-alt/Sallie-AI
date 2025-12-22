@@ -7,7 +7,7 @@ provenance:
 # Branch Merge Summary
 
 ## Purpose
-This document tracks the comprehensive merge of all branches in the Salle 1.0 repository to ensure no files or functionality are lost.
+This document tracks the comprehensive merge of all branches in the Sallie 1.0 repository to ensure no files or functionality are lost.
 
 ## Branches Merged
 - **main** (base branch with core project structure) - SHA: a00e3a8d64dbdb1bf69762a4fa50c4e46e5d96d6
@@ -47,7 +47,7 @@ This document tracks the comprehensive merge of all branches in the Salle 1.0 re
 	- Main's `build.gradle.kts` preserved for full Android project structure
 	- Main's `package.json` kept for complete dependency management
 4. **Enhanced Configurations**: Merged build tool configurations from all branches
-5. **Maintain Architecture**: Followed Salle's modular architecture principles per guide
+5. **Maintain Architecture**: Followed Sallie's modular architecture principles per guide
 
 ## Files Preserved with Multiple Versions
 - `App.vue` - Main version kept (most complete), old version preserved as `App_old.vue`
@@ -62,11 +62,11 @@ This document tracks the comprehensive merge of all branches in the Salle 1.0 re
 - **Build Configurations**: 3 JavaScript config files added (ESLint, Vite, Vitest)
 
 ## Architecture Compliance
-✅ All merges follow Salle 1.0 Operating Constitution requirements
+✅ All merges follow Sallie 1.0 Operating Constitution requirements
 ✅ Modular structure preserved with proper module separation
 ✅ Persona header requirements maintained in core files
 ✅ No network permissions added to localOnly flavor
 ✅ Build verification tasks updated and functional
 
 ## Got it, love.
-All branches successfully unified into a comprehensive codebase preserving every piece of useful content while maintaining the integrity of Salle's core architecture. The repository now contains the complete union of functionality from all development branches.
+All branches successfully unified into a comprehensive codebase preserving every piece of useful content while maintaining the integrity of Sallie's core architecture. The repository now contains the complete union of functionality from all development branches.
