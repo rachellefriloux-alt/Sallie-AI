@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -22,9 +23,15 @@ DEFAULT_URL = (
 
 
 def download(url: str, dest: Path) -> None:
+    # Only http/https — refuses file://, ftp://, etc., which urlopen
+    # would otherwise happily honour from a CLI flag.
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError(f"refusing non-http(s) URL scheme: {parsed.scheme!r}")
     dest.parent.mkdir(parents=True, exist_ok=True)
     print(f"downloading {url}\n          -> {dest}", file=sys.stderr)
-    with urllib.request.urlopen(url) as response, dest.open("wb") as out:
+    req = urllib.request.Request(url, method="GET")
+    with urllib.request.urlopen(req) as response, dest.open("wb") as out:  # noqa: S310 — scheme guarded above
         total = response.length or 0
         downloaded = 0
         chunk = 1024 * 1024
