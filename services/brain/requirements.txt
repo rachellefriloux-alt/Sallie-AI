@@ -2,10 +2,14 @@
 # Subsequent phases will add: qdrant-client, ollama, sentence-transformers,
 # numpy, pandas, etc. (see legacy/Sallie/requirements.txt for the full list).
 
-fastapi==0.115.0
+# fastapi >= 0.122 allows starlette 0.49.x, which is required to pick up
+# the patched starlette (>= 0.49.1) that fixes the Range-header DoS.
+fastapi==0.130.0
+starlette==0.49.1
 uvicorn[standard]==0.30.6
 pydantic==2.9.2
-python-multipart==0.0.12
+# python-multipart is intentionally omitted: the brain does not accept
+# multipart uploads. Add it back (>= 0.0.22) only if upload routes appear.
 
 # Dev / test
 pytest==8.3.3
