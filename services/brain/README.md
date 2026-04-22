@@ -73,6 +73,11 @@ Phase manifest in
   `app/(drawer)/brain-status.tsx` shows a live readout of `/ready`
   with per-system status and pull-to-refresh — the first real
   phone↔brain connection.
+- **Knowledge proxy:** the brain forwards `/knowledge/health` and
+  `/knowledge/query` to `services/knowledge/` (see
+  `app/clients/knowledge.py` + `app/routes/knowledge.py`). Mobile uses
+  `lib/knowledge.ts` to call these — that way the phone only knows one
+  backend URL.
 
 ## Tests
 

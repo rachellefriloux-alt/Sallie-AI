@@ -11,7 +11,10 @@ pydantic==2.9.2
 # python-multipart is intentionally omitted: the brain does not accept
 # multipart uploads. Add it back (>= 0.0.22) only if upload routes appear.
 
+# httpx is used both for outbound calls (e.g. the knowledge-service client
+# in app.clients.knowledge) and by FastAPI's TestClient at test time.
+httpx==0.27.2
+
 # Dev / test
 pytest==8.3.3
 pytest-asyncio==0.24.0
-httpx==0.27.2

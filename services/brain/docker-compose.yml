@@ -1,10 +1,26 @@
-# Sallie Brain — local development stack.
-# Phase 1: just the brain. Phases 3+ add qdrant, ollama, knowledge service.
-# Run from this directory:  docker-compose up
+# Sallie local dev stack — brain + knowledge + qdrant.
+#
+# Services:
+#   - brain      (FastAPI :8000)        Sallie's reasoning core
+#   - knowledge  (FastAPI :8100)        Wikipedia/RAG service
+#   - qdrant     (vector DB :6333)      backing store for knowledge
+#
+# Ollama is intentionally NOT containerised here: it's faster and simpler
+# to install Ollama natively on the host (it auto-detects GPUs) and let
+# the knowledge service reach it via OLLAMA_BASE_URL=http://host.docker.internal:11434.
+#
+# Run from the repo root:
+#   cd services && docker-compose -f brain/docker-compose.yml up --build
+#
+# To skip Ollama entirely (no embeddings server), set:
+#   KNOWLEDGE_EMBEDDER=hash
+# in the knowledge env block — useful for smoke-testing the wiring.
 
 services:
   brain:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: sallie-brain:dev
     container_name: sallie-brain
     ports:
@@ -13,19 +29,43 @@ services:
       LOG_LEVEL: INFO
       BRAIN_HOST: 0.0.0.0
       BRAIN_PORT: "8000"
-      # OLLAMA_BASE_URL: http://ollama:11434   # uncomment in Phase 3
+      KNOWLEDGE_BASE_URL: http://knowledge:8100
+    depends_on:
+      - knowledge
     restart: unless-stopped
 
-# Phase 3 will add:
-#   ollama:
-#     image: ollama/ollama
-#     ports: ["11434:11434"]
-#     volumes: [ollama_data:/root/.ollama]
-#   qdrant:
-#     image: qdrant/qdrant
-#     ports: ["6333:6333"]
-#     volumes: [qdrant_data:/qdrant/storage]
-#
-# volumes:
-#   ollama_data:
-#   qdrant_data:
+  knowledge:
+    build:
+      context: ../knowledge
+      dockerfile: Dockerfile
+    image: sallie-knowledge:dev
+    container_name: sallie-knowledge
+    ports:
+      - "8100:8100"
+    environment:
+      LOG_LEVEL: INFO
+      KNOWLEDGE_HOST: 0.0.0.0
+      KNOWLEDGE_PORT: "8100"
+      QDRANT_URL: http://qdrant:6333
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      KNOWLEDGE_EMBED_MODEL: nomic-embed-text
+      KNOWLEDGE_EMBED_DIM: "768"
+      KNOWLEDGE_COLLECTION: wikipedia
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - qdrant
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:v1.12.4
+    container_name: sallie-qdrant
+    ports:
+      - "6333:6333"  # HTTP
+      - "6334:6334"  # gRPC
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
