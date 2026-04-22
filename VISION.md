@@ -51,20 +51,28 @@ Sallie's "mind" is composed of nine cooperating subsystems. They live in
 ### Convergence in detail
 
 Convergence is **how Sallie is born**. The first time a user runs the app,
-Convergence walks them through roughly forty questions. The answers are not
-stored as a flat profile — they are fed into the other eight systems to
-shape:
+Convergence walks them through **40 questions across 6 phases**. Phases 1–5
+(Q1–29) are the canonical Heritage DNA from the predecessor `Sallie/` repo
+(Obsidian, Leopard, Peacock, Celestial, Void). Phase 6 (Q30–40, the
+**Visage Protocol**) is new and gives Sallie her face, voice, and avatar.
+
+The answers are not stored as a flat profile — they feed every other
+system to shape:
 
 - **Personality:** core values, temperament, humor style, conversational tone.
 - **Behavior:** how proactive she is, how blunt vs. gentle, how curious,
   how playful, how protective.
-- **Voice:** speaking cadence, vocabulary register, pet phrases.
-- **Face:** her visual avatar — features, color palette, expression baseline.
-- **Memory seed:** what she "remembers" caring about from day one.
+- **Voice:** speaking cadence, vocabulary register, pitch.
+- **Face:** her visual avatar — palette, shape language, eyes, resting
+  expression, motion.
+- **Memory seed:** what she "remembers" caring about from day one — including
+  the user's chosen address, her own name, and her first spoken words.
 
 After Convergence, Sallie has a unique identity that is hers, not a default.
-The full question bank, scoring model, and trait-mapping live in
-[`docs/spec/convergence.md`](docs/spec/convergence.md).
+The flow is implemented in [`services/brain/`](services/brain/); the spec
+lives in [`docs/spec/convergence.md`](docs/spec/convergence.md); the
+question bank in
+[`services/brain/app/convergence/data/questions.json`](services/brain/app/convergence/data/questions.json).
 
 ---
 

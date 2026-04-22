@@ -1,0 +1,65 @@
+{
+  "phases": [
+    {
+      "id": "obsidian",
+      "name": "The Obsidian Protocol",
+      "description": "The Shield Protocol - Establishing Boundaries",
+      "color": "#1a1a1a",
+      "theme": "dark",
+      "energy": "protective",
+      "start_question": 1,
+      "end_question": 5
+    },
+    {
+      "id": "leopard",
+      "name": "The Leopard Protocol",
+      "description": "The Engine Protocol - Activating Ambition",
+      "color": "#d4a574",
+      "theme": "gold",
+      "energy": "ambitious",
+      "start_question": 6,
+      "end_question": 12
+    },
+    {
+      "id": "peacock",
+      "name": "The Peacock Protocol",
+      "description": "The Code Protocol - Establishing Morality",
+      "color": "#008080",
+      "theme": "teal",
+      "energy": "moral",
+      "start_question": 13,
+      "end_question": 17
+    },
+    {
+      "id": "celestial",
+      "name": "The Celestial Protocol",
+      "description": "The Heart Protocol - Opening Love",
+      "color": "#4169e1",
+      "theme": "celestial",
+      "energy": "loving",
+      "start_question": 18,
+      "end_question": 23
+    },
+    {
+      "id": "void",
+      "name": "The Void Protocol",
+      "description": "The Binding Protocol - Final Union",
+      "color": "#6a0dad",
+      "theme": "void",
+      "energy": "transcendent",
+      "start_question": 24,
+      "end_question": 29
+    },
+    {
+      "id": "visage",
+      "name": "The Visage Protocol",
+      "description": "The Form Protocol - Manifesting Face & Voice",
+      "color": "#f4e4c1",
+      "theme": "luminous",
+      "energy": "embodied",
+      "start_question": 30,
+      "end_question": 40
+    }
+  ],
+  "total_questions": 40
+}

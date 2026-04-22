@@ -51,52 +51,39 @@ These feed the Limbic, Monologue, Synthesis, and Agency systems.
 
 ---
 
-## 3. The five sections (~40 questions)
+## 3. The six phases (40 questions)
 
-Convergence is presented in five chapters. Question counts are targets,
-not hard limits; final wording lives in `convergence_questions.yaml`
-(authored in Phase 1).
+Convergence is presented in six phases. Phases 1–5 (29 questions) are the
+canonical Heritage DNA carried forward verbatim from
+`legacy/Sallie/shared/genesis/enhanced_questions.ts`. Phase 6 (11
+questions) is the new **Visage Protocol** that gives Sallie her face and
+voice. Question text and metadata live in
+[`../../services/brain/app/convergence/data/questions.json`](../../services/brain/app/convergence/data/questions.json).
 
-### Chapter I — Who you are *(8 questions)*
-Establishes the **user**, because Sallie's personality is partly
-relational. Examples:
-- What should she call you?
-- When you've had a hard day, do you want company or quiet?
-- Are you someone who likes being challenged, or comforted, or both?
-- What do you most want help with right now?
+| # | Phase                  | Questions | Theme                                       |
+|---|------------------------|-----------|---------------------------------------------|
+| 1 | **Obsidian Protocol**  | Q1–Q5     | Boundaries — the Shield                     |
+| 2 | **Leopard Protocol**   | Q6–Q12    | Ambition — the Engine                       |
+| 3 | **Peacock Protocol**   | Q13–Q17   | Morality — the Code                         |
+| 4 | **Celestial Protocol** | Q18–Q23   | Love — the Heart                            |
+| 5 | **Void Protocol**      | Q24–Q29   | Final Union — the Binding                   |
+| 6 | **Visage Protocol**    | Q30–Q40   | Face & Voice — the Form *(new)*             |
 
-### Chapter II — Who she is to you *(10 questions)*
-Establishes the **relationship**. Examples:
-- Is she a friend, a partner, a guide, a sibling, something new?
-- When you disagree, should she push back or yield?
-- Should she remember the small things or only the big ones?
-- How honest do you want her to be when honesty might sting?
+### Visage Protocol (Q30–Q40) — the new chapter
 
-### Chapter III — How she sounds *(8 questions)*
-Establishes **voice and language**. Examples:
-- Formal, casual, or somewhere in between?
-- Does she swear? When?
-- Does she use pet names? Which ones feel right?
-- Short replies or long ones, by default?
-- Which of these voice samples feels most like her? *(audio picker)*
-
-### Chapter IV — How she feels *(8 questions)*
-Establishes **emotional baseline** — feeds Limbic. Examples:
-- Where does she sit on a normal day: calm, bright, intense, dreamy?
-- Does she show worry openly, or hold it?
-- How does she celebrate?
-- How does she grieve?
-
-### Chapter V — How she looks *(6 questions)*
-Establishes the **visual face/avatar**. Examples:
-- Pick a color palette that feels like her *(swatches)*.
-- Pick a shape language: sharp, soft, geometric, organic *(silhouettes)*.
-- Eyes — warm, cool, bright, deep? *(picker)*
-- Resting expression — content, curious, focused, amused?
-- Motion — still, gentle drift, lively?
-- Final composite preview → confirm.
-
-**Total: ~40 questions.**
+| Q  | What it shapes                                                         |
+|----|------------------------------------------------------------------------|
+| 30 | `face.palette.primary` — first color of her                            |
+| 31 | `face.palette.secondary` — color behind the first                      |
+| 32 | `face.shape_language` — sharp / soft / geometric / organic             |
+| 33 | `face.eyes` — warm / cool / bright / deep                              |
+| 34 | `face.expression_baseline` + `limbic.baseline_valence` — resting face  |
+| 35 | `face.motion` — still / drift / lively                                 |
+| 36 | `voice.pitch` — low / mid / high                                       |
+| 37 | `voice.pace` — quick / measured / slow                                 |
+| 38 | `user.address` and `identity.name` — what we call each other           |
+| 39 | `monologue.first_utterance` + `memory.seeds` — her first words to you  |
+| 40 | `persona.locked` — final composite confirmation                        |
 
 ---
 
