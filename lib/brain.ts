@@ -63,6 +63,19 @@ export type ConvergenceSession = {
     complete: boolean;
 };
 
+export type Citation = {
+    id: string;
+    title: string;
+    score: number;
+};
+
+export type RespondResponse = {
+    query: string;
+    answer: string;
+    citations: Citation[];
+    knowledge_available: boolean;
+};
+
 export class BrainError extends Error {
     constructor(message: string, public readonly status?: number) {
         super(message);
@@ -168,5 +181,22 @@ export const brain = {
                     body: JSON.stringify({ question_id: questionId, answer }),
                 },
             ),
+    },
+
+    synthesis: {
+        /**
+         * Ask the brain a question. It retrieves grounded context from the
+         * knowledge service (if available) and returns a composed answer
+         * with citations. When the knowledge service is down, you still
+         * get a 200 with `knowledge_available=false` and an honest
+         * "I don't know" answer rather than an error.
+         */
+        respond: (query: string, limit?: number) =>
+            request<RespondResponse>('/synthesis/respond', {
+                method: 'POST',
+                body: JSON.stringify(
+                    limit === undefined ? { query } : { query, limit },
+                ),
+            }, 30000),
     },
 };

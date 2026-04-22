@@ -78,6 +78,13 @@ Phase manifest in
   `app/clients/knowledge.py` + `app/routes/knowledge.py`). Mobile uses
   `lib/knowledge.ts` to call these — that way the phone only knows one
   backend URL.
+- **Synthesis:** `POST /synthesis/respond` is the brain's "talk to me"
+  endpoint. It pulls top-N chunks from the knowledge service, composes a
+  grounded prompt + cited answer, and degrades gracefully (200 with
+  `knowledge_available=false`) if knowledge is down. The responder is
+  pluggable — the default emits a deterministic citation-tagged answer
+  with no LLM dependency; Phase 6 swaps in real LLMs behind the same
+  `Responder` protocol. See `app/synthesis/composer.py`.
 
 ## Tests
 

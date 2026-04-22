@@ -22,6 +22,7 @@ from app.runtime import Brain
 from app.routes import convergence as convergence_routes
 from app.routes import health as health_routes
 from app.routes import knowledge as knowledge_routes
+from app.routes import synthesis as synthesis_routes
 from app.routes import systems as systems_routes
 
 logging.basicConfig(level=settings.log_level)
@@ -65,6 +66,7 @@ def create_app() -> FastAPI:
     app.include_router(health_routes.router)
     app.include_router(convergence_routes.router)
     app.include_router(knowledge_routes.router)
+    app.include_router(synthesis_routes.router)
     app.include_router(systems_routes.router)
     return app
 
