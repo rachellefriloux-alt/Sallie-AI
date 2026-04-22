@@ -66,6 +66,14 @@ Question text and metadata live in
 Phase manifest in
 [`app/convergence/data/phases.json`](app/convergence/data/phases.json).
 
+## Clients
+
+- **Mobile app:** `lib/brain.ts` at the repo root is the typed TypeScript
+  client used by the Expo React Native app. The drawer screen
+  `app/(drawer)/brain-status.tsx` shows a live readout of `/ready`
+  with per-system status and pull-to-refresh — the first real
+  phone↔brain connection.
+
 ## Tests
 
 ```bash
