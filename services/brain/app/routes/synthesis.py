@@ -67,6 +67,18 @@ class RespondResponse(BaseModel):
 async def respond(request: Request, body: RespondRequest) -> RespondResponse:
     composer = _composer(request)
     result = await composer.compose(body.query, limit=body.limit)
+    # Mirror the outcome into the synthesis system so /systems/synthesis
+    # (and the mobile Brain Status screen) reflect real activity. Guarded
+    # because tests sometimes construct app state without a brain.
+    brain = getattr(request.app.state, "brain", None)
+    if brain is not None:
+        synthesis = brain.systems.get("synthesis")
+        if synthesis is not None and hasattr(synthesis, "record_response"):
+            synthesis.record_response(
+                query=result.query,
+                knowledge_available=result.knowledge_available,
+                citation_count=len(result.citations),
+            )
     return RespondResponse(
         query=result.query,
         answer=result.answer,

@@ -203,3 +203,60 @@ def test_respond_validation(client):
     assert r.status_code == 422
     r = client.post("/synthesis/respond", json={"query": "x" * 5000})
     assert r.status_code == 422
+
+
+# ---- Synthesis system metrics ------------------------------------------
+
+
+def test_synthesis_system_records_metrics(client):
+    fake = FakeKnowledge(hits=[
+        KnowledgeHit(id="m#0", score=0.9, text="metric chunk", metadata={"title": "M"}),
+        KnowledgeHit(id="m#1", score=0.8, text="another", metadata={"title": "N"}),
+    ])
+    _install_composer(client, Composer(knowledge=fake))
+
+    # Baseline: nothing recorded yet.
+    r = client.get("/systems/synthesis")
+    assert r.status_code == 200
+    base = r.json()
+    assert base["name"] == "synthesis"
+    assert base["responses_total"] == 0
+    assert base["last_query"] is None
+    assert base["last_knowledge_available"] is None
+    assert base["last_citation_count"] is None
+    assert base["last_at"] is None
+
+    # Two grounded responses.
+    assert client.post("/synthesis/respond", json={"query": "first", "limit": 2}).status_code == 200
+    assert client.post("/synthesis/respond", json={"query": "second", "limit": 1}).status_code == 200
+
+    after = client.get("/systems/synthesis").json()
+    assert after["responses_total"] == 2
+    assert after["last_query"] == "second"
+    assert after["last_knowledge_available"] is True
+    # limit=1 → at most one citation
+    assert after["last_citation_count"] == 1
+    assert isinstance(after["last_at"], str) and after["last_at"]
+
+
+def test_synthesis_system_records_ungrounded_responses(client):
+    _install_composer(client, Composer(knowledge=FakeKnowledge(raise_exc=True)))
+    assert client.post("/synthesis/respond", json={"query": "anything"}).status_code == 200
+
+    s = client.get("/systems/synthesis").json()
+    assert s["responses_total"] == 1
+    assert s["last_query"] == "anything"
+    assert s["last_knowledge_available"] is False
+    assert s["last_citation_count"] == 0
+
+
+def test_synthesis_system_truncates_long_last_query(client):
+    _install_composer(client, Composer(knowledge=FakeKnowledge()))
+    long_q = "q" * 1000
+    assert client.post("/synthesis/respond", json={"query": long_q}).status_code == 200
+
+    s = client.get("/systems/synthesis").json()
+    assert s["last_query"] is not None
+    # Truncated and ellipsised, never the full 1000 chars.
+    assert len(s["last_query"]) < 1000
+    assert s["last_query"].endswith("…")
