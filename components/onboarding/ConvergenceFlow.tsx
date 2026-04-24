@@ -1,14 +1,16 @@
 /**
- * ConvergenceFlow — drives the real backend Convergence flow.
+ * ConvergenceFlow — drives the canonical Convergence ritual.
  *
- * Differs from `QASystem.tsx` (which hard-codes 10 questions in a local
- * Zustand store): this component talks to the brain at
- * `/convergence/sessions/*`, supports the full 40-question bank, and
- * shows phase + progress metadata returned by the server.
+ * Talks to the brain at `/convergence/sessions/*`, walks the full
+ * 40-question bank, and surfaces phase + progress metadata returned by
+ * the server. This is the single source of truth for onboarding Q&A;
+ * an earlier local-only `QASystem` component was removed in favor of
+ * this one (it was the same flow, just with 10 hardcoded questions and
+ * no brain).
  *
  * Drop-in usage from any onboarding stage:
  *
- *   <ConvergenceFlow onComplete={() => router.replace('/')} />
+ *   <ConvergenceFlow onComplete={(sid) => router.replace('/')} />
  *
  * The component fetches its own session on mount and never persists
  * outside the brain — mobile is a thin client. If the brain is
