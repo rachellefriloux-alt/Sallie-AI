@@ -1,0 +1,8 @@
+- name: GitHub Script
+  uses: actions/github-script@v9.0.0
+  
+- name: Android Emulator Runner
+  uses: ReactiveCircus/android-emulator-runner@v2.37.0
+
+- name: Build Android App
+  uses: sparkfabrik/android-build-action@v1.5.0
