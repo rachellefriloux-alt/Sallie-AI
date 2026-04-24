@@ -776,3 +776,140 @@ To save future contributors a wasted pass:
 - All vendored tool reference docs — intentionally skipped.
 
 If a specific subsystem name not above turns up in code without a referenced spec, grep `docs/vision/` and `legacy/` first — the spec is almost certainly somewhere in the imported corpus.
+
+---
+
+## Final deep-read pass — remaining 3 repos (April 2026)
+
+The previous extended pass covered `before/`, `Sally/`, `sallie_1.0/` long tail, and host docs. This final pass covers the 3 source repos that were only sampled before: `Sallie/` (14 docs), `app/` (9 docs), and `sallie-project/` (18 docs). `sallie-infinite/` (8 docs) was already fully read in the original Strategic Index. `sallieos/` has only a forwarder README.
+
+### Coverage of this pass
+
+| Source | Files in `docs/vision/<repo>/` | Read in full this pass | Already cited (skip) |
+|---|---:|---:|---:|
+| `Sallie/` | 14 | 9 | 5 (already-cited deviations + spec dir) |
+| `app/` | 9 | 4 | 5 (Life Partner / Mind-Soul-Heart / Roadmap / IMPLEMENTATION_SUMMARY / frontend boilerplate) |
+| `sallie-project/` | 18 | 11 | 7 (PR templates, .expo cache, root IMPLEMENTATION_SUMMARY already cited) |
+
+### NEW from `docs/vision/Sallie/` (the canonical-spec repo)
+
+**The five deviation docs** (in `Sallie/sallie/deviations/`) are the operational source for several items already canonical in MERGE_NOTES — but they contain previously-uncaptured detail:
+
+- **Identity Expansion deviation** (`20250108-expanded-identity-maximum-capabilities.md`):
+  - Sallie should have a **distinct identity DNA file separate from Creator's Heritage DNA** (`sallie_identity.json`) — visual expression (avatar, themes, colors) is **hers**, not the Creator's.
+  - **Tier 4 trust** safety model is specifically *transparency + rollback*, **not permission gates** — every action logged + reversible, no per-action approval needed once tier is granted.
+  - **Dynamic posture synthesis** replaces the 4 fixed postures with **unlimited context-specific combinations** generated at runtime.
+
+- **Human-Level Capability Expansion deviation** (`human level expansion.md`):
+  - The **10-variable Limbic Engine** adds: **Empathy, Intuition, Creativity, Wisdom, Humor** (on top of Trust/Warmth/Arousal/Valence/Posture).
+  - **8-week phased implementation plan** with weekly checkpoints — the operational rollout schedule for the deviation.
+  - Multi-model reasoning with real-time learning is explicitly part of Tier 4 grant.
+
+- **Comprehensive Decision & Discussion Log** (large; sampled):
+  - Established the **formal deviation proposal template** that all subsequent deviations follow.
+  - **Dual-mode connectivity** approved with concrete endpoints: LAN at `http://192.168.1.47:8742` + remote via Cloudflare Tunnel or Tailscale.
+  - References an external authority document `@c:\Sallie\docs\1111111111111111111.txt` as **source of truth** with mandatory comparison before mods. (This file is not in the repo — it's a reference to the Creator's local-machine file.)
+  - Documents the "One Room" methodology — formal decision-making convention.
+
+- **`thredf.md`** (29 KB; skimmed) — a meta-discussion / decision-log continuation. Not architectural; key decisions extracted into the log above.
+
+- **`20250108-adaptive-ui-productivity-design.md`** — same content as Sally's identically-named file (already synthesized). Confirms the 5 UI modes are a **deviation registered in both repos**, not just Sally-only.
+
+**Microservices backend layout** (the most concrete deployment topology in any repo):
+- 8 services with port assignments — **API Gateway** :3000 / **Auth** :3001 / **Chat** :3002 / **Analytics** :3003 / **Notification** :3004 / **File** :3005 / **AI** :3006 / **WebSocket** :3007 / **Python AI** :3008.
+- Infrastructure: PostgreSQL, Redis, Elasticsearch, MinIO, Prometheus, Jaeger, Kafka.
+- Source: `Sallie/backend/README.md`.
+
+**Python AI Service** (the brain layer, FastAPI-based):
+- Supports OpenAI, Anthropic, **and local HuggingFace models** in the same service.
+- Provides: chat, embeddings, sentiment, NER, summarization, translation.
+- Stack: async/await + Pydantic + SQLAlchemy + Prometheus metrics + Jaeger tracing.
+- Source: `Sallie/backend/services/python-ai-service/README.md`. **This is the operational source for the FastAPI brain referenced in `VISION.md`.**
+
+**Web UI** (the canonical web frontend):
+- Next.js 14 (App Router) + Tailwind + TypeScript; runs on :3000 and proxies to backend at :8000.
+- WCAG 2.1 AA + accessibility-first.
+- Source: `Sallie/web/README.md`.
+
+### NEW from `docs/vision/app/` (the React Native + FastAPI app)
+
+**Production deployment status** (concrete, from `DEPLOYMENT_HEALTH_CHECK.md`):
+- **93.3% endpoint success rate** (12/13 working) at the time of doc write.
+- Critical fixes shipped: **JWT secret hardened**, **N+1 query fix in convergence endpoint**, **MongoDB ObjectId serialization**, **`EXPO_PACKAGER_PROXY_URL` env var standardized**.
+- **Gemini integration functional**; deployment confidence flagged HIGH 🟢.
+
+**Backend collection schema** (from `test_result.md`):
+8 MongoDB collections power the app: `users`, `chat_messages`, `memories`, `limbic_states`, `integrations`, `projects`, `convergence`, `tool_executions`. **Chat LLM integration supports streaming.** This is the live data model the host's React Native frontend talks to.
+
+**Mobile UX inventory** (from `app/README.md`):
+- **4 tabs** — Chat, Tools, Home, Profile.
+- **50+ tools** in 8 categories: See, Hear, Create, Analyze, Communicate, Automate, Security, Utility.
+- Auth: JWT + bcrypt password hashing.
+- Visual: dark theme `#0c0c0c` + purple accent `#6C63FF`.
+- Account integrations: Email, Calendar, Social Media, Smart Home, Cloud Storage.
+
+### NEW from `docs/vision/sallie-project/` — service-layer specs (the highest-value find of this pass)
+
+The original Strategic Index credited sallie-project for the OCEAN engine summary but did not synthesize the four service-level READMEs. They are substantive specs in their own right.
+
+**Personality Engine — fuller numbers** (`COMPLETION_REPORT.md`, `IMPLEMENTATION_SUMMARY.md`):
+- **30 facets** total — 6 facets per Big Five trait (Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism), with confidence intervals, situational variance, stability metrics, change velocity tracking.
+- **16 emotions** decomposed: 6 primary + **10 complex** — Love, Gratitude, Pride, Guilt, Jealousy, Hope, Shame, Nostalgia, Contentment, Frustration. (Original index said "16 emotions" without the complex enumeration.)
+- **5 trait-evolution trigger types**: direct feedback, behavioral outcomes, social interactions, value alignment, emotional impact.
+- **Evolution rules**: linear, oscillation dampening, regression resistance.
+- **Identity anchor system** — protects core traits while allowing per-trait deviation flexibility.
+- **Expression mapping** has three rails:
+  - **Linguistic**: vocabulary profiles (complexity, emotional richness, formality, technical usage, metaphor frequency)
+  - **Visual**: facial expressions, body language, animation parameters, color themes
+  - **Behavioral**: initiative, response timing, decision confidence
+- **Emotion decay**: baseline recovery, personality-influenced rates, exponential decay model.
+- **Quality bar** (carried across all sallie-project services): **TypeScript strict mode, zero `any` types, zero TODOs, 90%+ test coverage, sub-100ms performance, full JSDoc, complete error handling, production-ready** — from `docs/COMPLETE-REQUIREMENTS.md`. *This is the single most concrete code-quality bar anywhere in the corpus and should be the host repo's standard.*
+
+**Memory Service** (`src/core/services/memory/README.md`) — 4 types and **7 retrieval strategies**, distinct from sallie_1.0's "hierarchical 4 layers":
+- **4 memory types** — Episodic (events with temporal/spatial context + participants), Semantic (facts, preferences, relationships), **Procedural (task procedures with effectiveness tracking)**, Emotional (experiences with triggers & responses).
+- **7 retrieval strategies** — Contextual, Associative, Temporal, Emotional, Pattern-based + 2 more — using real algorithms, not placeholders.
+- **15 advanced enhancements** — Compression, Validation, **Privacy (AES-256-GCM encryption)**, Analytics, Associations, Replay, Versioning, Lifecycle, Sync, Semantic-search, Query-optimization, Real-time-updates, Export-import, plus 2 more.
+
+**Conversation System (5.8K LOC)** (`src/core/services/conversation/README.md`, `ENHANCEMENTS.md`, `INTEGRATION.md`):
+- **NLU stack** — **14 intent types** with multi-intent detection + user-specific pattern learning; NER with **coreference resolution**; sentiment analysis (6 emotions + sarcasm detection); topic modeling with transition detection; reference resolution (anaphora, implicit refs, cross-turn tracking); **30+ speech acts**.
+- **Response generation** — **100+ templates** organized by intent/emotion/formality; dynamic content filling; personality styling via Big Five traits; memory integration; appropriateness checking; diversity management (repetition avoidance, variation generation, novelty scheduling).
+- **Dialogue management** — flow control (topic lifecycle); turn-taking (natural rhythm, response timing, **backchanneling**); clarification system; repair strategies; topic suggestion; **meta-conversation handler** (self-aware commentary, quality assessment, improvement suggestions).
+- **Performance contracts** — sub-200ms for simple queries, sub-300ms for complex; **10+ concurrent conversations**; streaming with chunking; **44 tests, 100% pass rate**.
+- **Cross-service integration patterns** (from `INTEGRATION.md`):
+  - Memory ↔ Conversation: retrieve relevant memories, store turns with context.
+  - Personality ↔ Conversation: trait-based styling; personality updates from sentiment/engagement signals.
+  - Values ↔ Conversation: goal-aware responses, value alignment tracking.
+  - **Event Bus pattern** for real-time trait/memory/conversation updates.
+  - **Streaming response support** with configurable chunk sizes, natural typing simulation, progress callbacks.
+
+**Values Service** (`src/core/services/values/README.md`) — the only formal goal/accountability spec in any repo:
+- **Value management** — 8+ categories (Health, Relationships, Career, Personal, Financial, Creative, Spiritual, Learning); dynamic prioritization on 0–10 scale; conflict detection.
+- **Goals & accountability** — Goal timeframes (short/medium/long-term), milestone decomposition, **streak tracking + check-in system** (daily/weekly), completion rate analytics, **gamification support**.
+- **Decision support** — value-based evaluation framework, alignment scoring with keyword analysis, conflict resolution assistance.
+
+**Standards (`docs/COMPLETE-REQUIREMENTS.md`)** — formalizes "**15 advanced enhancements per service**" pattern: reinforcement learning, emotion blending, EQ metrics, consistency monitoring, effectiveness tracking, correlation analysis, event recording, report generation, plus more. Recommend adopting as the default checklist when promoting any subsystem from `legacy/` to canonical.
+
+### Conflicts & clarifications surfaced this pass
+
+- **Source of canonical Approved Deviations** is `Sallie/sallie/deviations/`, not Sally's `EDIT ME.md`. The original Strategic Index attributed them to both; correction: Sally's `EDIT ME.md` *implements* (Right-Hand v5.4.1) what the deviations *propose*.
+- **Tier 4 safety model** is specifically **transparency + rollback**, *not* per-action permission. Original index said "Tier 4 unlock conditions" without specifying the safety doctrine.
+- **Memory 4th tier** — sallie-project says **Procedural** (matching sallie_1.0); host says **Working**. Both are now triple-confirmed; the recommendation in the prior pass — "coexistence: Working = runtime cache, Procedural = long-term skill memory" — stands.
+- **16 emotions** — the previous index was right about the count; this pass adds the explicit list of the 10 complex ones.
+- **Identity DNA model** — the deviations propose **dual identity** (Creator's Heritage DNA + Sallie's own `sallie_identity.json`), a philosophical shift from "Sallie as Creator's right-hand" toward "cognitive equal with independent expression." This is *not* yet reflected in host code; flag as an upcoming Tier-4-tier architectural change.
+- **Connectivity endpoint constants** — the LAN URL `http://192.168.1.47:8742` is a Creator-machine specific address from the discussion log; should be parameterized via env var, never hard-coded.
+
+### What is now exhaustively covered
+
+After this pass, every doc tree in `docs/vision/` has been triaged:
+
+- `docs/vision/Sallie/` — 14/14 files visited (9 read in full, 5 already cited or boilerplate)
+- `docs/vision/Sally/` — 229 files (14 read, 190+ skimmed; coverage tracked in prior pass)
+- `docs/vision/app/` — 9/9 files visited (4 read in full, 5 already cited)
+- `docs/vision/before/` — 623 files (20 read, 500+ skimmed; tracked in prior pass)
+- `docs/vision/sallie-infinite/` — 8/8 read in full (original Strategic Index)
+- `docs/vision/sallie-project/` — 18 files visited (11 read in full, 7 already cited or boilerplate)
+- `docs/vision/sallie_1.0/` — 70 files (30+ read in full; tracked in prior pass)
+
+Plus host `Sallie-AI/` triaged (~18 read in full, ~95 skimmed) and both binary docs extracted and assessed.
+
+**No source-repo doc tree remains untriaged.** The only material genuinely unread is the long tail of vendored tool-reference docs, per-component changelogs, completion-status reports, and the Creator-local file `c:\Sallie\docs\1111111111111111111.txt` referenced in the Decision Log (not in any repo).
