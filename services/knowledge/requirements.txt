@@ -25,5 +25,5 @@ qdrant-client==1.12.1
 mwparserfromhell==0.6.6
 
 # Dev / test
-pytest==8.3.3
+pytest==9.0.3
 pytest-asyncio==0.24.0
