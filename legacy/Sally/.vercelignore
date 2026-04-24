@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Legacy / removed files
+remove/
+
+# Reference and assets
+attached_assets/
+
+# Desktop and mobile (separate platform apps)
+desktop/
+mobile/
+
+# Cache and logs
+_cacache/
+_logs/
+
+# IDE config
+.vscode/
+.idea/
+.cursor/
+.kilocode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.production
+.env.vercel
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large files
+*.zip
+screenshots/

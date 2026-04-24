@@ -1,0 +1,30 @@
+{
+  "cli": { "version": ">= 3.0.0" },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": { "buildType": "apk" },
+      "ios": { "simulator": true },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "http://localhost:3000"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": { "buildType": "apk" },
+      "ios": { "simulator": true },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://sallie-studio.replit.app"
+      }
+    },
+    "production": {
+      "android": { "buildType": "app-bundle" },
+      "ios": { "enterprise": false, "distribution": "store" },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://sallie-studio.replit.app"
+      }
+    }
+  },
+  "submit": { "production": {} }
+}

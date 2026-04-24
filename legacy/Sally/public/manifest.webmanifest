@@ -1,0 +1,78 @@
+{
+  "name": "Sallie AI Studio",
+  "short_name": "Sallie",
+  "description": "Your AI companion for life management, creative growth, and self-discovery",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#0F0A1A",
+  "theme_color": "#3E1D68",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["lifestyle", "productivity", "utilities"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your dashboard",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/icons/icon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "short_name": "Chat",
+      "description": "Start a chat",
+      "url": "/chat",
+      "icons": [
+        {
+          "src": "/icons/icon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Source",
+      "short_name": "Source",
+      "description": "View your sources",
+      "url": "/?tab=source",
+      "icons": [
+        {
+          "src": "/icons/icon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Sanctuary",
+      "short_name": "Sanctuary",
+      "description": "Enter your sanctuary",
+      "url": "/?tab=sanctuary",
+      "icons": [
+        {
+          "src": "/icons/icon.svg",
+          "sizes": "any"
+        }
+      ]
+    }
+  ]
+}
