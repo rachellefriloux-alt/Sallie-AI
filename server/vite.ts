@@ -16,6 +16,7 @@ import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
 import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
+import rateLimit from "express-rate-limit";
 
 const viteLogger = createLogger();
 
@@ -53,6 +54,15 @@ export async function setupVite(app: Express, server: Server) {
   });
 
   app.use(vite.middlewares);
+
+  const viteRequestLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 120,
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  app.use("*", viteRequestLimiter);
   app.use("*", async (req, res, next) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const url = req.originalUrl;
