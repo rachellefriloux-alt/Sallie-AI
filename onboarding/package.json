@@ -51,5 +51,10 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "~9.2.0"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "brace-expansion": "^1.1.13",
+    "uuid": "^14.0.0",
+    "@tootallnate/once": "^3.0.1"
+  }
 }
