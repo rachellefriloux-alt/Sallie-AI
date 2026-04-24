@@ -130,6 +130,9 @@
   ],
   "author": "Sallie Sovereign Team",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "overrides": {
     "jest-expo": {
       "react": "^18.3.1",
