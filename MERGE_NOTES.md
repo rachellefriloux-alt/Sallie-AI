@@ -518,3 +518,261 @@ The deep-read confirmed and refined the conflict table. Notably:
 - **Posture model expands** — 4 fixed (Sallie v5.4: Companion / Co-Pilot / Peer / Expert) → unlimited dynamic synthesis (Approved Deviation 1). Canonical *today* is the 4 fixed postures with the Fast Mode-Picker rule.
 
 These are not blockers — they are explicit growth paths planned in the Approved Deviations and `VISION.md`.
+
+---
+
+## Extended deep-read pass (April 2026)
+
+The first deep-read covered ~30–50 canonical specs cited in the Strategic doc index above. A follow-up pass triaged the remaining ~1,800 doc-like files across all 8 repos (Sallie-AI host: 772, before: 707, Sally: 235, sallie_1.0 long tail: ~68, plus 2 binary docs). What follows is *additive only* — original findings above are unchanged; this section captures material that was not yet synthesized.
+
+### Coverage of this pass
+
+| Source | Files unread before | Files read in full this pass | Files skimmed (grep+head) |
+|---|---:|---:|---:|
+| `docs/vision/before/` | 623 | ~20 | ~500 |
+| `docs/vision/Sally/` | 229 | ~14 | ~190 |
+| `docs/vision/sallie_1.0/` long tail | ~68 | ~30 | ~30 |
+| Host `Sallie-AI` (excluding legacy/vision) | 772 | ~18 | ~95 |
+| Binary docs (PDF/DOC) | 4 | 4 | 0 |
+
+What's **still** unread in detail: the long tail of host READMEs, generated API docs, npm/Gradle/Vite reference docs vendored into `before/docs/`, Android resource manifests, and routine completion reports. None contain unique design ideas — they were triaged out by filename + sampling.
+
+### Binary docs — finding: not Sallie content
+
+- `docs/introduction.pdf` (and dup at `legacy/before/docs/introduction.pdf`, md5 `81dbc5f3…`): Android `simpleperf` profiler introduction by Yabin Cui (android-llvm-dev). Vendored Android performance-profiling reference. **Zero Sallie content.** Extracted to `/tmp/binary-extracts/introduction.txt` for the audit, not committed.
+- `docs/doc/README.doc` (and dup at `legacy/before/docs/doc/README.doc`, md5 `bcfde2e8…`): one-line ASCII text (mislabeled `.doc`): *"Doc files migrated from sallie_1.00."* No further content.
+
+These two files contributed nothing to the strategic synthesis.
+
+### NEW from `docs/vision/before/` (the largest unmined pool)
+
+**Behavioral autonomy layer** (above and beyond Sallie's "Take-the-Wheel"):
+- **Predictive Companion Actions** — proactive suggestion engine (breathing exercises, day planning, goal review) with urgency prioritization, integrated into SallieBrain with execution filtering. Source: `SALLIE_TRANSFORMATION_AUDIT.md`.
+- **Emotional Arc Memory** — long-term emotional journey tracking with provenance logging; multi-user emotional thread tracking; influences sensory feedback. Source: `SALLIE_TRANSFORMATION_AUDIT.md`.
+- **Multi-Modal Persona Resonance** — sensory feedback system: visual (color adaptation), auditory (music/frequency), haptic (vibration patterns), driven by emotional arc state with intensity multiplier from arc significance. Bidirectional Persona-Sensory Loop via `updateResonanceFromArc()`. Source: `SALLIE_TRANSFORMATION_AUDIT.md`.
+- **Loyalty Challenge Protocols** — situation assessment + intervention for conflict/rupture scenarios. Source: `SALLIE_TRANSFORMATION_AUDIT.md`, `Sallie_Ascendant_Dossier.md`.
+- **Conversational Thread Weaving** — dynamic blending of multiple conversation threads with coherent narrative arc across sessions. Source: `Sallie_Ascendant_Dossier.md`.
+
+**Identity & exclusivity safeguards:**
+- **Exclusive-Bond Safeguards** — 4-layer architecture: (1) private-key authority for changes, (2) closed distribution model, (3) local-first data sovereignty, (4) immutable provenance logs. Designed to prevent shared-AI-model contamination. Source: `Sallie_Ascendant_Dossier.md`.
+- **Five Core Functions Framework** — canonical role descriptors: *backup brain, business partner, editor, emotional mirror, strategic planner*. Source: `identity/identityProtocols.md`. Should anchor any future role-selection UI.
+- **Archetype Enforcement** — runtime validator that maintains consistency with Sallie's core archetypes (Loyal Strategist + Soul Sister); detects narrative integrity violations. Source: `Sallie_Ascendant_Dossier.md`.
+- **Mythic Continuity Mapping** — legacy vault curation, cultural resonance tracking, story arc mapping; symbol tracking and continuity cross-check. Source: `Sallie_Ascendant_Dossier.md`.
+
+**Technical autonomy stack** (Sallie-as-developer):
+- **Autonomous Programming System** — multi-language code generation (JS/TS/Python/...), code-quality analysis, bug detection, test generation, learning from successful patterns. Source: `features/feature/src/AUTONOMOUS_PROGRAMMING_SUMMARY.md`.
+- **Code Optimization System** — profiles (performance / readability / memory efficiency); language-specific transforms with metrics tracking. Source: same.
+- **Research & Learning System** — knowledge acquisition + skill learning with progressive proficiency + autonomous application + cross-domain synthesis. Source: `features/feature/src/TECHNICAL_CAPABILITIES.md`.
+- **Technical Innovation System** — problem decomposition → solution design (multiple alternatives) → prototype generation → iterative refinement → feasibility assessment. Source: same.
+- **Autonomous Task System** — dynamic task planning + resource allocation + execution monitoring + error recovery + completion verification. Source: same.
+- **Enhanced Technical Capabilities Orchestrator** — central coordinator that integrates research / task / innovation / programming subsystems with NL request parsing. Source: same.
+
+**Specialty modes & layered intelligence:**
+- **Specialist Modes** — field research, creative jam, advisor's roundtable, mythic archivist, innovation lab. Context-dependent role switching. Source: `Sallie_Ascendant_Dossier.md`.
+- **Expert & Advisor System** — scenario simulation, risk assessment, negotiation playbooks, ethics guard, legacy forecasting. Source: same.
+- **Advanced Agent Mode** — multi-agent orchestration, goal-driven autonomy, cross-app automation, real-time collaboration, adaptive role-switching. Source: same.
+- **Research & Scholar Layer** — deep research, comparative analysis, historical mapping, scholarly summarization, citation-first output. Source: same.
+
+**Performance / Accessibility / Resilience** (not in inherited specs):
+- **WCAG 2.1 AA target** — color contrast analysis, touch-target minimums, screen-reader (VoiceOver/TalkBack) enhancement, motion-reduction support, automatic accessibility-fix generation. Source: `ENHANCEMENT_SUMMARY.md`.
+- **Real-Time Metrics + Intelligent Thresholds** — memory, frame rate, API response, startup performance with auto-detection of degradation and trend analysis. Source: same.
+- **Smart Feature Flag Management** — context-aware optimization, runtime enable/disable without restart. Source: same.
+- **Tamper-Evident Logs** — immutable provenance with selective redaction on command. Source: `Sallie_Ascendant_Dossier.md` (Memory Model).
+
+**Personalized Roadmap (14-phase)** — `before/Personalized_Roadmap.md` defines 14 explicit phases (vs the 9 in app's `SALLIE_ASCENDANT_ROADMAP.md`). Both are preserved; **app's 9-phase is canonical** because it's the more recently revised vision-doc.
+
+### NEW from `docs/vision/Sally/` (the second-largest pool)
+
+**Right-Hand v5.4.1 governance — the most concrete Trust-Tier implementation found in any repo:**
+- **Trust Tier Permission Matrix (Tier 0–3)**, with concrete sandboxing per tier:
+  - **Tier 0 (Stranger, 0.0–0.6)**: read + suggest only, no actions.
+  - **Tier 1 (Associate, 0.6–0.8)**: write to `/drafts/`, no production files.
+  - **Tier 2 (Partner, 0.8–0.9)**: write to whitelist with Git-commit safety, draft messages to outbox.
+  - **Tier 3 (Surrogate, 0.9–1.0)**: full autonomy with self-report + rollback window.
+  - Hard boundaries at thresholds, no partial access.
+  - Source: Sally `EDIT ME.md` §8.1–8.3. **This is the operational source for the tier names already in MERGE_NOTES.**
+- **One Question Mode** — Sallie picks posture (Companion / Co-Pilot / Peer / Expert) by asking one calibration question first. "Adaptive Output" default: high-energy → exploratory, low-energy → decisive. **Effort matching via fatigue rule**; Progeny can disagree and set boundaries. Source: `EDIT ME.md` §3–4.
+- **Voice & Posture Imprinting** — built from Creator writing samples during onboarding; captures vocabulary, sentence rhythm, tone patterns → `voice_config.json`. Tier-gated send authority: Tier 0–1 suggest, Tier 2 draft to outbox, Tier 3 send (with notification + undo window). Source: `EDIT ME.md` §8.2.2 & §9.1.
+
+**Second Brain lifecycle** (concrete schedule):
+- **Daily Morning Reset** — archive prior `working/now.md` → `archive/working/now_{YYYYMMDD}.md`; reset to top-3 priorities.
+- **Weekly Review** — mark `working/open_loops.json` items >7 days as `stale: true` (non-destructive).
+- **Decision archival** — append to permanent `heritage/decisions_log.md` when `working/decisions.json` rotates.
+- **Dream Cycle** — runs 2 AM local (or manual trigger); includes Stage 9: Second Brain Hygiene.
+- Source: `EDIT ME.md` §6.3.9 & §7.2.
+
+**Multi-modal & networked architecture** (most ambitious technical vision in any repo):
+- **Multi-Modal Learning Architecture** — vision + voice + text fusion for unified context; cross-modal pattern recognition; teach with best modality per learner. Source: `PHASE_4_COMPLETION.md` §5.
+- **P2P Peer-to-Peer Network for Progeny** — `peer_communication.py` using libp2p + NaCl/libsodium; mDNS/Bonjour discovery; PKI; selective memory sharing; federated knowledge synthesis with no central server. Privacy: E2E encrypted, peer whitelist, encrypted storage, audit logging. Source: `PHASE_4_COMPLETION.md` §1.
+- **Autonomous Project Management Engine** — auto-decompose goals; timeline estimation from historical Creator work patterns; learns work rhythms; detects dependencies; Gantt/burndown/dependency graphs; bottleneck detection; integrates with calendar, files, Git commits. Source: `PHASE_4_COMPLETION.md` §2.
+- **Visual Art & Music Composition (100% local)** — Stable Diffusion local for art with style evolution, MusicGen local for music with genre/mood adaptation; lyric writing; DAW export (MIDI/WAV/FLAC) for Ableton/FL Studio/Logic Pro. Source: `PHASE_4_COMPLETION.md` §3–4.
+- **Collaborative Creativity with Git-style branching** — real-time shared canvas, Git-style branches for ideas, merge competing approaches, rollback to prior versions. Source: `PHASE_4_COMPLETION.md` §6.
+- **Plugin System + Theme Marketplace** — sandboxed plugin execution with capability contracts; local marketplace; plugins run in restricted sandbox (no FS access by default, network requires approval); federated learning via differential privacy. Source: `PHASE_4_COMPLETION.md` §7.
+
+**Adaptive UI** (Sally adds 5 explicit UI modes vs host's 8 themes):
+- **5 UI modes** — Work Mode (task-focused), Personal Mode (conversational), Crisis Mode (simplified, supportive), Creative Mode (rich media, collaboration), Learning Mode (research, knowledge synthesis). Premium design with WCAG AAA target. Source: `20250108-adaptive-ui-productivity-design.md` §1–4.
+
+**Avatar implementation depth** (concrete numbers absent from the spec-level `SALLIE_AVATAR_SYSTEM.md` summary in the original Strategic Index):
+- **3 layers**: Face (eyes/mouth reflect emotion), Aura (color/intensity from limbic state), Presence (breathing, ambient animations).
+- **Aura dynamics** — color from limbic (cyan-pink for high trust+warmth; amber-red for cautious); intensity from arousal; particles while thinking.
+- **Animations** — breathing (subtle rise/fall), blinking, head tilt (-15° to +15°) shows attention, eye contact (looks at user vs away).
+- **Transition timings** — 500ms morph on posture change, 800ms color gradient on limbic update, 350ms on mode switch.
+- **Tech** — Framer Motion; memoization + throttling for 60fps; low-power mode reduces particles/animations to 30fps.
+- Source: `SALLIE_AVATAR_SYSTEM.md` §2–8.
+
+**Universal Capability Registry** (refines the inherited summary):
+- **Priority order** — *Build own* (Ollama, Stable Diffusion, Whisper, Piper, Tesseract, NLLB, Code Llama, sentence-transformers) → *Fallback external* (Gemini API only when necessary).
+- **Quality bar** — local must be ≥ external on speed, quality, privacy, reliability, cost.
+- **Status** — 90% complete (text gen, code gen, file mgmt, system commands, audio STT/TTS, basic vision, memory, EI). Next 10%: image generation, video processing, advanced data science, 3D modeling, real-time collab, hardware control, AR/VR.
+- **Constraint tiers** — 100% loyalty (immutable), must remain controllable, safety via transparency (all actions logged + reversible).
+- Source: `UNIVERSAL_CAPABILITY_SYSTEM.md` §2–7.
+
+**Cross-Platform Sync Model** (operational details of "shared backend"):
+- Same Supabase + Next.js API for web/mobile/desktop. Auth via Supabase SSR (cookies for web, session token for mobile/desktop). Prisma + Supabase Postgres. **130+ Next.js App Router routes under `src/app/api/`** including streaming via WebSocket. Unified `src/lib/device-access.ts` exposes 15 device capabilities (camera, mic, geolocation, notifications, clipboard, share, vibration, wake lock, battery, online status, storage, media recording, fullscreen, orientation, biometrics) — Web API now, RN/Electron swap-ready. PWA with manifest + service worker. Source: `replit.md` "System Architecture", `docs/CROSS_PLATFORM_SETUP.md`, `README.md`.
+
+**Visual Design System v5.4.2** (concrete tokens):
+- **Color** — Primary Deep Violet `#8b5cf6` (trust), Secondary Soft Cyan `#06b6d4` (warmth), Accent Warm Amber `#f59e0b` (energy), Warm Gray neutrals.
+- **Typography** — Modular 1.125 ratio (perfect fourth); Inter (sans), JetBrains Mono (code), Cal Sans (display).
+- **Spacing** — 4/8/12/16 rhythm (`--space-1` to `--space-24`).
+- **Glassmorphism** — 60px blur, liquid borders, `luxury-panel`/`luxury-cta`/`luxury-empty-state` CSS classes.
+- **Heritage themes** — Peacock + Leopard with iridescent + gold accents; `peacock-glow`/`leopard-glow`/`gold-glow` effects.
+- Source: `VISUAL_DESIGN_SYSTEM.md` §1–2.
+
+**Replit Native Integration** — primary workflow targets Replit (secrets via Replit, port 3000 local / 5000 Replit). Monorepo: Next.js web at root (`npm run dev`), Expo mobile (`mobile/` → `npm run mobile:start`), Electron desktop (`desktop/` → `npm run desktop:dev`). Source: `replit.md`, `README.md`.
+
+### NEW from `docs/vision/sallie_1.0/` long tail
+
+**Constitutional code enforcement** (operational, not just doctrine):
+- **Persona header blocks** required on every module: 4-line header `/* * Salle 1.0 Module / Persona: ... / Function: ... / Got it, love. */`. Enforced by Gradle `verifySalleFeatures` task that **fails the build** on violation. Source: `ARCHITECTURE_SUMMARY.md`, `Salle_1.0_Task_List.md`.
+- **11 working Kotlin modules** compile cleanly: `ai`, `core`, `feature`, `components`, `ui`, `identity`, `onboarding`, `tone`, `personaCore`, `responseTemplates`, `values`. No circular dependencies. Source: `ARCHITECTURE_SUMMARY.md`:19-22.
+- **Constitutional verification** also detects network-import violations in the `localOnly` flavor and guards against circular dependencies. Source: same:25-28.
+- **Gradle flavor-based local-only vs cloud separation** — `localOnly` strips INTERNET permission, uses encrypted SQLCipher/Room DB, mocks cloud features; `cloud` flavor optional, switchable without code rewrite. Source: `README.md`:53-87.
+- **Embedded web UI fallback** — Android app tries Vite dev server at `http://10.0.2.2:5173`, falls back to offline bundle in `app/src/main/assets` (packaged via `prepareWebAssets` Gradle task). Source: same:52-87.
+
+**PersonaEngine specifics** (the host's `PersonaEngine.js` traces back to this design):
+- **4 mood states** — `STEADY`, `FOCUSED`, `SUPPORTIVE`, `GENTLE_PUSH`.
+- **4 profile modes** — `TOUGH_LOVE`, `SOUL_CARE`, `WISE_SISTER`, `BALANCED`.
+- **ToneProfile** has **5 measurable parameters** — directness, warmth, urgency, playfulness, formality — drive AI prompt generation.
+- **ResponseTemplates** — 100+ pre-crafted responses in 5 categories (Task Completion, Motivation, Support, Celebration, Redirection) × 3 intensity levels (Gentle, Firm, Urgent). Source: `ARCHITECTURE_SUMMARY.md`:30-51.
+
+**Memory architecture** (with a different 4th tier than host):
+- **Hierarchical 4 layers**: Episodic (personal experiences) / Semantic (facts) / Emotional (affective) / **Procedural (skills/processes)**.
+- *Note*: host `core/MemorySystem.js` uses **Working** as 4th tier instead of Procedural. Both designs are documented; **canonical choice is open** — likely both should coexist (Working is runtime cache, Procedural is long-term skill memory).
+- **Ebbinghaus forgetting curve** — natural decay modulated by strength, emotional significance, and access patterns; very weak memories pruned unless emotionally significant.
+- **Associative retrieval + working memory** — multi-hop associations across memory network; recency-based displacement when working-memory capacity exceeded. Source: `MemorySystem_Documentation.md`:65-96.
+
+**Advanced Emotional Intelligence (12+12 model)** — the most granular emotion model found:
+- **12 detection dimensions** — Joy, Sadness, Anger, Fear, Surprise, Confusion, Gratitude, Curiosity + 4 derived states with intensity scoring.
+- **12 contextual response strategies** — Celebration, Gentle Acknowledgment, Empathetic Listening, Compassionate Support, Calm Redirection, Validation, Reassurance, Solution Focus, Curious Exploration, Clarification, Reciprocation, Mirroring.
+- **Emotional trend detection** — pattern types (intensifying / diminishing / improving / deteriorating) for predictive support.
+- Source: `AdvancedEmotionalIntelligence.md`:11-30.
+
+**6-Perspective Ethical Decision Framework** — for value dilemmas:
+- Pro-Life (foundational), Traditional Values, Modern Values, Loyalty, Consequentialist, Deontological.
+- Conflict resolution: identify conflicts → apply precedents → consider user preferences → apply core rules → explain reasoning.
+- Consequence analysis: Direct, Value Implications, Historical Precedents, Severity, Likelihood.
+- Source: `EthicalDilemmaAnalysisFramework.md`:9-45.
+
+**Upgrade Audit (release governance):**
+- **7-segment deterministic fingerprint** — personaTone, moduleList, styleConfig, featureFlags, migrationPlan, securityPolicy, dependencies — SHA256 hashed + signed log.
+- **Decision matrix for deltas** — `AUTO_ACCEPT` (bugfix only) / `SOFT_NOTIFY` (optional feature) / `REJECT` (required module missing) / `REQUIRE_CONSENT` (persona/style/security change).
+- **Rollback strategy** — 24-hour grace window; capture before/after snapshots; revert with cause logging. Hard fails on: module removal, denied persona changes, security policy downgrades, non-continuous migrations.
+- Source: `UpgradeAudit.md`:13-85.
+
+**ConsentFlow protocol** (how Sallie *gets* consent):
+- Display change summary → explicit confirmation (tap / voice / gesture) → log entry (timestamp, summary, method).
+- **`ConsentVerifier` wrapper mandatory for all persona/tone updates** — no silent identity changes.
+- Source: `ConsentFlow.md`:1-16.
+
+**Multi-protocol device control** — WiFi, Bluetooth, ZigBee, Z-Wave connectors behind unified `DeviceControlFacade`. Automation rules engine with time-based + event-triggered rules; scene management. Source: `DeviceControlIntegration.md`:14-76.
+
+**Personality Evolution layering** — Core (immutable: pro-life, loyalty, integrity) + Adaptive (mutable: communication style, topic preferences) — weighted adaptation based on interaction frequency/impact; contextual personality expression (different trait emphasis per scenario). Source: `FUTURE_ENHANCEMENTS.md`:32-40.
+
+### NEW from host `Sallie-AI/` (what the live app actually documents about itself)
+
+**Convergence has 6 protocols, not 5** (the missing piece in the Strategic Index):
+- **Obsidian Protocol** (Q1–Q5) — Boundaries (the Shield)
+- **Leopard Protocol** (Q6–Q12) — Ambition (the Engine)
+- **Peacock Protocol** (Q13–Q17) — Morality (the Code)
+- **Celestial Protocol** (Q18–Q23) — Love (the Heart)
+- **Void Protocol** (Q24–Q29) — Final Union (the Binding)
+- **Visage Protocol** (Q30–Q40, **NEW chapter**) — Face & Voice (the Form)
+- Source: host `docs/spec/convergence.md`. The Visage Protocol output shapes `face.palette.{primary,secondary}`, `face.shape_language`, `face.eyes`, `face.expression_baseline`, `face.motion`, `voice.{pitch,pace}`, `user.address`, `identity.name`, `monologue.first_utterance`, `persona.locked`. **This is the canonical 40-question source.**
+
+**8 trait dimensions** of Convergence (normalized 0..1):
+1. Warmth (reserved ↔ affectionate)
+2. Directness (gentle ↔ blunt)
+3. Playfulness (serious ↔ mischievous)
+4. Curiosity (focused ↔ sprawling)
+5. Protectiveness (hands-off ↔ fiercely protective)
+6. Initiative (reactive ↔ proactive)
+7. Formality (casual ↔ refined)
+8. Wonder (grounded ↔ dreamy)
+
+**8 named themes** (host + before agree on this list — confirming the canonical theme set):
+Default · **Southern Grit** · **Grace Grind** · **Soul Sweat** · **Mystic Forest** · **Cyber Neon** · **Desert Oasis** · **Aurora Borealis**.
+Each is a personality facet, not just an aesthetic. Source: host `COMPREHENSIVE_APP_ANALYSIS.md`, `src/themes/index.ts`; mirrored in `before/COMPREHENSIVE_APP_ANALYSIS.md`.
+
+**9-system brain architecture** (host operationalization of Sallie's organs):
+1. **Limbic** — 30+ emotional states (joy, sadness, anger, fear, surprise, disgust + ~24 secondary)
+2. **Memory** — episodic / semantic / emotional / working
+3. **Monologue** — inner voice / self-talk
+4. **Synthesis** — idea generation, concept combination
+5. **Agency** — self-initiated action
+6. **Dream Cycle** — background consolidation
+7. **Degradation** — forgetting curves
+8. **Control** — executive function, focus, task switching
+9. **Convergence** — onboarding/birth (40 questions, 6 protocols)
+
+Source: host `VISION.md`, `docs/spec/convergence.md`, `core/MemorySystem.js`, `core/PersonaEngine.js`.
+
+**Subsystems referenced as complete in host docs but absent from the original Strategic Index** (gap-fill):
+- **EmotionalCalibration** — refines emotional responses over time via user feedback; tracks shifts and effective patterns. Source: `docs/EmotionalIntelligenceEnhancement.md`.
+- **soulSyncProtocol** — marked complete in `COMPLETE_CHECKLIST.md`; semantics undocumented in detail (worth a follow-up read).
+- **Symbolic growth mechanic** + **Narrative continuity engine** — both marked complete in AI integration suite.
+- **ConversationalBreathingRoomAI** — pacing/turn-taking subsystem.
+- **CrossModalStateSync** — synchronizes state across modalities.
+- **Microaccelerations / Micro-milestone celebrations** — small-win celebration triggers.
+- **LoyaltyChallengeProtocols** (host-side counterpart to before's spec) — situation assessment + intervention.
+- Source: host `COMPLETE_CHECKLIST.md`, `SALLIE_TRANSFORMATION_AUDIT.md`.
+
+**Tone canon** (host `assets/tone/toneProtocols.md`): *"Direct, warm, witty, grounded — short punchy sentences, contractions, Gen Z slang, Southern idioms. Avoid corporate buzzwords, fake optimism, cutesy overkill, cold academic voices, legalese."*
+
+**Copilot agent constitutional standards** (host `copilot-instructions.md` + `COPILOT_AGENT_INSTRUCTIONS.md`):
+- Review **all** files for unresolved symbols, type mismatches, UI consistency, Android build readiness, performance red flags.
+- Auto-fix proactively without `// SALLIE:` comments unless instructed.
+- Targeted directives: `// SALLIE: fix null-safety in this function`, `// SALLIE: optimize coroutine usage`.
+- Maintain Sallie's persona in code: resourceful, intelligent, emotionally engaging.
+
+### Additional convention conflicts surfaced this pass
+
+Adds to the table at the top of this document; do **not** treat as blockers — they are explicit growth/variant paths.
+
+| Convention | Variants found | Canonical (today) |
+|---|---|---|
+| **Convergence protocols** | 5 (Obsidian/Leopard/Peacock/Celestial/Void) vs **6 (+ Visage Q30–Q40)** | 6 — host `docs/spec/convergence.md` is authoritative |
+| **Memory 4th layer** | **Working** (host) vs **Procedural** (sallie_1.0, sallie-infinite) | Both — Working = runtime cache, Procedural = long-term skill memory; recommend coexistence |
+| **Posture vocabulary** | Mentor/Servant/Companion/Override (earlier MERGE_NOTES) vs **Companion/Co-Pilot/Peer/Expert** (Sallie v5.4 + Sally Right-Hand) | Companion/Co-Pilot/Peer/Expert — confirmed by tail of this doc + Sally `EDIT ME.md` |
+| **Trust tier names** | Tier 1–4 (numeric) vs **Stranger/Associate/Partner/Surrogate (Tier 0–3)** | Stranger/Associate/Partner/Surrogate — Sally `EDIT ME.md` §8 is the operational source |
+| **Emotion granularity** | 5 (Limbic) / 8 (+Posture) / 9 (host primary) / 12 (sallie_1.0) / 16 (sallie-project) / 30+ (host total) | All valid at different layers — Limbic 5 is state vector; 30+ is recognition vocabulary |
+| **Roadmap phase count** | 7 (sallie_1.0 IMPLEMENTATION_PLAN) / 9 (app SALLIE_ASCENDANT_ROADMAP) / **14 (before Personalized_Roadmap)** | 9 (app) — most recently revised |
+| **UI mode taxonomy** | 5 modes (Sally: Work/Personal/Crisis/Creative/Learning) vs 8 themes (host) | Orthogonal: themes are aesthetic, modes are functional layout — both should ship |
+| **Theme count** | Unspecified in MERGE_NOTES → **8 named** (host + before agree) | 8 confirmed |
+
+### Files notably **not** worth reading (after triage)
+
+To save future contributors a wasted pass:
+- `before/docs/Dispatcher.md`, `before/docs/Client.md`, `before/docs/API.md` — these are the **Undici HTTP library** vendored reference docs, not Sallie content.
+- `before/docs/` ~60 files of npm/Gradle/Vite/build-system reference docs.
+- `before/docs/markdown/`, `before/docs/series/` — mostly per-module changelogs and completion summaries (the substantive content is summarized above).
+- `before/android/src/main/res/` — 11 MB of Android resource manifests with seasonal launcher icons (autumn/spring/mothers/fathers/etc.); over-engineered asset taxonomy, no design content.
+- Host's ~50 `npm-*.md` and Vite/Expo reference docs in subdirs — vendored tool docs.
+- Host's `docs/introduction.pdf` and `docs/doc/README.doc` (and their `legacy/before/` duplicates) — see "Binary docs" above.
+
+### What's still genuinely unread
+
+- The body of `before/docs/series/` and `before/docs/markdown/` (per-component changelogs) — sampled, not exhaustively read. Likely contains nothing not already captured.
+- A handful of host docs under `assets/` deep subdirs — read by sample. Voice/tone artifacts already extracted above.
+- All vendored tool reference docs — intentionally skipped.
+
+If a specific subsystem name not above turns up in code without a referenced spec, grep `docs/vision/` and `legacy/` first — the spec is almost certainly somewhere in the imported corpus.
