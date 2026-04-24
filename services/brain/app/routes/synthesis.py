@@ -1,0 +1,94 @@
+"""Synthesis routes — grounded responses from the brain.
+
+`POST /synthesis/respond` is the brain's "talk to me" endpoint. It:
+
+1. Takes a user query.
+2. Pulls top-N chunks from the knowledge service (via the same client the
+   /knowledge proxy uses, so we share the singleton on app.state).
+3. Composes a grounded answer with citations.
+
+Tests inject ``app.state.composer`` directly so they don't need the
+knowledge service.
+"""
+from __future__ import annotations
+
+import time
+from typing import List
+
+from fastapi import APIRouter, Request
+from pydantic import BaseModel, Field
+
+from app.clients.knowledge import KnowledgeClient
+from app.config import settings
+from app.synthesis import Composer, build_default_responder
+
+router = APIRouter(prefix="/synthesis", tags=["synthesis"])
+
+
+def _composer(request: Request) -> Composer:
+    composer = getattr(request.app.state, "composer", None)
+    if composer is not None:
+        return composer
+    # Lazy default: reuse the existing knowledge client singleton if one
+    # was created by the /knowledge routes; otherwise create one.
+    knowledge = getattr(request.app.state, "knowledge_client", None)
+    if knowledge is None:
+        knowledge = KnowledgeClient(base_url=settings.knowledge_base_url)
+        request.app.state.knowledge_client = knowledge
+    composer = Composer(knowledge=knowledge, responder=build_default_responder())
+    request.app.state.composer = composer
+    return composer
+
+
+# ---- schemas ------------------------------------------------------------
+
+
+class RespondRequest(BaseModel):
+    query: str = Field(..., min_length=1, max_length=4000)
+    limit: int = Field(default=4, ge=1, le=20)
+
+
+class CitationOut(BaseModel):
+    id: str
+    title: str
+    score: float
+
+
+class RespondResponse(BaseModel):
+    query: str
+    answer: str
+    citations: List[CitationOut]
+    knowledge_available: bool
+
+
+# ---- routes -------------------------------------------------------------
+
+
+@router.post("/respond", response_model=RespondResponse)
+async def respond(request: Request, body: RespondRequest) -> RespondResponse:
+    composer = _composer(request)
+    started = time.perf_counter()
+    result = await composer.compose(body.query, limit=body.limit)
+    latency_ms = (time.perf_counter() - started) * 1000.0
+    # Mirror the outcome into the synthesis system so /systems/synthesis
+    # (and the mobile Brain Status screen) reflect real activity. Guarded
+    # because tests sometimes construct app state without a brain.
+    brain = getattr(request.app.state, "brain", None)
+    if brain is not None:
+        synthesis = brain.systems.get("synthesis")
+        if synthesis is not None and hasattr(synthesis, "record_response"):
+            synthesis.record_response(
+                query=result.query,
+                knowledge_available=result.knowledge_available,
+                citation_count=len(result.citations),
+                latency_ms=latency_ms,
+            )
+    return RespondResponse(
+        query=result.query,
+        answer=result.answer,
+        citations=[
+            CitationOut(id=c.id, title=c.title, score=c.score)
+            for c in result.citations
+        ],
+        knowledge_available=result.knowledge_available,
+    )

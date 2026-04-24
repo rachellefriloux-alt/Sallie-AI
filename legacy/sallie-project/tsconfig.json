@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "react-native",
+    "outDir": "lib",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": ["src/core/*"],
+      "@platforms/*": ["src/platforms/*"],
+      "@ui/*": ["src/ui/*"],
+      "@ai/*": ["src/ai/*"],
+      "@storage/*": ["src/storage/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "**/__tests__/**", "**/*.test.ts", "**/*.test.tsx"]
+}

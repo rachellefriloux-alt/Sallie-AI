@@ -20,5 +20,54 @@ local.properties
 # Logs
 *.log
 
-# Environment files
-.env.local
+# Environment files — never commit real secrets
+.env
+.env.*
+!.env.example
+
+# Service account keys / credentials — NEVER commit
+*-firebase-adminsdk-*.json
+*service-account*.json
+*serviceAccount*.json
+*credentials*.json
+*.pem
+*.p12
+*.key
+
+# Backup / scratch files
+*.backup
+*.bak
+*.orig
+*.tmp
+
+# Large model files (LLM weights, embeddings, TTS/STT models)
+*.gguf
+*.safetensors
+*.bin
+*.onnx
+*.pt
+*.pth
+models/
+.ollama/
+
+# Wikipedia / knowledge base dumps & vector DB data
+*.xml.bz2
+*.xml.gz
+data/wikipedia/
+data/dumps/
+data/qdrant/
+data/chroma/
+data/embeddings/
+services/knowledge/data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db

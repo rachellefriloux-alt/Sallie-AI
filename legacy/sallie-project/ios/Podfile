@@ -1,0 +1,70 @@
+# Podfile for Sallie AI Companion iOS App
+# Minimum iOS version
+platform :ios, '12.0'
+
+# Use frameworks for all CocoaPods
+use_frameworks!
+
+# Enable modular headers for all pods
+use_modular_headers!
+
+target 'SallieApp' do
+  # React Native core
+  require_relative '../node_modules/react-native/scripts/react_native_pods'
+  require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+  # React Native configuration
+  config = use_native_modules!
+
+  # React Native pods
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # Enables Flipper for debugging
+    :flipper_configuration => FlipperConfiguration.enabled,
+    # Hermes engine for better performance
+    :hermes_enabled => true,
+    # Fabric (New Architecture) support
+    :fabric_enabled => flags[:fabric_enabled]
+  )
+
+  # Additional pods for Sallie features
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  pod 'Firebase/Storage'
+  pod 'Firebase/Analytics'
+  
+  # AI and ML capabilities
+  pod 'TensorFlowLiteObjC'
+  
+  # Voice and audio processing
+  pod 'react-native-voice'
+  pod 'react-native-tts'
+  
+  # Device integration
+  pod 'react-native-device-info'
+  pod 'react-native-permissions'
+  
+  # Storage and security
+  pod 'react-native-keychain'
+  pod 'react-native-async-storage'
+
+  target 'SallieAppTests' do
+    inherit! :complete
+    # Testing pods
+  end
+
+  post_install do |installer|
+    react_native_post_install(installer)
+    
+    # Flipper configuration
+    flipper_post_install(installer) if FlipperConfiguration.enabled
+    
+    # iOS deployment target
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+      end
+    end
+  end
+end

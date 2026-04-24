@@ -91,6 +91,16 @@ export default function DrawerLayout() {
                         ),
                     }}
                 />
+                <Drawer.Screen
+                    name="talk-to-sallie"
+                    options={{
+                        title: 'Talk to Sallie',
+                        drawerLabel: 'Talk to Sallie',
+                        drawerIcon: ({ color, size }: { color: string; size: number }) => (
+                            <IconSymbol name="bubble.left.and.bubble.right.fill" size={size} color={color} />
+                        ),
+                    }}
+                />
 
                 {/* Emotional Support */}
                 <Drawer.Screen

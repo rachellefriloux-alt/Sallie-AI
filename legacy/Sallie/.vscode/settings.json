@@ -1,0 +1,17 @@
+{
+    "git.alwaysShowStagedChangesResourceGroup": true,
+    "git.autofetchPeriod": 400,
+    "git.enableCommitSigning": true,
+    "git.enableSmartCommit": true,
+    "git.autofetch": true,
+    "terminal.integrated.shellIntegration.enabled": true,
+    "editor.smoothScrolling": false,
+    "workbench.list.smoothScrolling": false,
+    "editor.mouseWheelScrollSensitivity": 1,
+    "editor.fastScrollSensitivity": 5,
+    "python.testing.pytestArgs": [
+        "SallieStudioApp"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}

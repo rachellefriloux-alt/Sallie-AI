@@ -1,4 +1,16 @@
-# Sallie 1.0
+# Sallie
+
+> **The plan is in [`VISION.md`](VISION.md).**
+> Onboarding (Convergence) spec: [`docs/spec/convergence.md`](docs/spec/convergence.md).
+>
+> The repository is mid-restructure into a monorepo (`apps/`, `services/`,
+> `packages/`, `legacy/`). The "Sallie 1.0" overview below is historical
+> context for the predecessor app and does not describe the target
+> architecture. New work should follow `VISION.md`.
+
+---
+
+# Sallie 1.0 (historical)
 
 ## Overview
 

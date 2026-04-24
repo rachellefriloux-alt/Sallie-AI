@@ -1,0 +1,29 @@
+# Sallie Knowledge — runtime dependencies (Phase 3).
+#
+# The knowledge service is intentionally small: it owns Wikipedia ingestion
+# + a Qdrant-backed RAG index and exposes /query for the brain.
+#
+# Embeddings use Ollama (`nomic-embed-text`) by default but the embedder is
+# pluggable; tests use a deterministic hash embedder so they need neither
+# Ollama nor Qdrant.
+
+# Web framework — same pinned versions as services/brain so the two stay
+# in lockstep on Starlette's Range-header DoS fix.
+fastapi==0.130.0
+starlette==0.49.1
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+
+# HTTP client (talks to Ollama, and the brain talks to us)
+httpx==0.27.2
+
+# Vector store (embedded mode supported, can also point at a server)
+qdrant-client==1.12.1
+
+# Wikipedia dump streaming. bz2 is in the stdlib; we only need an XML parser
+# that streams and a wikitext-to-plain-text stripper.
+mwparserfromhell==0.6.6
+
+# Dev / test
+pytest==8.3.3
+pytest-asyncio==0.24.0
