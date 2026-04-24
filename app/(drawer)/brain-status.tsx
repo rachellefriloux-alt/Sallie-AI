@@ -81,12 +81,19 @@ function describeSystem(name: string, sys: SystemStatus): string[] {
             const lastQuery = getString(sys, 'last_query');
             const lastCites = getNumber(sys, 'last_citation_count');
             const lastAt = getString(sys, 'last_at');
+            const latencyMs = getNumber(sys, 'last_latency_ms');
             const grounded = sys['last_knowledge_available'];
             if (total !== null) {
-                lines.push(
-                    `${total} response${total === 1 ? '' : 's'}` +
-                    (lastAt ? ` · last ${formatRelativeTime(lastAt)}` : ''),
-                );
+                const segments = [
+                    `${total} response${total === 1 ? '' : 's'}`,
+                ];
+                if (lastAt) segments.push(`last ${formatRelativeTime(lastAt)}`);
+                if (latencyMs !== null) {
+                    segments.push(
+                        `${latencyMs < 10 ? latencyMs.toFixed(1) : Math.round(latencyMs)}ms`,
+                    );
+                }
+                lines.push(segments.join(' · '));
             }
             if (lastQuery) {
                 const cites =

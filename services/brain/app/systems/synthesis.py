@@ -34,6 +34,7 @@ class SynthesisSystem(CognitiveSystem):
         self._last_knowledge_available: Optional[bool] = None
         self._last_citation_count: Optional[int] = None
         self._last_at: Optional[str] = None
+        self._last_latency_ms: Optional[float] = None
 
     def record_response(
         self,
@@ -41,6 +42,7 @@ class SynthesisSystem(CognitiveSystem):
         query: str,
         knowledge_available: bool,
         citation_count: int,
+        latency_ms: Optional[float] = None,
     ) -> None:
         """Called by the synthesis route after each successful compose."""
         self._responses_total += 1
@@ -51,6 +53,12 @@ class SynthesisSystem(CognitiveSystem):
         self._last_knowledge_available = bool(knowledge_available)
         self._last_citation_count = max(0, int(citation_count))
         self._last_at = datetime.now(timezone.utc).isoformat()
+        if latency_ms is None:
+            self._last_latency_ms = None
+        else:
+            # Clamp to non-negative and round to 0.1ms — the wall-clock
+            # resolution we need for a status pane, not a profiler.
+            self._last_latency_ms = round(max(0.0, float(latency_ms)), 1)
 
     def status(self) -> Dict[str, Any]:
         s = super().status()
@@ -60,5 +68,6 @@ class SynthesisSystem(CognitiveSystem):
             last_knowledge_available=self._last_knowledge_available,
             last_citation_count=self._last_citation_count,
             last_at=self._last_at,
+            last_latency_ms=self._last_latency_ms,
         )
         return s

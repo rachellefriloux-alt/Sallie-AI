@@ -225,6 +225,7 @@ def test_synthesis_system_records_metrics(client):
     assert base["last_knowledge_available"] is None
     assert base["last_citation_count"] is None
     assert base["last_at"] is None
+    assert base["last_latency_ms"] is None
 
     # Two grounded responses.
     assert client.post("/synthesis/respond", json={"query": "first", "limit": 2}).status_code == 200
@@ -237,6 +238,9 @@ def test_synthesis_system_records_metrics(client):
     # limit=1 → at most one citation
     assert after["last_citation_count"] == 1
     assert isinstance(after["last_at"], str) and after["last_at"]
+    # Latency is recorded as a non-negative number of milliseconds.
+    assert isinstance(after["last_latency_ms"], (int, float))
+    assert after["last_latency_ms"] >= 0.0
 
 
 def test_synthesis_system_records_ungrounded_responses(client):

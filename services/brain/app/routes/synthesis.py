@@ -12,6 +12,7 @@ knowledge service.
 """
 from __future__ import annotations
 
+import time
 from typing import List
 
 from fastapi import APIRouter, Request
@@ -66,7 +67,9 @@ class RespondResponse(BaseModel):
 @router.post("/respond", response_model=RespondResponse)
 async def respond(request: Request, body: RespondRequest) -> RespondResponse:
     composer = _composer(request)
+    started = time.perf_counter()
     result = await composer.compose(body.query, limit=body.limit)
+    latency_ms = (time.perf_counter() - started) * 1000.0
     # Mirror the outcome into the synthesis system so /systems/synthesis
     # (and the mobile Brain Status screen) reflect real activity. Guarded
     # because tests sometimes construct app state without a brain.
@@ -78,6 +81,7 @@ async def respond(request: Request, body: RespondRequest) -> RespondResponse:
                 query=result.query,
                 knowledge_available=result.knowledge_available,
                 citation_count=len(result.citations),
+                latency_ms=latency_ms,
             )
     return RespondResponse(
         query=result.query,
