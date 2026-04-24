@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field
 
 from app.clients.knowledge import KnowledgeClient
 from app.config import settings
-from app.synthesis import Composer
+from app.synthesis import Composer, build_default_responder
 
 router = APIRouter(prefix="/synthesis", tags=["synthesis"])
 
@@ -35,7 +35,7 @@ def _composer(request: Request) -> Composer:
     if knowledge is None:
         knowledge = KnowledgeClient(base_url=settings.knowledge_base_url)
         request.app.state.knowledge_client = knowledge
-    composer = Composer(knowledge=knowledge)
+    composer = Composer(knowledge=knowledge, responder=build_default_responder())
     request.app.state.composer = composer
     return composer
 

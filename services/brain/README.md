@@ -83,8 +83,15 @@ Phase manifest in
   grounded prompt + cited answer, and degrades gracefully (200 with
   `knowledge_available=false`) if knowledge is down. The responder is
   pluggable — the default emits a deterministic citation-tagged answer
-  with no LLM dependency; Phase 6 swaps in real LLMs behind the same
-  `Responder` protocol. See `app/synthesis/composer.py`.
+  with no LLM dependency. Set `SALLIE_RESPONDER=github_models` plus a
+  non-empty `GITHUB_TOKEN` to route generation through GitHub Models
+  (OpenAI-compatible API at `https://models.github.ai/inference`).
+  Optional tuning: `SALLIE_RESPONDER_MODEL` (default `openai/gpt-4.1`),
+  `SALLIE_RESPONDER_TEMPERATURE` (default `1.0`), `SALLIE_RESPONDER_TOP_P`
+  (default `1.0`). If the upstream call fails (auth, rate limit, network,
+  empty response) the request falls back to a short user-facing degraded
+  message and `/synthesis/respond` still returns 200. See
+  `app/synthesis/composer.py`.
 
 ## Tests
 

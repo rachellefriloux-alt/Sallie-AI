@@ -15,6 +15,13 @@ pydantic==2.9.2
 # in app.clients.knowledge) and by FastAPI's TestClient at test time.
 httpx==0.27.2
 
+# OpenAI SDK — used by app.synthesis.composer.GitHubModelsResponder to
+# call the GitHub Models OpenAI-compatible endpoint
+# (https://models.github.ai/inference). Only loaded when the responder is
+# selected via SALLIE_RESPONDER=github_models, so the brain still boots
+# without a GITHUB_TOKEN.
+openai==1.54.0
+
 # Dev / test
 pytest==8.3.3
 pytest-asyncio==0.24.0

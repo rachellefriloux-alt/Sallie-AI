@@ -15,14 +15,18 @@ the same interface.
 
 from app.synthesis.composer import (
     Composer,
+    GitHubModelsResponder,
     GroundedAnswer,
     GroundedStubResponder,
     Responder,
+    build_default_responder,
 )
 
 __all__ = [
     "Composer",
     "GroundedAnswer",
     "GroundedStubResponder",
+    "GitHubModelsResponder",
     "Responder",
+    "build_default_responder",
 ]
