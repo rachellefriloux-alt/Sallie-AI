@@ -1,0 +1,16 @@
+{
+  "name": "@sallie/convergence",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Convergence engine: renders the Q1–Q40 protocol questions, persists answers, and produces a sealed DNA blob signed by the brain. Implements the 6 protocols (Obsidian / Leopard / Peacock / Celestial / Void / Visage) per ADR 0006 with at-rest encryption per ADR 0007.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
+}

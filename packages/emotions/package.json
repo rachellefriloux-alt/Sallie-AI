@@ -1,0 +1,15 @@
+{
+  "name": "@sallie/emotions",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Unified emotion model — 30+ named emotions (12+12 EI from sallie_1.0 + 10 named complex emotions from sallie-project) plus the Limbic system. Promoted from host core/emotional and legacy per Phase 4, item 43.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
+}

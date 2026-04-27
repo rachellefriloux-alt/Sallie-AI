@@ -1,9 +1,12 @@
-# Sallie local dev stack — brain + knowledge + qdrant.
+# Sallie local dev stack — brain + knowledge + qdrant + postgres + redis + minio.
 #
 # Services:
 #   - brain      (FastAPI :8000)        Sallie's reasoning core
 #   - knowledge  (FastAPI :8100)        Wikipedia/RAG service
 #   - qdrant     (vector DB :6333)      backing store for knowledge
+#   - postgres   (Postgres 16 :5432)    users / devices / sessions / audit log (Phase 1, item 25)
+#   - redis      (Redis 7 :6379)        session cache, rate limiting, pub/sub, Working memory tier (per ADR 0001)
+#   - minio      (S3-compatible :9000)  avatar + audio storage (Phase 0.6, item 14)
 #
 # Ollama is intentionally NOT containerised here: it's faster and simpler
 # to install Ollama natively on the host (it auto-detects GPUs) and let
@@ -67,5 +70,60 @@ services:
       - qdrant_data:/qdrant/storage
     restart: unless-stopped
 
+  postgres:
+    image: postgres:16-alpine
+    container_name: sallie-postgres
+    environment:
+      POSTGRES_USER: sallie
+      POSTGRES_PASSWORD: sallie
+      POSTGRES_DB: sallie
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sallie -d sallie"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: sallie-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    container_name: sallie-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: sallie
+      MINIO_ROOT_PASSWORD: sallie-dev-only
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web console
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
 volumes:
   qdrant_data:
+  postgres_data:
+  redis_data:
+  minio_data:
