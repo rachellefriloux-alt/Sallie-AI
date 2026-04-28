@@ -22,6 +22,14 @@ httpx==0.27.2
 # without a GITHUB_TOKEN.
 openai==1.54.0
 
+# Auth — Phase 1 item 22.
+# passlib provides a stable wrapper around bcrypt; we pin bcrypt 4.x to
+# avoid the silent ABI break that landed in bcrypt 4.0 vs. 3.x. PyJWT 2.x
+# is the canonical Python JWT library.
+passlib[bcrypt]==1.7.4
+bcrypt==4.2.0
+pyjwt==2.9.0
+
 # Dev / test
 pytest==8.3.3
 pytest-asyncio==0.24.0
