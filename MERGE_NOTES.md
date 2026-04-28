@@ -203,6 +203,49 @@ preserved) — by far the most documentation of any source repo.
 - v3.0 README (the most exhaustive product spec) becomes a reference
   source for the consolidated `VISION.md`.
 
+### Promoted (April 2026)
+- **MemoryService TS module** (`src/core/memory/`) → `services/memory/`.
+  - 2,073 LOC across 9 files: `MemoryService.ts` (609 LOC, the main service),
+    `types/index.ts` (308 LOC, full type system: `Memory`, `MemoryQuery`,
+    `Episodic|Semantic|Procedural|EmotionalMemory`, `Association`,
+    `StorageStats`, plus enums for `MemoryType`, `AssociationType`,
+    `EmotionType`, `PrivacyLevel`, `ImportanceLevel`, `IndexType`),
+    `storage/encryption.ts` (140 LOC, AES-256-GCM via Node `crypto`),
+    `storage/compression.ts` (158 LOC, gzip/deflate via Node `zlib`),
+    barrel `index.ts`, `examples/usage-example.ts`, plus three test files
+    (`MemoryService.test.ts`, `compression.test.ts`, `encryption.test.ts`).
+  - Fully self-contained: only Node built-ins (`crypto`, `zlib`, `util`)
+    and intra-module relative imports. Production files (`MemoryService.ts`,
+    `index.ts`, `types/index.ts`, both `storage/*.ts`,
+    `examples/usage-example.ts`) pass `tsc --strict --noEmit` standalone.
+  - Lands at `services/memory/` alongside the other Node/server services
+    (`services/brain/` Python, `services/voice/`, `services/knowledge/`,
+    `services/api/`). Distinct from — and complementary to — the existing
+    React Native side `core/memory/MemorySystem.ts` and the Kotlin native
+    `core/memory/*.kt` files; the three layers can coexist:
+    *Kotlin native (Android device) → RN client (cross-platform UI) →
+    Node service (server-side persistence with encryption + compression)*.
+  - README and IMPLEMENTATION_SUMMARY were copied alongside.
+
+### Not promoted: ValuesService TS module — assessment correction
+The earlier code-subsystems sweep listed `src/core/services/values/` as a
+clean, test-covered lift candidate. **That assessment was inaccurate.**
+On verification, the values module is **not self-contained**:
+- It imports from `../models/Value`, `../models/Goal`, `../models/Commitment`,
+  `../models/Decision`, `../models/Milestone` — **none of these model files
+  exist anywhere in `legacy/sallie-project/src/`**.
+- It imports from path aliases `@core/services/conversation`,
+  `@core/services/personality`, `@core/services/memory` — none of which
+  resolve in the canonical app's `tsconfig.json` paths.
+
+The module's structure (ValueManager, GoalManager, AccountabilityManager,
+DecisionSupport, ProgressTracker, StreakTracker, PatternAnalyzer,
+SuccessMetrics + integrations) is still a valuable **specification**, but
+promotion would require either lifting the missing models from another
+legacy snapshot or stubbing them out — neither is a small, surgical change.
+Re-classified from "lift candidate" to "spec reference; needs scoping
+work before promotion."
+
 ### Preserved in `legacy/sallie-project/`
 - 170 files (~2 MB) — full src tree, docs, package.json.
 
@@ -1115,4 +1158,7 @@ No code was moved. Three classes of risk are now mitigated for future merges:
 
 1. **Forgotten subsystems** — the 28-file Python server stack, the four large `before/ai/` subsystems, and the `Sallie/shared/` Genesis content are now named in this doc and can be searched for by anyone planning a later phase.
 2. **Stub traps** — the 14 zero-byte `.ts` files in `legacy/before/core/` and the 3 zero-byte feature stubs in `legacy/before/features/` are explicitly flagged so they won't be mistaken for real implementations.
-3. **Best lift candidates surfaced** — `sallie-project/src/core/memory/`, `sallie-project/src/core/services/values/`, and `Sallie/shared/genesis/*.json` are the cleanest, most self-contained, test-covered candidates for the next promotion phase. (The Genesis content was promoted in the same PR as this sweep — see the Sallie "Promoted" section.)
+3. **Best lift candidates surfaced** — `sallie-project/src/core/memory/`, `sallie-project/src/core/services/values/`, and `Sallie/shared/genesis/*.json` were initially flagged as the cleanest, most self-contained, test-covered candidates for promotion.
+   - **Genesis content** was promoted in the same PR as this sweep — see the Sallie "Promoted" section.
+   - **MemoryService TS module** was promoted to `services/memory/` (see the sallie-project "Promoted (April 2026)" section).
+   - **ValuesService TS module** turned out **not** to be self-contained on closer inspection — it depends on `../models/Value|Goal|Commitment|Decision|Milestone` (which don't exist in the snapshot) and on `@core/services/conversation|personality|memory` path aliases that don't resolve in the canonical `tsconfig.json`. Re-classified to "spec reference; needs scoping work before promotion." See the sallie-project "Not promoted: ValuesService TS module — assessment correction" section.
