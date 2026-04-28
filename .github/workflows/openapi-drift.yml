@@ -1,0 +1,72 @@
+# OpenAPI drift check — re-runs services/brain/scripts/export_openapi.py
+# and fails the build if the regenerated spec differs from the one
+# committed at packages/sdk/openapi.json.
+#
+# Closes the loop on Phase 1 plan item 28: the SDK has a stable,
+# versioned source-of-truth, and the brain cannot ship a route change
+# without also bumping the spec (and, by extension, regenerating the SDK
+# in a follow-up step once codegen lands).
+#
+# Triggered whenever the brain's HTTP surface or the committed spec
+# could plausibly change.
+
+name: openapi-drift
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "services/brain/app/**"
+      - "services/brain/scripts/export_openapi.py"
+      - "services/brain/requirements.txt"
+      - "packages/sdk/openapi.json"
+      - ".github/workflows/openapi-drift.yml"
+  pull_request:
+    paths:
+      - "services/brain/app/**"
+      - "services/brain/scripts/export_openapi.py"
+      - "services/brain/requirements.txt"
+      - "packages/sdk/openapi.json"
+      - ".github/workflows/openapi-drift.yml"
+
+concurrency:
+  group: openapi-drift-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-drift:
+    name: check committed openapi.json matches generated
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: services/brain/requirements.txt
+
+      - name: Install brain dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r services/brain/requirements.txt
+
+      - name: Regenerate OpenAPI spec
+        run: |
+          python services/brain/scripts/export_openapi.py \
+            --output /tmp/openapi.regenerated.json
+
+      - name: Diff against committed spec
+        # `diff -u` exits non-zero on any difference; that fails the job.
+        # The diff itself is printed so the contributor can see exactly
+        # which routes / schemas drifted.
+        run: |
+          if ! diff -u packages/sdk/openapi.json /tmp/openapi.regenerated.json; then
+            echo "::error::packages/sdk/openapi.json is out of date."
+            echo "Run: python services/brain/scripts/export_openapi.py --output packages/sdk/openapi.json"
+            exit 1
+          fi
+          echo "OpenAPI spec is in sync."
