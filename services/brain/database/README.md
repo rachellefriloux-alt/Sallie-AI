@@ -12,18 +12,56 @@
 - Audit-style tables (currently just `audit_log`) are append-only and
   enforce immutability via a `BEFORE UPDATE OR DELETE` trigger.
 
-## Migration runner
-Phase 1 keeps the migration runner intentionally minimal: apply the
-`.sql` files in lexicographic order against a Postgres 16 instance.
-A proper runner (Alembic or `dbmate`) lands in a follow-up PR once
-runtime DB integration is wired.
+## Migration runner — Alembic
 
-For local development against the brain's docker-compose stack:
+Phase 1.1.1 lands a real Alembic setup so migrations have a versioned,
+async-aware runner instead of "shell out to `psql -f`".
 
 ```bash
-psql ******localhost:5432/sallie \
-     -f services/brain/database/migrations/001_initial.sql
+# From the repo root:
+alembic -c services/brain/database/alembic.ini upgrade head
+
+# Or from inside services/brain/database/:
+cd services/brain/database && alembic upgrade head
+
+# One-off URL override (handy for ad-hoc envs):
+alembic -c services/brain/database/alembic.ini \
+    -x db_url=postgresql+asyncpg://user:pass@host:5432/db upgrade head
+
+# Roll back the last revision:
+alembic -c services/brain/database/alembic.ini downgrade -1
 ```
+
+The runner resolves the database URL in this precedence order:
+
+1. `-x db_url=...` on the command line
+2. `DATABASE_URL` env var (asyncpg-prefixed: `postgresql+asyncpg://…`)
+3. `app.config.settings.database_url` (the docker-compose default)
+
+`sqlalchemy.url` is **never** hardcoded in `alembic.ini`, so credentials
+can't leak into git.
+
+### How the bootstrap revision works
+
+`database/alembic/versions/001_initial_schema.py` doesn't re-encode the
+schema in Python `op.create_table` calls. Instead it `exec_driver_sql`s
+the canonical `database/migrations/001_initial.sql` verbatim. This keeps
+the SQL file as the single source of truth — important because it
+encodes Postgres-only objects (`uuid-ossp`, `pgcrypto`, audit-log
+immutability trigger per ADR 0003) that ORM metadata can't express.
+
+Subsequent per-feature schemas (memory, knowledge, agency in their own
+phases) **will** use `alembic revision --autogenerate` against
+`app.db.base.Base.metadata`, exercising the standard diff machinery.
+
+### Tests don't run Alembic
+
+The brain's pytest suite uses an in-memory SQLite via aiosqlite and
+builds the schema with `Base.metadata.create_all`. Alembic's bootstrap
+revision would fail there (no `uuid-ossp` extension on SQLite). A
+`tests/test_alembic_config.py` smoke test instead verifies the Alembic
+config is well-formed and the bootstrap revision references the SQL
+file correctly — fast, no DB needed.
 
 ## Source map (per "scan every repo, then port and complete")
 | Migration                | Source                                                                                  | Notes                                                                                          |

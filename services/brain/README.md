@@ -24,7 +24,7 @@ the Convergence onboarding flow.
 | Plan item | Status | Notes                                                                                       |
 |-----------|--------|---------------------------------------------------------------------------------------------|
 | 22        | done   | `app/auth/password.py` + `app/auth/tokens.py` (Phase 1.0) **and** `app/routes/auth.py` wired into `main.py` (Phase 1.1) — `/auth/register`, `/auth/login`, `/auth/refresh` (with rotation + replay-detection), `/auth/logout`, `/auth/me`. Device pairing remains for Phase 1.2. |
-| 25        | partial | `database/migrations/001_initial.sql` ports the legacy schema (curated). SQLAlchemy 2.x async + asyncpg driver wired in Phase 1.1; ORM models in `app/db/models.py` mirror the migration tables for the auth router. **Alembic migration runner** still pending in Phase 1.1.1. |
+| 25        | done    | `database/migrations/001_initial.sql` ports the legacy schema (curated). SQLAlchemy 2.x async + asyncpg driver wired in Phase 1.1; ORM models in `app/db/models.py` mirror the migration tables. Alembic migration runner landed in Phase 1.1.1 (`database/alembic.ini` + `database/alembic/`) — bootstrap revision delegates to `001_initial.sql` so it stays canonical; future per-feature schemas use `--autogenerate`. |
 | 28        | done   | OpenAPI export committed at `packages/sdk/openapi.json`.                                    |
 
 📋 **Still to do (follow-up PRs):**
@@ -32,7 +32,7 @@ the Convergence onboarding flow.
 | Plan item | What's missing                                                                                       |
 |-----------|------------------------------------------------------------------------------------------------------|
 | 22        | Device-pairing endpoints (Phase 1.2)                                                                 |
-| 25        | Alembic env + migration script that replays `001_initial.sql` (Phase 1.1.1); per-feature schemas (memory, knowledge, agency) in their own phases |
+| 25        | Per-feature schemas (memory, knowledge, agency) in their own phases, using `alembic revision --autogenerate` against `app.db.base.Base.metadata` |
 | 26        | Redis client wiring (sessions, rate limit, pub/sub, Working memory tier per ADR 0001)                |
 | 27        | OpenTelemetry traces + structured JSON logs                                                          |
 | 28        | TS SDK codegen pipeline (e.g. `openapi-typescript`); replace `packages/sdk/src/index.ts` placeholder |
