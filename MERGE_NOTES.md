@@ -72,6 +72,25 @@ one is the migration target (per the user's plan). Concretely:
 - Local-first principle (Ollama + Qdrant; no telemetry).
 - Heritage DNA / Vector / Working memory trinity.
 - Tools framework (50+ tool slots, capability contracts).
+- **Genesis onboarding content** (April 2026): the 5-phase definitions and the
+  29 enhanced questions originally in `legacy/Sallie/shared/genesis/` are now
+  promoted into the canonical app:
+  - `legacy/Sallie/shared/genesis/phases.json` → `assets/data/genesis/phases.json`
+    (5 phases: Obsidian → Leopard → Peacock → Celestial → Void).
+  - `legacy/Sallie/shared/genesis/enhanced_questions.ts` →
+    `shared/src/genesis/enhanced_questions.ts` (29 questions, with the
+    `EnhancedGenesisQuestion` type and the helper functions
+    `analyzeQuestionDepth` / `getPhaseQuestions` / `getQuestionById` /
+    `calculateTotalBondingPotential` / `getMostImpactfulQuestions` /
+    `getQuestionsByDepth`). Self-contained module, no imports, passes
+    `tsc --strict --noEmit`.
+  - `legacy/Sallie/shared/genesis/questions.json` was **not** promoted — the
+    file in the source repo is structurally invalid JSON (raw newlines and
+    unquoted property names inside string values; 47 control-character
+    positions). The substantive content is preserved in the promoted
+    `enhanced_questions.ts`, so no information is lost.
+  - `legacy/Sallie/shared/genesis/enhanced_questions.json` was **not**
+    promoted — it is a 19-byte stub (`{"enhanced": true}`).
 
 ### Preserved in `legacy/Sallie/`
 - 976 files (~11 MB) — `sallie_brain.py`, the `sallie/` Python package,
@@ -1044,7 +1063,7 @@ Not previously catalogued. Cleanly organised and small enough to lift wholesale 
 - `avatar/selection.ts`
 - `components/UnifiedSallieDashboard.ts`
 - `convergence/flow.ts`, `convergence/enhanced_flow.ts`
-- `genesis/questions.json`, `genesis/enhanced_questions.json`, `genesis/enhanced_questions.ts`, `genesis/phases.json` — these are the **content** for the Genesis onboarding (the Sallie spec already mandates this flow); strong candidate for promotion in a later phase.
+- `genesis/questions.json`, `genesis/enhanced_questions.json`, `genesis/enhanced_questions.ts`, `genesis/phases.json` — these are the **content** for the Genesis onboarding (the Sallie spec already mandates this flow). **Update (this PR):** `phases.json` and `enhanced_questions.ts` have now been promoted to `assets/data/genesis/` and `shared/src/genesis/` respectively. `questions.json` is malformed at the source (not valid JSON) and `enhanced_questions.json` is a 19-byte stub; neither was lifted. See the Sallie "Promoted" section above for full disposition.
 - `heritage/identity.ts`
 - `imprinting/neuralBridge.ts`
 - `services/agencyService.ts` (+ `Impl`), `services/limbicEngine.ts` (+ `Impl`), `services/memoryService.ts` (+ `Impl`)
@@ -1096,4 +1115,4 @@ No code was moved. Three classes of risk are now mitigated for future merges:
 
 1. **Forgotten subsystems** — the 28-file Python server stack, the four large `before/ai/` subsystems, and the `Sallie/shared/` Genesis content are now named in this doc and can be searched for by anyone planning a later phase.
 2. **Stub traps** — the 14 zero-byte `.ts` files in `legacy/before/core/` and the 3 zero-byte feature stubs in `legacy/before/features/` are explicitly flagged so they won't be mistaken for real implementations.
-3. **Best lift candidates surfaced** — `sallie-project/src/core/memory/`, `sallie-project/src/core/services/values/`, and `Sallie/shared/genesis/*.json` are the cleanest, most self-contained, test-covered candidates for the next promotion phase.
+3. **Best lift candidates surfaced** — `sallie-project/src/core/memory/`, `sallie-project/src/core/services/values/`, and `Sallie/shared/genesis/*.json` are the cleanest, most self-contained, test-covered candidates for the next promotion phase. (The Genesis content was promoted in the same PR as this sweep — see the Sallie "Promoted" section.)
