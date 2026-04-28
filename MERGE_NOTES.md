@@ -1006,3 +1006,94 @@ After this pass, every doc tree in `docs/vision/` has been triaged:
 Plus host `Sallie-AI/` triaged (~18 read in full, ~95 skimmed) and both binary docs extracted and assessed.
 
 **No source-repo doc tree remains untriaged.** The only material genuinely unread is the long tail of vendored tool-reference docs, per-component changelogs, completion-status reports, and the Creator-local file `c:\Sallie\docs\1111111111111111111.txt` referenced in the Decision Log (not in any repo).
+
+---
+
+## Code subsystems sweep (April 2026)
+
+Companion pass to the doc sweeps above. The doc sweeps catalogued what the legacy repos *say*; this pass catalogues what they *contain as code* and flags subsystems that were not previously mentioned anywhere in this document. All paths below are preserved-only (under `legacy/`) unless explicitly listed in a per-repo "Promoted" section. The goal is to make sure no substantive subsystem is silently forgotten when later phases lift code into the canonical app.
+
+### Coverage of this pass
+
+For each substantive legacy repo, every top-level code directory was enumerated and every distinctive module name (server, AI, core, feature, shared) was cross-referenced against the rest of `MERGE_NOTES.md`. Names already cited above are not repeated here.
+
+### NEW from `legacy/Sallie/server/` — Python backend (~14.8k lines, 28 files)
+
+Not previously catalogued. This is the largest single body of unreferenced code in the merge. All preserved-only.
+
+- **Dream cycle stack** — `dream_cycle.py` (583), `dream_cycle_complete.py` (756), `advanced_dream_cycle.py` (700). Three generations of the same subsystem; "complete" and "advanced" supersede the base. Maps to the "consolidation / dream" concept in `SALLIES_CONSCIOUSNESS.md`.
+- **Convergence stack** — `convergence_processor.py` (481), `convergence_websocket.py` (211). Server side of the "Genesis → Convergence" flow already represented in `legacy/Sallie/shared/convergence/`.
+- **Posture & control** — `posture_modes.py` (881), `take_the_wheel_protocol.py` (997), `trust_tiers.py` (439). Mode-switching, escalation/handoff, and trust-tier authorization. Closely tied to the "Take the Wheel" doctrine and to the Tier system in the canonical spec.
+- **Sensors & I/O** — `sensor_array.py` (691), `sensor_array_complete.py` (501), `wake_word_detection.py` (313), `voice_input_integration.py` (248), `speech_to_text.py` (502), `text_to_speech.py` (560).
+- **Memory hygiene** — `working_memory_hygiene.py` (388). Distinct from the canonical memory system; appears to handle GC / decay rules.
+- **Limbic** — `enhanced_limbic_engine.py` (311). Server companion to `legacy/Sallie/shared/services/limbicEngine.ts`.
+- **Premium / production scaffolding** — `premium_websocket.py` (655), `premium_websocket_endpoints.py` (480), `production_excellence.py` (846), `cross_platform_sync.py` (401), `security.py` (108), `git_safety_net.py` (416).
+- **Ghost interface** — `ghost_interface.py` (493). No matching doc; appears to be a low-visibility ops/diagnostics surface.
+- **Server entrypoints** — `sallie_main_server.py` (213), `sallie_server_with_sync.py` (942), `sallie_studio_production_server.py` (553), `api_endpoints_complete.py` (498), `test_websocket.py` (591). Three competing entrypoints — a likely future-cleanup conflict.
+
+**Disposition:** preserved-only for now. If/when the canonical app grows a Python service tier, the dream / convergence / posture / trust subsystems are the priority candidates because they match doctrine that is already canonical. The three rival server entrypoints should not be lifted as-is — they need to be reconciled first.
+
+### NEW from `legacy/Sallie/SallieStudioApp/` — C# config loader
+
+Not previously catalogued. Three small files: `Cloud/CloudConfig.cs`, `Helpers/ConfigLoader.cs`, `Models/StudioConfig.cs`, `Models/StudioConfigRoot.cs`. Appears to be a desktop "Studio" config shim. **Disposition:** preserved-only; no canonical equivalent and no signal that one is wanted.
+
+### NEW from `legacy/Sallie/shared/` — TypeScript shared layer
+
+Not previously catalogued. Cleanly organised and small enough to lift wholesale if a target slot is identified:
+
+- `avatar/selection.ts`
+- `components/UnifiedSallieDashboard.ts`
+- `convergence/flow.ts`, `convergence/enhanced_flow.ts`
+- `genesis/questions.json`, `genesis/enhanced_questions.json`, `genesis/enhanced_questions.ts`, `genesis/phases.json` — these are the **content** for the Genesis onboarding (the Sallie spec already mandates this flow); strong candidate for promotion in a later phase.
+- `heritage/identity.ts`
+- `imprinting/neuralBridge.ts`
+- `services/agencyService.ts` (+ `Impl`), `services/limbicEngine.ts` (+ `Impl`), `services/memoryService.ts` (+ `Impl`)
+
+**Disposition:** preserved-only. The `genesis/*.json` content and the three `services/*Impl.ts` files are the highest-value lift candidates because they are concrete data/logic, not interfaces.
+
+### NEW from `legacy/before/ai/` — 39 JS/TS modules
+
+Not previously catalogued. Substantive (most files 400–900 lines). Highlights of names not mentioned anywhere else in this doc:
+
+- `AdaptiveChallengeLadder.js` (599), `AdaptiveDialogue.js` (500), `AmbientAwarenessLayer.js` (631), `MetaLayerTransparencyPanel.js` (591) — four large standalone subsystems with no canonical counterpart.
+- `ConversationalBreathingRoomAI.js`, `CrossModalStateSync.js`, `EmotionalArcMemory.js`, `EmotionalIntelligence.js`, `LoyaltyChallengeProtocols.js`, `MicroMilestoneCelebrations.js`, `MultiModalPersonaResonance.js`, `NarrativeContinuityEngine.js`, `PredictiveCompanion.js`, `SymbolicGrowthMechanic.js`, `VoiceInteractionManager.js` — each ties to a doctrine area already discussed in the doc sweeps but never before tied to specific code.
+- `intentRouter.ts`, `moduleStackVisualizer.ts`, `moodSignal.ts`, `nlpEngine.ts`, `soulSyncProtocol.ts` — orchestration plumbing.
+- TS modules: `ARVRIntegration.ts`, `DatabaseIntegration.ts`, `EmotionRecognitionSystem.ts`, `MLPersonalizationEngine.ts`, `MultiPlatformSupport.ts`, `PersonalFeatures.ts`, `PredictiveSuggestionsEngine.ts`, `QATestingFramework.ts`, `RuntimeSwitcher.ts`, `SecurityPrivacySystem.ts`, `SocialFeatures.ts`, `VoiceAudioIntegration.ts`.
+- Two `OpenAIIntegration__from__import_*.js` files — a merge artifact from a prior attempt; **do not lift these**; use the clean `OpenAIIntegration.js` if any.
+
+**Disposition:** preserved-only. The four large standalone subsystems (Challenge Ladder / Dialogue / Ambient Awareness / Meta Layer) are the most novel content here.
+
+### Trap: zero-byte stubs in `legacy/before/`
+
+Flagging explicitly so a future merge does not assume these contain anything:
+
+- `legacy/before/core/` — these `.ts`/`.js` files are **0 bytes** and must be ignored: `FeatureRegistry.js`, `CrossDeviceSyncManager.ts`, `GodModeManager.ts`, `InformationAccessSystem.js`, `AdvancedMemoryManager.ts`, `visualStateManager.ts`, `BackendSyncService.ts`, `UserPreferencesManager.ts`, `PhoneControlManager.ts`, `MemoryAnalytics.ts`, `AdaptivePersonaEngine.ts`, `AssetManager.ts`, `MemoryManager.ts`, `LocalEncryptedStorage.ts`. The `.js` siblings (e.g. `AdaptivePersonaEngine.js`, `MemoryManager` via `MemorySystem.js`, `AssetManager.js`) hold the actual code; the matching `.ts` files are placeholders, not type declarations.
+- `legacy/before/features/adaptive-expertise/index.ts`, `proactive-helper-mode/index.ts`, `skill-chaining/index.ts` — also **0 bytes**. Only `conversational-coding/index.ts` (171) and `omni-domain-research/index.{js,ts}` (172 + 70) contain real code under `features/`.
+- `legacy/before/personaCore/PersonaCore.js` is only 25 lines — effectively a stub; the substantive PersonaEngine code lives in `legacy/before/core/PersonaEngine.js` and `AdaptivePersonaEngine.js`.
+
+### NEW from `legacy/sallie-project/src/core/`
+
+Not previously catalogued at the file level (the IMPLEMENTATION_SUMMARY was read in the doc sweep). Two well-formed subsystems each with their own tests:
+
+- `memory/` — `MemoryService.ts`, `storage/encryption.ts`, `storage/compression.ts`, with tests under `__tests__/`. Has its own `IMPLEMENTATION_SUMMARY.md` and `examples/usage-example.ts`.
+- `services/values/` — `ValuesService.ts`, `types.ts`, `integration/{PersonalityAdapter,MemoryIntegrator,ConversationBridge}.ts`, with tests for `Value`, `ValueManager`, `ValuesService`.
+
+**Disposition:** preserved-only. Both are tidy, tested, and the highest-quality unlifted code in the legacy tree. They are the obvious next promotion candidates if/when the canonical app needs a memory service or values service of its own.
+
+### NEW from `legacy/Sallie/sallie/deviations/` — five approval-record docs
+
+Already partially cited in the Strategic doc index, but not enumerated. The directory contains exactly five files: `20250108-adaptive-ui-productivity-design.md`, `20250108-expanded-identity-maximum-capabilities.md`, `Comprehensive Decision & Discussion Log.md`, `human level expansion.md`, `thredf.md`. These are the canonical "approved deviations" record; treat as authoritative provenance, not as code.
+
+### Empty-shell repos confirmed
+
+- `legacy/sallieos/` — only `README.md`. No code. No further action.
+- `legacy/sallie-infinite/` — only `README.md`, `SNAPSHOT.md`, `docs/`. No code. Already covered in doc sweeps.
+- `legacy/Sallie/progeny_root/memory/` — only a `qdrant/` subdir (vector store data, not source code). No further action.
+
+### Net effect of this pass
+
+No code was moved. Three classes of risk are now mitigated for future merges:
+
+1. **Forgotten subsystems** — the 28-file Python server stack, the four large `before/ai/` subsystems, and the `Sallie/shared/` Genesis content are now named in this doc and can be searched for by anyone planning a later phase.
+2. **Stub traps** — the 14 zero-byte `.ts` files in `legacy/before/core/` and the 3 zero-byte feature stubs in `legacy/before/features/` are explicitly flagged so they won't be mistaken for real implementations.
+3. **Best lift candidates surfaced** — `sallie-project/src/core/memory/`, `sallie-project/src/core/services/values/`, and `Sallie/shared/genesis/*.json` are the cleanest, most self-contained, test-covered candidates for the next promotion phase.
