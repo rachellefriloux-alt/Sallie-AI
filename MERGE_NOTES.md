@@ -199,6 +199,11 @@ preserved) — by far the most documentation of any source repo.
 - The complete OCEAN personality engine
   (`src/core/services/personality/`) — 8,000 LOC, 30 facets, 16 emotions,
   91% test coverage — is the chosen implementation for `packages/core/`.
+  > **April 2026 caveat:** see "Lift-readiness audit" below — this engine
+  > is **not** drop-in lift-ready as currently shipped in the snapshot;
+  > it depends on a missing `models/` tree (`EmotionVector`, `TraitVector`,
+  > `EmotionalState`, `MoodState`). Plan still stands, but a model-
+  > reconstruction pass is a prerequisite.
 - Clean RN/Expo screens, navigation, theming → `apps/mobile/`.
 - v3.0 README (the most exhaustive product spec) becomes a reference
   source for the consolidated `VISION.md`.
@@ -245,6 +250,98 @@ promotion would require either lifting the missing models from another
 legacy snapshot or stubbing them out — neither is a small, surgical change.
 Re-classified from "lift candidate" to "spec reference; needs scoping
 work before promotion."
+
+### Lift-readiness audit (April 2026 follow-up)
+While verifying the next promotion candidate, an exhaustive audit of
+`legacy/sallie-project/src/core/services/` revealed that the missing-models
+problem flagged for ValuesService is **systemic across all four service
+modules**, and that there are in fact **two parallel memory implementations**
+in the snapshot.
+
+#### Finding 1 — Two memory implementations co-exist in the snapshot
+
+| Path                                             | Size  | Files | Status                                            |
+|--------------------------------------------------|-------|-------|---------------------------------------------------|
+| `src/core/memory/`                               | 140 K | 9 TS  | **Promoted** to `services/memory/` (April 2026)   |
+| `src/core/services/memory/`                      | 316 K | ~25 TS| **Blocked** — depends on missing `../models/*`    |
+
+The promoted (simpler) module defines its own type universe in
+`types/index.ts` and is fully self-contained on Node built-ins. The
+"rich" sibling under `src/core/services/memory/` is the architectural
+target the other three service modules (conversation, personality,
+values) were written against — it adds `association/`, `consolidation/`,
+`indexing/`, `retrieval/`, and `sync/` engines, plus a richer
+`MemoryService.ts` with pattern mining, attention weighting, and
+import/export. Lifting it requires reconstructing the model layer first.
+
+#### Finding 2 — All 4 service modules reference a missing `models/` tree
+
+`grep -hr "from '\.\./models" legacy/sallie-project/src/core/services/`
+yields **19 distinct missing model classes** with the following
+distribution across modules:
+
+| Module                                   | Missing models from `../models/`                                              |
+|------------------------------------------|-------------------------------------------------------------------------------|
+| `services/memory/` (rich)                | `MemoryEntity`, `EpisodicMemory`, `SemanticMemory`, `ProceduralMemory`, `EmotionalMemory` |
+| `services/conversation/`                 | `ConversationContext`, `DialogueState`, `Entity`, `Intent`, `SpeechAct`       |
+| `services/personality/`                  | `EmotionVector`, `TraitVector`, `EmotionalState`, `MoodState`                 |
+| `services/values/`                       | `Value`, `Goal`, `Commitment`, `Decision`, `Milestone`                        |
+
+`find legacy -type d -name models` returns **no matches** in any of the
+12 legacy snapshots, and no file with these names exists anywhere in the
+imported tree. The `models/` directory was never committed upstream
+(or was excluded from the snapshot during the original sallie-project
+publication).
+
+#### Finding 3 — Cross-module path-alias coupling
+
+Beyond the missing models, the four service modules import each other
+via the `@core/services/{memory,conversation,personality,values}` path
+aliases (which would resolve to siblings under `src/core/services/`).
+This means promoting any single module pulls in transitive references
+to the other three — they are an **all-or-nothing block**, not four
+independent candidates.
+
+#### Finding 4 — Docs partially specify the missing models
+
+`docs/vision/sallie-project/src/core/services/memory/API.md` documents
+the `MemoryEntity` base class and its four subtypes at field-level
+detail (e.g. `id: string`, `type: MemoryType`, `content: T`, `privacy:
+PrivacyLevel`, `metadata: MemoryMetadata`, `version: VersionInfo`,
+`isConsolidated: boolean`, `decayFactor: number`, plus methods
+`validate()`, `recordAccess()`, `applyDecay()`, etc.) — usable as the
+starting point for reconstruction.
+
+`docs/vision/sallie-project/src/core/services/personality/README.md`
+sketches `TraitVector` (value, confidence, variance, stability,
+velocity, 6 facets per trait) and references `EmotionVector` /
+`MoodState` shapes, but at lower fidelity.
+
+The conversation and values modules have no equivalent model-shape docs;
+those would have to be inferred from how the service code uses them.
+
+#### Recommended next promotion phases (ordered)
+
+1. **Model reconstruction pass** (Phase 1.4) — author `services/models/`
+   (or per-domain submodules) covering the 19 classes, sourced from
+   the existing API.md / README specs and the consumer call sites.
+   This is the unique blocker for the entire `services/` family.
+2. **Rich MemoryService promotion** (Phase 1.5) — once models exist,
+   lift `legacy/sallie-project/src/core/services/memory/` to either
+   `services/memory-rich/` or replace the current `services/memory/`
+   (decision deferred — depends on whether the simple/rich split is
+   intentional or accidental in the upstream design).
+3. **PersonalityService promotion** (Phase 1.6) — the largest single
+   service (~8 K LOC, 91 % test coverage per the IMPLEMENTATION_SUMMARY).
+4. **ConversationService promotion** (Phase 1.7) — depends on
+   personality + memory.
+5. **ValuesService promotion** (Phase 1.8) — depends on memory +
+   personality + conversation.
+
+No code changes were made during this audit — it is a strategic
+documentation update to prevent future agents from chasing the same
+missing-model dead ends and to set the dependency order for the
+remaining sallie-project promotions.
 
 ### Preserved in `legacy/sallie-project/`
 - 170 files (~2 MB) — full src tree, docs, package.json.
@@ -1161,4 +1258,4 @@ No code was moved. Three classes of risk are now mitigated for future merges:
 3. **Best lift candidates surfaced** — `sallie-project/src/core/memory/`, `sallie-project/src/core/services/values/`, and `Sallie/shared/genesis/*.json` were initially flagged as the cleanest, most self-contained, test-covered candidates for promotion.
    - **Genesis content** was promoted in the same PR as this sweep — see the Sallie "Promoted" section.
    - **MemoryService TS module** was promoted to `services/memory/` (see the sallie-project "Promoted (April 2026)" section).
-   - **ValuesService TS module** turned out **not** to be self-contained on closer inspection — it depends on `../models/Value|Goal|Commitment|Decision|Milestone` (which don't exist in the snapshot) and on `@core/services/conversation|personality|memory` path aliases that don't resolve in the canonical `tsconfig.json`. Re-classified to "spec reference; needs scoping work before promotion." See the sallie-project "Not promoted: ValuesService TS module — assessment correction" section.
+   - **ValuesService TS module** turned out **not** to be self-contained on closer inspection — it depends on `../models/Value|Goal|Commitment|Decision|Milestone` (which don't exist in the snapshot) and on `@core/services/conversation|personality|memory` path aliases that don't resolve in the canonical `tsconfig.json`. Re-classified to "spec reference; needs scoping work before promotion." A subsequent audit (see "Lift-readiness audit (April 2026 follow-up)" in the sallie-project section) found this is a **systemic issue across all four** `legacy/sallie-project/src/core/services/` modules (memory-rich, conversation, personality, values), all of which reference a missing `models/` tree (19 distinct classes). The four also import each other via `@core/services/*` aliases, making them an all-or-nothing block. A model-reconstruction pass is the prerequisite for the remaining sallie-project promotions.
