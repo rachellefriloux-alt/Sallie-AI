@@ -28,6 +28,13 @@ class Settings:
     knowledge_base_url: str = os.getenv(
         "KNOWLEDGE_BASE_URL", "http://localhost:8100"
     )
+    # Database URL passed straight through to SQLAlchemy's async engine.
+    # In production this is asyncpg → Postgres (e.g. ``postgresql+asyncpg://...``).
+    # In tests we override to ``sqlite+aiosqlite:///:memory:``. The ORM
+    # models in ``app/db/models.py`` use portable types so both work.
+    database_url: str = os.getenv(
+        "DATABASE_URL", "postgresql+asyncpg://sallie:sallie@localhost:5432/sallie"
+    )
 
 
 settings = Settings()

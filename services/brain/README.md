@@ -19,20 +19,20 @@ the Convergence onboarding flow.
 | Phase 4   | Convergence questions/sessions/answer routes + 40-question bank (29 + 11 = ✓ ADR 0006)               |
 | Phase 9   | 62 passing tests, pytest config, Dockerfile, docker-compose with Postgres/Redis/Qdrant/MinIO         |
 
-🚧 **Phase 1 gap-fill (this PR — `app/auth/` + `database/migrations/`):**
+🚧 **Phase 1 gap-fill (this PR — `app/auth/` + `app/db/` + `app/repositories/` + `database/migrations/`):**
 
 | Plan item | Status | Notes                                                                                       |
 |-----------|--------|---------------------------------------------------------------------------------------------|
-| 22        | partial | `app/auth/password.py` (bcrypt via passlib) + `app/auth/tokens.py` (JWT via PyJWT) ported and tested. **Routes** wiring auth endpoints into `main.py` is the next PR. |
-| 25        | partial | `database/migrations/001_initial.sql` ports the legacy schema (curated). DB driver wiring (asyncpg / SQLAlchemy) is the next PR. |
+| 22        | done   | `app/auth/password.py` + `app/auth/tokens.py` (Phase 1.0) **and** `app/routes/auth.py` wired into `main.py` (Phase 1.1) — `/auth/register`, `/auth/login`, `/auth/refresh` (with rotation + replay-detection), `/auth/logout`, `/auth/me`. Device pairing remains for Phase 1.2. |
+| 25        | partial | `database/migrations/001_initial.sql` ports the legacy schema (curated). SQLAlchemy 2.x async + asyncpg driver wired in Phase 1.1; ORM models in `app/db/models.py` mirror the migration tables for the auth router. **Alembic migration runner** still pending in Phase 1.1.1. |
 | 28        | done   | OpenAPI export committed at `packages/sdk/openapi.json`.                                    |
 
 📋 **Still to do (follow-up PRs):**
 
 | Plan item | What's missing                                                                                       |
 |-----------|------------------------------------------------------------------------------------------------------|
-| 22        | `app/auth/routes.py` (`/auth/register`, `/auth/login`, `/auth/refresh`, `/auth/logout`); device pairing |
-| 25        | SQLAlchemy + asyncpg integration; migration runner (Alembic or dbmate); per-feature schemas (memory, knowledge, agency) |
+| 22        | Device-pairing endpoints (Phase 1.2)                                                                 |
+| 25        | Alembic env + migration script that replays `001_initial.sql` (Phase 1.1.1); per-feature schemas (memory, knowledge, agency) in their own phases |
 | 26        | Redis client wiring (sessions, rate limit, pub/sub, Working memory tier per ADR 0001)                |
 | 27        | OpenTelemetry traces + structured JSON logs                                                          |
 | 28        | TS SDK codegen pipeline (e.g. `openapi-typescript`); replace `packages/sdk/src/index.ts` placeholder |
@@ -47,7 +47,7 @@ items have a ✓.
 |---------------------------------------------------------------------|-----------------------------------------------------------------------------|--------|
 | `legacy/app/backend/server.py` (`hash_password`, `verify_password`, `create_token`, `decode_token`) | Auth helpers (FastAPI + bcrypt + PyJWT, already FastAPI-shaped)          | ✓ ported into `app/auth/password.py` + `app/auth/tokens.py` (with key-separation hardening per RFC 8725) |
 | `legacy/Sallie/backend/database/migrations/001_initial_schema.sql` (535 lines) | Postgres schema — curated to `users`, `devices`, `sessions`, `refresh_tokens`, `audit_log` | ✓ ported into `database/migrations/001_initial.sql` |
-| `legacy/Sallie/backend/services/auth-service/src/routes/auth.ts`    | TS Express reference for the register/login/refresh contract               | ⏳ contract reference for the next PR's `app/auth/routes.py` |
+| `legacy/Sallie/backend/services/auth-service/src/routes/auth.ts`    | TS Express reference for the register/login/refresh contract               | ✓ contract realised in `app/routes/auth.py` (FastAPI + SQLAlchemy + repository pattern; refresh adds rotation + replay-detection that the TS reference lacked) |
 | `legacy/Sallie/sallie_brain.py`                                     | Top-level brain orchestrator (already overlapped by `app/runtime.py`)      | ⏳ |
 | `legacy/Sallie/sallie/`                                             | Nine-systems Python package                                                | ⏳ Phase 1.5+ — replace each `app/systems/*` stub with the legacy implementation |
 | `legacy/Sallie/backend/services/` (10 microservices)                | ai-service, chat-service, memory-service, limbic-engine, agency-service, etc. | ⏳ Phase 1.5+ — port the algorithms; the brain absorbs them into the in-process system rather than running them as separate services |

@@ -61,8 +61,15 @@ def test_refresh_token_cannot_be_used_as_access_token() -> None:
 
 def test_tampered_token_rejected() -> None:
     token, _ = create_token("u")
-    # Flip the last char of the signature to corrupt it.
-    tampered = token[:-1] + ("A" if token[-1] != "A" else "B")
+    # Flip a char in the *middle* of the signature (the last character of
+    # a base64url-encoded HMAC-SHA256 only encodes 4 useful bits — the
+    # remaining 2 bits are padding, so flipping the last char alone can
+    # decode to the same bytes and round-trip cleanly. Flipping mid-sig
+    # changes a full byte of the HMAC and is always rejected.)
+    sig_start = token.rfind(".") + 1
+    mid = sig_start + (len(token) - sig_start) // 2
+    flipped_char = "A" if token[mid] != "A" else "B"
+    tampered = token[:mid] + flipped_char + token[mid + 1:]
     with pytest.raises(InvalidTokenError):
         decode_token(tampered)
 
