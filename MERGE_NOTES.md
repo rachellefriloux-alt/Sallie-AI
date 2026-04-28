@@ -322,6 +322,15 @@ those would have to be inferred from how the service code uses them.
 
 #### Recommended next promotion phases (ordered)
 
+> **Update — Phase 1.4 contract spec landed.** See
+> [`docs/contracts/sallie-project-models-contract.md`](./docs/contracts/sallie-project-models-contract.md)
+> for the evidence-based contract specification of all 19 missing model
+> classes (every required export, every observed enum value, every
+> property-access pattern, every test-derived constructor signature, every
+> open design question). That document is the authoritative scoping
+> artifact for steps 1, 3, 5, and 7 below — implementers should not need
+> to re-derive shapes from the legacy snapshot.
+
 1. **Model reconstruction pass** (Phase 1.4) — author `services/models/`
    (or per-domain submodules) covering the 19 classes, sourced from
    the existing API.md / README specs and the consumer call sites.
