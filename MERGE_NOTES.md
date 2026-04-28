@@ -305,6 +305,99 @@ Not part of the eight-repo merge described above — pre-existed in
 
 ---
 
+## Reference snapshots — added by the org-wide sweep (post-PR)
+
+After the original eight-way merge landed, a follow-up sweep of the
+`rachellefriloux-alt` org surfaced three more repos that hadn't been
+catalogued. Per the user's standing directive ("check all other repos
+for anything we don't have or that's better or can expand"), they are
+now tracked in `legacy/` as **reference-only** snapshots — `README.md`
++ `SNAPSHOT.md` placeholders that document source URL, role, and
+which specific ideas are worth porting in later phases. The full
+source is **not** mirrored, because:
+
+- Either the repo overlaps an existing snapshot at lower fidelity
+  (PersonaPilot vs. Sallie),
+- Or it's a single-purpose product useful only after a future phase
+  lands (email-assistant → Phase 4/5 skill registry),
+- Or it's a different problem domain whose architectural shape, not
+  its code, is the takeaway (guarddog → Phase 7 sensors).
+
+These three are deliberately **not** counted as part of the eight-way
+merge convention table above; they don't introduce new conflicts to
+resolve, only reference material to consult.
+
+---
+
+## PersonaPilot  (`legacy/PersonaPilot/`)
+
+**Source:** https://github.com/rachellefriloux-alt/PersonaPilot · **Role:** Sibling local-first AI assistant (Electron + FastAPI + Qdrant + Whisper + Coqui + Ollama, 9-tab desktop UI).
+
+### Promoted (tracked for future phases — code not yet lifted)
+- Per-skill metadata schema `{purpose, autonomy ∈ {proactive, reactive}, privacy ∈ {full, hybrid, restricted}}` from PersonaPilot's "Available Agents" table → Phase 4/5 skill registry contract.
+- Privacy-mode env switch (`PRIVACY_MODE=full|hybrid|restricted`, `ALLOW_AUTO_ACTIONS=false`) → Phase 1.4 settings, aligns with ADR 0004 consent-gated agency.
+- Three-RAG-mode split (Perplexity / Concise / Copilot — top-10/top-3/top-5 with different prompts) → Phase 3 knowledge service.
+- Whisper + Coqui local STT/TTS pipeline + `scripts/models/download-models.ps1` model-bootstrap convention → Phase 6 voice + Phase 0.6 DevEx.
+- 9-tab Electron layout (Chat / Tasks / Calendar / Notes / Health / Finance / Family / Learning / Code) → Phase 2 desktop client reference layout.
+
+### Reference-only in `legacy/PersonaPilot/`
+- `README.md` + `SNAPSHOT.md` only. Re-fetch upstream for source.
+- PersonaPilot's own [`PERSONAPILOT_VS_SALLIE_ANALYSIS.md`](https://github.com/rachellefriloux-alt/PersonaPilot/blob/main/PERSONAPILOT_VS_SALLIE_ANALYSIS.md) self-assesses the project at ~15% of Sallie's intended feature set, so a verbatim mirror would add bulk without giving us anything actionable beyond what Sallie's own legacy snapshots already provide.
+
+### Conflicts vs. canonical (`VISION.md`)
+- Frontend wrapper: PersonaPilot uses Electron + React; Sallie's mobile is Expo / RN, web is Vue + Vite, and Electron is a **future** desktop target.
+- Vector DB: agreement (Qdrant).
+- LLM: PersonaPilot defaults to Mistral 7B with optional OpenAI/Anthropic; Sallie defaults to Ollama llama3.1 + GitHub Models per ADR 0007. The shape ("`MODEL_TYPE` env var swap") is consistent.
+
+---
+
+## email-assistant  (`legacy/email-assistant/`)
+
+**Source:** https://github.com/rachellefriloux-alt/email-assistant · **Role:** Standalone Gmail assistant — FastAPI + React + Vite + Tailwind, SQLite/Postgres, Docker / Helm / Terraform / Prometheus + Grafana, GPT-powered replies.
+
+### Promoted (tracked for future phases — code not yet lifted)
+- Gmail OAuth flow + token-refresh service → Phase 4 email skill (the OAuth boilerplate is the long pole; lift verbatim).
+- Zero-shot categorisation with keyword fallback (cleaner than reaching for an LLM per message) → Phase 4 email skill.
+- Email-threading endpoints (`/threads/`, archive/unarchive) → Phase 4 email skill.
+- Reply-template engine with `{{variable}}` substitution and usage tracking → Phase 4 email skill **and** Phase 5 personality (tone-aware drafting).
+- Per-account scheduler (`/scheduler/account`, `/scheduler/jobs`) → Phase 4 generic skills runtime.
+- Bulk-operations endpoints (archive / delete / mark-read / star) → Phase 4 email skill.
+- Prometheus + Grafana monitoring stack with `alert.rules.yml` → Phase 1.4 observability template.
+- Helm chart + raw k8s manifests + Terraform AWS/GCP starters → Phase 9 distribution patterns (lift the patterns, not the files — single-product topology doesn't match Sallie's monorepo).
+
+### Reference-only in `legacy/email-assistant/`
+- `README.md` + `SNAPSHOT.md` only. Re-fetch upstream for source.
+- Useful primarily once Phase 4/5 skills registry exists; mirroring the code today would just add weight.
+
+### Conflicts vs. canonical
+- LLM provider: hardcoded `gpt-4o-mini` (with some Gemini paths); Sallie wraps providers behind `SALLIE_RESPONDER` per ADR 0007.
+- Auth: implicit single-user; Sallie skills must gate every action through the brain's JWT + refresh-rotation auth from Phase 1.0/1.1.
+- Frontend: React + Vite + Tailwind; Sallie's web is Vue + Vite. The React port belongs in the future Electron desktop client, not the web app.
+
+---
+
+## guarddog  (`legacy/guarddog/`)
+
+**Source:** https://github.com/rachellefriloux-alt/guarddog · **Role:** Local-first home-security system — NestJS backend + React/Electron/Android clients, Ring + EseeCloud cameras, local YOLO inference on CPU, OneDrive-backed clip/snapshot storage. **Different problem domain** from Sallie (CCTV vs. personal companion).
+
+### Promoted (tracked for future phases — code not yet lifted)
+- Adapter pattern: `{Device, Event, Clip, Snapshot}` core entities + per-source `adapters/<name>/` modules with a uniform `getFrame()` / event-emit contract → Phase 7 proactive sensors (generalises to "watcher skills").
+- `/ws/alerts` WebSocket gateway with motion/AI/system event channels → Phase 7 sensors **and** Phase 4 realtime client transport. Sallie has nothing yet on the realtime push side.
+- Internal vs. public API split (`/api` for clients, `/internal` for adapters + AI) → Phase 1.4 service-boundary convention; mirrors the `services/brain/` ↔ `services/knowledge/` split we already have.
+- Local YOLO (ultralytics) on CPU as a separate Python sidecar that polls frames over HTTP → Phase 7 sensors + Phase 6 multi-AI ("heavyweight inference in its own process, talks to brain over HTTP" matches `services/knowledge/`).
+- OneDrive-as-storage convention (everything writes under a sync folder, no S3) → Phase 9 distribution / personal-cloud variant.
+- Strict "Hard Constraints" section in README (e.g. "never assume RTSP for C90") → adopt as a convention in `services/*/README.md` files.
+
+### Reference-only in `legacy/guarddog/`
+- `README.md` + `SNAPSHOT.md` only. Re-fetch upstream for source.
+- The EseeCloud screen-capture machinery and `ring-mqtt` integration are too domain-specific to be portable.
+
+### Conflicts vs. canonical
+- Backend language: Node.js + TypeScript + NestJS; Sallie's brain is Python + FastAPI. A future Sallie sensors service might reasonably copy guarddog's stack (Sallie permits per-service language choice), but the consistent default is a Python+FastAPI port.
+- Auth: single-user `email + password_hash`; too thin to lift — Sallie sensors will use the brain's JWT + refresh-rotation from Phase 1.0/1.1.
+
+---
+
 ## Security: secrets removed from snapshots
 
 Several predecessor repos contained committed secrets (Anthropic API keys,

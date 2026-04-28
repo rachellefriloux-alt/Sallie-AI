@@ -50,7 +50,9 @@ implementation; each canonical destination's `README.md` lists the exact
 sources and migration plan. See [`MERGE_NOTES.md`](MERGE_NOTES.md) for the
 full mapping.
 
-## What lives in `legacy/` (the eight-way merge)
+## What lives in `legacy/` (eight-way merge + three reference snapshots)
+
+**Eight-way merge** — full source mirrored:
 
 | Folder              | Source repo                                                                | Role                                                                                          |
 |---------------------|----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
@@ -63,8 +65,16 @@ full mapping.
 | `app/`              | [app](https://github.com/rachellefriloux-alt/app)                          | "Sallie Ascendant" FastAPI + Expo + MongoDB; Life Partner roles, 3D rooms, sovereign binding. |
 | `sallieos/`         | (host-only)                                                                | OS-level integration experiments (predates this PR; preserved as-is).                         |
 
+**Reference-only** — README + SNAPSHOT.md placeholder, full source kept upstream:
+
+| Folder               | Source repo                                                                  | Why reference-only                                                                                 |
+|----------------------|------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| `PersonaPilot/`      | [PersonaPilot](https://github.com/rachellefriloux-alt/PersonaPilot)          | Sibling local-first assistant (Electron + FastAPI + Qdrant); ~15% of Sallie's vision per its own analysis — useful as architectural prior art, not as code to lift. |
+| `email-assistant/`   | [email-assistant](https://github.com/rachellefriloux-alt/email-assistant)    | Standalone Gmail OAuth + categorisation + reply service. Natural source for a Phase 4/5 Sallie email skill once the skills registry lands. |
+| `guarddog/`          | [guarddog](https://github.com/rachellefriloux-alt/guarddog)                  | Local CCTV system (NestJS + YOLO). Different domain; the adapter + event-bus + realtime-alerts shape is prior art for Phase 7 sensors. |
+
 Each has a curated `legacy/<repo>/SNAPSHOT.md` describing what was excluded
-during import and what was promoted out.
+during import (or for reference snapshots, what's worth porting and when).
 
 ## Where to start
 
