@@ -19,6 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.runtime import Brain
+from app.routes import auth as auth_routes
 from app.routes import convergence as convergence_routes
 from app.routes import health as health_routes
 from app.routes import knowledge as knowledge_routes
@@ -64,6 +65,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health_routes.router)
+    app.include_router(auth_routes.router)
     app.include_router(convergence_routes.router)
     app.include_router(knowledge_routes.router)
     app.include_router(synthesis_routes.router)

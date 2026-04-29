@@ -1,34 +1,113 @@
 # Sallie
 
-> **The plan is in [`VISION.md`](VISION.md).**
+Sallie is a personal AI companion — local-first, privacy-first, persona-driven —
+intended to live across mobile, web, and desktop surfaces. This repository
+(`Sallie-AI`) is the **canonical home**: the eight predecessor repos
+(`Sallie`, `before`, `Sally`, `sallie-project`, `sallie_1.0`, `sallie-infinite`,
+`app`, plus this host) have been combined here.
+
+> **The plan and target architecture are in [`VISION.md`](VISION.md).**
 > Onboarding (Convergence) spec: [`docs/spec/convergence.md`](docs/spec/convergence.md).
->
-> The repository is mid-restructure into a monorepo (`apps/`, `services/`,
-> `packages/`, `legacy/`). The "Sallie 1.0" overview below is historical
-> context for the predecessor app and does not describe the target
-> architecture. New work should follow `VISION.md`.
+> Per-source-repo merge log: [`MERGE_NOTES.md`](MERGE_NOTES.md).
+> Original idea/vision/spec documents from every predecessor repo:
+> [`docs/vision/`](docs/vision/) (preserved verbatim).
 
 ---
 
-# Sallie 1.0 (historical)
+## Repository layout
 
-## Overview
+The repo is mid-restructure into a monorepo. The canonical layout is:
 
-Sallie 1.0 is an AI companion application designed to help users align their digital habits with their core values. Built with a "tough love meets soul care" philosophy, Sallie provides supportive but accountable guidance through intelligent conversation, memory-based context awareness, and values-driven interaction patterns. The application combines emotional intelligence, persistent memory systems, and personalized responses to create a meaningful digital companion experience.
+```
+apps/
+  mobile/          Expo / React Native phone app
+  web/             Web app (PWA / desktop browser surface)
+  android-native/  Native Android / Kotlin launcher
+  desktop/         Electron desktop wrapper
+  android-launcher/(predecessor; folds into android-native)
+services/
+  api/             Node / TypeScript API gateway
+  brain/           Python AI brain (the nine core systems)
+  knowledge/       RAG / vector search service
+  voice/           STT / TTS service
+packages/
+  core/            Shared persona, memory, tone, identity, AI logic
+  ui/              Shared UI components
+  persona/, personality/, emotions/, memory/, ai-models/, skills/, features/, common/
+docs/
+  vision/          Verbatim idea / vision / spec docs from every predecessor repo
+  spec/            Live, host-owned specs (e.g. convergence.md)
+legacy/
+  Sallie/  before/  Sally/  sallie-project/  sallie_1.0/  sallie-infinite/  app/
+                   Read-only snapshots of every predecessor repo (no .git, no binaries
+                   over 1 MB, no node_modules / build caches). Code migrates *out* of
+                   here into apps/services/packages phase by phase.
+```
 
-## User Preferences
+Live root-level dirs (`core/`, `personaCore/`, `identity/`, `tone/`, `ai/`,
+`server/`, `android/`, `App.tsx`, `App.vue`, …) currently host the running
+implementation; each canonical destination's `README.md` lists the exact
+sources and migration plan. See [`MERGE_NOTES.md`](MERGE_NOTES.md) for the
+full mapping.
 
-Preferred communication style: Simple, everyday language.
+## What lives in `legacy/` (eight-way merge + three reference snapshots)
 
-## System Architecture
+**Eight-way merge** — full source mirrored:
 
-### Frontend Architecture
-- **Single Page Application (SPA)**: Built with vanilla JavaScript using ES6 modules for a clean, dependency-free frontend
-- **Component-based UI**: Modular interface components managed through `SallieInterface.js` for separation of concerns
-- **Real-time Chat Interface**: Dynamic conversation management with typing indicators and status updates
-- **Values Management Panel**: Interactive UI for users to define and manage their core values
-- **Responsive Design**: CSS Grid and Flexbox-based layout with custom CSS variables for consistent theming
+| Folder              | Source repo                                                                | Role                                                                                          |
+|---------------------|----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `Sallie/`           | [Sallie](https://github.com/rachellefriloux-alt/Sallie)                    | Python + Ollama brain (v5.4.2). Canonical "nine systems" + Convergence.                       |
+| `before/`           | [before](https://github.com/rachellefriloux-alt/before)                    | Earlier Vue/Kotlin Android launcher; superseded by host root.                                 |
+| `Sally/`            | [Sally](https://github.com/rachellefriloux-alt/Sally)                      | Next.js 15 + Expo + Electron monorepo (Supabase + Prisma + Azure OpenAI, 130+ API routes).    |
+| `sallie-project/`   | [sallie-project](https://github.com/rachellefriloux-alt/sallie-project)    | Cleanest RN/Expo phone app; production-grade OCEAN personality engine (8K LOC).               |
+| `sallie_1.0/`       | [sallie_1.0](https://github.com/rachellefriloux-alt/sallie_1.0)            | Original Vue + Kotlin "Sallie 2.0 plan"; source of `MANIFESTO.md`, persona/values/tone split. |
+| `sallie-infinite/`  | [sallie-infinite](https://github.com/rachellefriloux-alt/sallie-infinite)  | Pure spec/vision repo — Siri/Alexa/Gemini/Copilot blend, consent-gated, citation-first.       |
+| `app/`              | [app](https://github.com/rachellefriloux-alt/app)                          | "Sallie Ascendant" FastAPI + Expo + MongoDB; Life Partner roles, 3D rooms, sovereign binding. |
+| `sallieos/`         | (host-only)                                                                | OS-level integration experiments (predates this PR; preserved as-is).                         |
 
-### Backend Architecture
-- **Express.js Server**: Lightweight Node.js server for serving static files and providing health check endpoints
-- **Modular Core Systems**: Organized into distinct modules for memory, values, persona, and AI integration
+**Reference-only** — README + SNAPSHOT.md placeholder, full source kept upstream:
+
+| Folder               | Source repo                                                                  | Why reference-only                                                                                 |
+|----------------------|------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| `PersonaPilot/`      | [PersonaPilot](https://github.com/rachellefriloux-alt/PersonaPilot)          | Sibling local-first assistant (Electron + FastAPI + Qdrant); ~15% of Sallie's vision per its own analysis — useful as architectural prior art, not as code to lift. |
+| `email-assistant/`   | [email-assistant](https://github.com/rachellefriloux-alt/email-assistant)    | Standalone Gmail OAuth + categorisation + reply service. Natural source for a Phase 4/5 Sallie email skill once the skills registry lands. |
+| `guarddog/`          | [guarddog](https://github.com/rachellefriloux-alt/guarddog)                  | Local CCTV system (NestJS + YOLO). Different domain; the adapter + event-bus + realtime-alerts shape is prior art for Phase 7 sensors. |
+
+Each has a curated `legacy/<repo>/SNAPSHOT.md` describing what was excluded
+during import (or for reference snapshots, what's worth porting and when).
+
+## Where to start
+
+1. Read [`VISION.md`](VISION.md) — the canonical target architecture.
+2. Read [`MERGE_NOTES.md`](MERGE_NOTES.md) — what came from where, what was
+   promoted vs. preserved vs. dropped. Includes a **Strategic doc index**
+   that synthesizes the most important specs across all 8 repos (the
+   "Digital Progeny" v5.4.x master spec, Approved Deviations, Universal
+   Capability System, Avatar System, Personality Engine, Life Partner
+   doctrine, Mind/Soul/Heart framework, Sallie Ascendant Roadmap, Sallie
+   2.0 Implementation/Enhancement plans, and the Manifesto).
+3. Browse [`docs/vision/`](docs/vision/) — the full original idea/vision/spec
+   docs from each predecessor repo, preserved verbatim and grouped by source.
+4. Browse `apps/*/README.md`, `services/*/README.md`, `packages/*/README.md`
+   for per-target-folder migration plans.
+
+## Build (today, transitional)
+
+The running implementation is still rooted at the repo root. Use existing
+scripts:
+
+```bash
+npm install
+npm start            # Expo / React Native (apps/mobile target)
+npm run dev          # Vite (apps/web target)
+./gradlew :app:assembleDebug   # Android (apps/android-native target)
+npm test
+npm run lint
+```
+
+Per-target builds (`apps/mobile`, `services/brain`, etc.) come online as
+each migration phase completes.
+
+## License
+
+See [`LICENSE`](LICENSE).

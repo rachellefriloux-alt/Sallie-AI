@@ -1,0 +1,210 @@
+
+> sally@0.1.0 build
+> node scripts/setup.js && next build
+
+Created .env.local from .env.example — ready to run.
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+   ▲ Next.js 15.1.0
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (133kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+
+
+Source path: /vercel/sandbox/primary/src/app/globals.css
+Setting up new context...
+Finding changed files: 11.134ms
+Reading changed files: 488.027ms
+Sorting candidates: 15.392ms
+Generate rules: 297.57ms
+Build stylesheet: 4.21ms
+Potential classes:  19497
+Active contexts:  1
+JIT TOTAL: 1.025s
+
+
+ ✓ Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/149) ...
+   Generating static pages (37/149) 
+   Generating static pages (74/149) 
+   Generating static pages (111/149) 
+ ✓ Generating static pages (149/149)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                Size     First Load JS
+┌ ○ /                                                      24.5 kB         130 kB
+├ ○ /_not-found                                            427 B           106 kB
+├ ƒ /analytics                                             3.76 kB         163 kB
+├ ƒ /analytics/performance                                 3.4 kB          162 kB
+├ ƒ /analytics/system                                      945 B           106 kB
+├ ƒ /analytics/usage                                       4.38 kB         168 kB
+├ ƒ /api/agency/status                                     427 B           106 kB
+├ ƒ /api/analytics/ai-insights                             427 B           106 kB
+├ ƒ /api/analytics/events                                  427 B           106 kB
+├ ƒ /api/analytics/feature-used                            427 B           106 kB
+├ ƒ /api/auth/change-password                              427 B           106 kB
+├ ƒ /api/auth/enable-2fa                                   427 B           106 kB
+├ ƒ /api/auth/last-login                                   427 B           106 kB
+├ ƒ /api/auth/login                                        427 B           106 kB
+├ ƒ /api/auth/logout                                       427 B           106 kB
+├ ƒ /api/auth/profile                                      427 B           106 kB
+├ ƒ /api/auth/refresh                                      427 B           106 kB
+├ ƒ /api/auth/register                                     427 B           106 kB
+├ ƒ /api/auth/validate                                     427 B           106 kB
+├ ƒ /api/auth/verify-2fa                                   427 B           106 kB
+├ ƒ /api/avatar/change-form                                427 B           106 kB
+├ ƒ /api/avatar/customize                                  427 B           106 kB
+├ ƒ /api/avatar/render                                     427 B           106 kB
+├ ƒ /api/avatar/state                                      427 B           106 kB
+├ ƒ /api/chat                                              427 B           106 kB
+├ ƒ /api/chat/history                                      427 B           106 kB
+├ ƒ /api/chat/messages                                     427 B           106 kB
+├ ƒ /api/chat/messages/[messageId]                         427 B           106 kB
+├ ƒ /api/chat/messages/[messageId]/bookmark                427 B           106 kB
+├ ƒ /api/chat/messages/[messageId]/reactions               427 B           106 kB
+├ ƒ /api/chat/messages/[messageId]/reactions/[reactionId]  427 B           106 kB
+├ ƒ /api/chat/search                                       427 B           106 kB
+├ ƒ /api/chat/threads                                      427 B           106 kB
+├ ƒ /api/cognitive                                         427 B           106 kB
+├ ƒ /api/communication/email/draft                         427 B           106 kB
+├ ƒ /api/communication/email/outbox                        427 B           106 kB
+├ ƒ /api/communication/text/chat                           427 B           106 kB
+├ ƒ /api/communication/text/history                        427 B           106 kB
+├ ƒ /api/control/[action]                                  427 B           106 kB
+├ ƒ /api/control/history                                   427 B           106 kB
+├ ƒ /api/control/status                                    427 B           106 kB
+├ ƒ /api/convergence/answer                                427 B           106 kB
+├ ƒ /api/convergence/complete                              427 B           106 kB
+├ ƒ /api/convergence/question                              427 B           106 kB
+├ ƒ /api/convergence/start                                 427 B           106 kB
+├ ƒ /api/convergence/status                                427 B           106 kB
+├ ƒ /api/discover                                          427 B           106 kB
+├ ƒ /api/duality/state                                     427 B           106 kB
+├ ƒ /api/duality/switch-mode                               427 B           106 kB
+├ ƒ /api/enhance                                           427 B           106 kB
+├ ƒ /api/extensions                                        427 B           106 kB
+├ ƒ /api/extensions/propose                                427 B           106 kB
+├ ƒ /api/features                                          427 B           106 kB
+├ ƒ /api/features/[id]/toggle                              427 B           106 kB
+├ ƒ /api/genesis/dream-cycle/start                         427 B           106 kB
+├ ƒ /api/genesis/dream-cycle/status                        427 B           106 kB
+├ ƒ /api/genesis/dream-cycle/stop                          427 B           106 kB
+├ ƒ /api/genesis/hypotheses                                427 B           106 kB
+├ ƒ /api/genesis/promotion/candidates                      427 B           106 kB
+├ ƒ /api/genesis/promotion/promote                         427 B           106 kB
+├ ƒ /api/genesis/veto/active                               427 B           106 kB
+├ ƒ /api/genesis/veto/trigger                              427 B           106 kB
+├ ƒ /api/ghost/veto_pending                                427 B           106 kB
+├ ƒ /api/ghost/veto_pending/[id]                           427 B           106 kB
+├ ƒ /api/growth/energy                                     427 B           106 kB
+├ ƒ /api/growth/focus-tasks                                427 B           106 kB
+├ ƒ /api/growth/goals                                      427 B           106 kB
+├ ƒ /api/growth/journal                                    427 B           106 kB
+├ ƒ /api/health                                            427 B           106 kB
+├ ƒ /api/heritage/[section]                                427 B           106 kB
+├ ƒ /api/heritage/dna                                      427 B           106 kB
+├ ƒ /api/heritage/version/current                          427 B           106 kB
+├ ƒ /api/history                                           427 B           106 kB
+├ ƒ /api/interact                                          427 B           106 kB
+├ ƒ /api/learning/create                                   427 B           106 kB
+├ ƒ /api/learning/metrics                                  427 B           106 kB
+├ ƒ /api/learning/overview                                 427 B           106 kB
+├ ƒ /api/learning/skills                                   427 B           106 kB
+├ ƒ /api/learning/summary                                  427 B           106 kB
+├ ƒ /api/life/contexts                                     427 B           106 kB
+├ ƒ /api/life/daily-items                                  427 B           106 kB
+├ ƒ /api/life/recall                                       427 B           106 kB
+├ ƒ /api/life/tasks                                        427 B           106 kB
+├ ƒ /api/lifeos/state                                      427 B           106 kB
+├ ƒ /api/lifeos/sync                                       427 B           106 kB
+├ ƒ /api/limbic                                            427 B           106 kB
+├ ƒ /api/limbic/state                                      427 B           106 kB
+├ ƒ /api/limbic/trust                                      427 B           106 kB
+├ ƒ /api/memory/memories                                   427 B           106 kB
+├ ƒ /api/memory/memories/[id]                              427 B           106 kB
+├ ƒ /api/memory/memories/search                            427 B           106 kB
+├ ƒ /api/memory/metadata                                   427 B           106 kB
+├ ƒ /api/memory/stats                                      427 B           106 kB
+├ ƒ /api/messenger/call/end                                427 B           106 kB
+├ ƒ /api/messenger/call/start                              427 B           106 kB
+├ ƒ /api/messenger/messages                                427 B           106 kB
+├ ƒ /api/messenger/send                                    427 B           106 kB
+├ ƒ /api/monologue/thoughts                                427 B           106 kB
+├ ƒ /api/omnis/history                                     427 B           106 kB
+├ ƒ /api/omnis/knowledge-base                              427 B           106 kB
+├ ƒ /api/omnis/knowledge-base/[id]                         427 B           106 kB
+├ ƒ /api/omnis/modes/[id]/activate                         427 B           106 kB
+├ ƒ /api/omnis/query                                       427 B           106 kB
+├ ƒ /api/omnis/sources                                     427 B           106 kB
+├ ƒ /api/omnis/statistics                                  427 B           106 kB
+├ ƒ /api/reset                                             427 B           106 kB
+├ ƒ /api/sallieverse/change-room                           427 B           106 kB
+├ ƒ /api/sallieverse/interact                              427 B           106 kB
+├ ƒ /api/sallieverse/state                                 427 B           106 kB
+├ ƒ /api/settings                                          427 B           106 kB
+├ ƒ /api/speech-to-text                                    427 B           106 kB
+├ ƒ /api/state                                             427 B           106 kB
+├ ƒ /api/storage/files                                     427 B           106 kB
+├ ƒ /api/sync/toggle                                       427 B           106 kB
+├ ƒ /api/text-to-speech                                    427 B           106 kB
+├ ƒ /api/thought-action-log                                427 B           106 kB
+├ ƒ /api/user/avatar                                       427 B           106 kB
+├ ƒ /api/user/delete                                       427 B           106 kB
+├ ƒ /api/user/export                                       427 B           106 kB
+├ ƒ /api/user/profile                                      427 B           106 kB
+├ ƒ /api/user/stats                                        427 B           106 kB
+├ ƒ /api/v1/agency/sync                                    427 B           106 kB
+├ ƒ /api/voice/toggle                                      427 B           106 kB
+├ ○ /auth                                                  1.18 kB         160 kB
+├ ƒ /auth/callback                                         427 B           106 kB
+├ ƒ /avatar                                                2.57 kB         112 kB
+├ ○ /communication                                         4.39 kB         110 kB
+├ ○ /control                                               9.66 kB         151 kB
+├ ○ /convergence                                           9.81 kB         151 kB
+├ ○ /conversation-hub                                      5.59 kB         115 kB
+├ ○ /copy-mind                                             7.41 kB         116 kB
+├ ○ /dashboard                                             8.96 kB         114 kB
+├ ○ /genesis                                               4.05 kB         109 kB
+├ ○ /growth                                                5.49 kB         114 kB
+├ ○ /heritage                                              3.75 kB         109 kB
+├ ○ /hypotheses                                            1.54 kB         107 kB
+├ ○ /life-management                                       5.6 kB          115 kB
+├ ○ /limbic                                                11.4 kB         152 kB
+├ ○ /manifest.webmanifest                                  0 B                0 B
+├ ○ /meli-ai                                               5.4 kB          114 kB
+├ ○ /mind-map                                              6.49 kB         115 kB
+├ ○ /offline                                               1.44 kB         146 kB
+├ ○ /omnis                                                 4.5 kB          110 kB
+├ ƒ /presence                                              6.94 kB         152 kB
+├ ƒ /profile                                               2.27 kB         165 kB
+├ ○ /projects                                              2.08 kB         107 kB
+├ ○ /settings                                              309 B           114 kB
+├ ƒ /settings/[section]                                    507 B           114 kB
+├ ƒ /systems                                               189 B           109 kB
+├ ● /systems/[slug]                                        189 B           109 kB
+├   ├ /systems/ghost
+├   ├ /systems/cli
+├   ├ /systems/veto
+├   └ [+5 more paths]
+├ ○ /thought-action-log                                    5.14 kB         114 kB
+└ ○ /thoughts                                              3.36 kB         109 kB
++ First Load JS shared by all                              105 kB
+  ├ chunks/1517-7c1d37a0e2c086e8.js                        50.5 kB
+  ├ chunks/4bd1b696-fa260417b5805c5c.js                    52.9 kB
+  └ other shared chunks (total)                            1.92 kB
+
+
+ƒ Middleware                                               79.4 kB
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

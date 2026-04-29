@@ -1,0 +1,40 @@
+{
+  "name": "Sallie monorepo",
+  "image": "mcr.microsoft.com/devcontainers/universal:2-linux",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    },
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17",
+      "installGradle": true
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postCreateCommand": "corepack enable && corepack prepare pnpm@9.12.3 --activate || true",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-python.python",
+        "tamasfe.even-better-toml",
+        "redhat.vscode-yaml"
+      ]
+    }
+  },
+  "forwardPorts": [3000, 5000, 5432, 6333, 6379, 8000, 9000, 11434],
+  "portsAttributes": {
+    "3000": { "label": "Brain (Node services)" },
+    "5000": { "label": "Expo dev server" },
+    "5432": { "label": "Postgres" },
+    "6333": { "label": "Qdrant" },
+    "6379": { "label": "Redis" },
+    "8000": { "label": "FastAPI Python AI gateway" },
+    "9000": { "label": "MinIO" },
+    "11434": { "label": "Ollama" }
+  }
+}

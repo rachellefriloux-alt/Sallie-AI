@@ -1,0 +1,395 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model HeritageDna {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  completedAt DateTime? @map("completed_at")
+  answers     Json      @default("{}")
+  summary     Json?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@unique([userId])
+  @@map("heritage_dna")
+}
+
+model Profile {
+  id                  String    @id @db.Uuid
+  displayName         String?   @map("display_name")
+  avatarUrl           String?   @map("avatar_url")
+  convergenceCompleted Boolean  @default(false) @map("convergence_completed")
+  limbicTrust         Decimal?  @map("limbic_trust") @db.Decimal(3, 2)
+  limbicWarmth        Decimal?  @map("limbic_warmth") @db.Decimal(3, 2)
+  limbicArousal       Decimal?  @map("limbic_arousal") @db.Decimal(3, 2)
+  limbicValence       Decimal?  @map("limbic_valence") @db.Decimal(3, 2)
+  limbicState         Json?     @map("limbic_state")
+  avatarState         Json?     @map("avatar_state")
+  posture             String?   @default("Friend")
+  emotionalState      String?   @map("emotional_state")
+  memoryVectorCount   Int       @default(0) @map("memory_vector_count")
+  memoryWorkingCount  Int       @default(0) @map("memory_working_count")
+  dreamCycleLastAt    DateTime? @map("dream_cycle_last_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  @@map("profiles")
+}
+
+model StreakHistory {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  date        DateTime @db.Date
+  streakCount Int      @default(0) @map("streak_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, date])
+  @@map("streak_history")
+}
+
+model Conversation {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  title     String?
+  mode      String?  @default("default")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  messages  Message[]
+
+  @@index([userId])
+  @@index([updatedAt(sort: Desc)])
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String   @map("conversation_id") @db.Uuid
+  role           String
+  content        String
+  mode           String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+model KnowledgeDomain {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  tierId      String   @map("tier_id")
+  description String?
+  expertise   Int      @default(80)
+  topics      Json     @default("[]")
+  source      String?  @default("user")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([tierId])
+  @@map("knowledge_domains")
+}
+
+model UserPreference {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  key       String
+  value     Json     @default("null")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, key])
+  @@index([userId])
+  @@map("user_preferences")
+}
+
+model MessageBookmark {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  messageId String   @map("message_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, messageId])
+  @@map("message_bookmarks")
+}
+
+model MessageReaction {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  messageId String   @map("message_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  emoji     String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([messageId])
+  @@index([userId])
+  @@map("message_reactions")
+}
+
+model LimbicHistory {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  state     Json
+  event     String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@map("limbic_history")
+}
+
+model ControlLog {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@map("control_logs")
+}
+
+model ThoughtLog {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@map("thought_logs")
+}
+
+model GenesisHypothesis {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  title     String
+  content   String
+  status    String   @default("active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("genesis_hypotheses")
+}
+
+model GenesisVeto {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  reason    String
+  context   String?
+  action    String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("genesis_vetoes")
+}
+
+model EmailDraft {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  to        String?
+  subject   String?
+  body      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("email_drafts")
+}
+
+model LearningSkill {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  name      String
+  level     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("learning_skills")
+}
+
+model LearningProject {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  name        String
+  description String?
+  status      String   @default("active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("learning_projects")
+}
+
+model Extension {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  name      String
+  proposed  Boolean  @default(false)
+  status    String   @default("pending")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("extensions")
+}
+
+model ConvergenceSession {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  currentIndex Int      @default(0) @map("current_index")
+  answers     Json      @default("[]")
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@unique([userId])
+  @@map("convergence_sessions")
+}
+
+model Memory {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorId      String?  @map("actor_id") @db.Uuid
+  content      String
+  embedding    Json     @default("[]")
+  metadata     Json     @default("{}")
+  tags         Json     @default("[]")
+  accessCount  Int      @default(0) @map("access_count")
+  lastAccessed DateTime @default(now()) @map("last_accessed")
+  salience     Decimal  @default(0.5) @db.Decimal(3, 2)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([actorId])
+  @@index([createdAt(sort: Desc)])
+  @@map("memories")
+}
+
+model Goal {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  title       String
+  description String?
+  category    String    @default("general")
+  priority    String    @default("medium")
+  status      String    @default("active")
+  progress    Int       @default(0)
+  targetDate  DateTime? @map("target_date")
+  steps       Json      @default("[]")
+  stuckSince  DateTime? @map("stuck_since")
+  domain      String    @default("home")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([status])
+  @@map("goals")
+}
+
+model Habit {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  name          String
+  description   String?
+  frequency     String   @default("daily")
+  category      String   @default("general")
+  targetTime    String?  @map("target_time")
+  currentStreak Int      @default(0) @map("current_streak")
+  longestStreak Int      @default(0) @map("longest_streak")
+  totalCheckins Int      @default(0) @map("total_checkins")
+  lastCheckin   DateTime? @map("last_checkin")
+  status        String   @default("active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  checkins      HabitCheckin[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("habits")
+}
+
+model HabitCheckin {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  habitId   String   @map("habit_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  note      String?
+  mood      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@index([habitId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("habit_checkins")
+}
+
+model UserInsight {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  category    String
+  key         String
+  value       Json
+  confidence  Decimal  @default(0.5) @db.Decimal(3, 2)
+  source      String   @default("conversation")
+  lastSeen    DateTime @default(now()) @map("last_seen")
+  frequency   Int      @default(1)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, category, key])
+  @@index([userId])
+  @@index([category])
+  @@map("user_insights")
+}
+
+model Decision {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  title       String
+  description String?
+  factors     Json      @default("[]")
+  options     Json      @default("[]")
+  analysis    Json?
+  chosenOption String?  @map("chosen_option")
+  outcome     String?
+  status      String    @default("pending")
+  domain      String    @default("general")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([status])
+  @@map("decisions")
+}
+
+model DailyReflection {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  date      DateTime @db.Date
+  prompts   Json     @default("[]")
+  responses Json     @default("{}")
+  mood      String?
+  energy    String?
+  insights  Json     @default("[]")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@map("daily_reflections")
+}
+
+model MemorySummary {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  periodStart DateTime @map("period_start")
+  periodEnd   DateTime @map("period_end")
+  summary     String
+  keyEvents   Json     @default("[]") @map("key_events")
+  emotions    Json     @default("[]")
+  topics      Json     @default("[]")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([periodEnd(sort: Desc)])
+  @@map("memory_summaries")
+}
+

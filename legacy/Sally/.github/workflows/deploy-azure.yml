@@ -1,0 +1,84 @@
+name: Deploy to Azure Container Apps
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+
+env:
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'production' }}
+  RESOURCE_GROUP: sallie-${{ github.event.inputs.environment || 'production' }}
+  ACR_NAME: sallie${{ github.event.inputs.environment || 'production' }}acr
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push all services
+        run: |
+          echo "Building all Docker images..."
+          # Auth Service
+          cd services/auth-service && docker build -t ${{ env.ACR_NAME }}.azurecr.io/auth-service:latest . && cd ../..
+          docker push ${{ env.ACR_NAME }}.azurecr.io/auth-service:latest
+          
+          # Chat Service
+          cd services/chat-service && docker build -t ${{ env.ACR_NAME }}.azurecr.io/chat-service:latest . && cd ../..
+          docker push ${{ env.ACR_NAME }}.azurecr.io/chat-service:latest
+          
+          # File Service
+          cd services/file-service && docker build -t ${{ env.ACR_NAME }}.azurecr.io/file-service:latest . && cd ../..
+          docker push ${{ env.ACR_NAME }}.azurecr.io/file-service:latest
+          
+          # Notification Service
+          cd services/notification-service && docker build -t ${{ env.ACR_NAME }}.azurecr.io/notification-service:latest . && cd ../..
+          docker push ${{ env.ACR_NAME }}.azurecr.io/notification-service:latest
+          
+          # AI Service
+          cd services/ai-service && docker build -t ${{ env.ACR_NAME }}.azurecr.io/ai-service:latest . && cd ../..
+          docker push ${{ env.ACR_NAME }}.azurecr.io/ai-service:latest
+          
+          # WebSocket Service
+          cd services/websocket-service && docker build -t ${{ env.ACR_NAME }}.azurecr.io/websocket-service:latest . && cd ../..
+          docker push ${{ env.ACR_NAME }}.azurecr.io/websocket-service:latest
+          
+          # Memory Service
+          cd services/memory-service && docker build -t ${{ env.ACR_NAME }}.azurecr.io/memory-service:latest . && cd ../..
+          docker push ${{ env.ACR_NAME }}.azurecr.io/memory-service:latest
+          
+          # Analytics Service
+          cd services/analytics-service && docker build -t ${{ env.ACR_NAME }}.azurecr.io/analytics-service:latest . && cd ../..
+          docker push ${{ env.ACR_NAME }}.azurecr.io/analytics-service:latest
+          
+          echo "Images built and pushed successfully!"
+
+      - name: Tag auth-service as api-gateway for deploy
+        run: |
+          docker pull ${{ env.ACR_NAME }}.azurecr.io/auth-service:latest
+          docker tag ${{ env.ACR_NAME }}.azurecr.io/auth-service:latest ${{ env.ACR_NAME }}.azurecr.io/api-gateway:latest
+          docker push ${{ env.ACR_NAME }}.azurecr.io/api-gateway:latest
+
+      - name: Azure Container Apps deployment
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          containerAppName: 'api-gateway'
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          imageToDeploy: ${{ env.ACR_NAME }}.azurecr.io/api-gateway:latest
+          targetPort: 8000

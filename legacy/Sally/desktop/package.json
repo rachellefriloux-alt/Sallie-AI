@@ -1,0 +1,51 @@
+{
+  "name": "sallie-studio-desktop",
+  "version": "0.1.0",
+  "description": "Sallie Studio Desktop — Electron wrapper for the Next.js web app",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "cross-env NODE_ENV=development electron .",
+    "prebuild": "node scripts/write-build-config.js",
+    "build": "npm run prebuild && electron-builder",
+    "make": "npm run prebuild && electron-builder --win",
+    "build:win": "npm run prebuild && electron-builder --win",
+    "build:mac": "npm run prebuild && electron-builder --mac",
+    "build:linux": "npm run prebuild && electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.sallie.studio",
+    "productName": "Sallie Studio",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "build-config.json",
+      "assets"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    }
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.0"
+  }
+}

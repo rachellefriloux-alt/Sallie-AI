@@ -1,0 +1,91 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+  <uses-permission android:name="android.permission.ANDROID_RECEIVE_LEGACY_BROADCAST" tools:node="remove"/>
+  <uses-permission android:name="android.permission.BLUETOOTH"/>
+  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+  <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+  <uses-permission android:name="android.permission.READ_CONTACTS"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+  <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+  <queries>
+    <intent>
+      <action android:name="android.intent.action.VIEW"/>
+      <category android:name="android.intent.category.BROWSABLE"/>
+      <data android:scheme="https"/>
+    </intent>
+  </queries>
+  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="true" android:theme="@style/AppTheme" android:supportsRtl="true" android:requestLegacyExternalStorage="true">
+    <!-- Main Activities -->
+    <activity android:name="com.sallie.launcher.activities.MainActivity" 
+              android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" 
+              android:launchMode="singleTask" 
+              android:windowSoftInputMode="adjustResize" 
+              android:theme="@style/Theme.App.SplashScreen" 
+              android:exported="true" 
+              android:screenOrientation="portrait">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="sallie"/>
+      </intent-filter>
+    </activity>
+    
+    <!-- Demo Activities -->
+    <activity android:name="com.sallie.launcher.activities.EmotionalIntelligenceDemoActivity"
+              android:label="Emotional Intelligence Demo"
+              android:parentActivityName="com.sallie.launcher.activities.MainActivity"
+              android:exported="false" />
+              
+    <activity android:name="com.sallie.launcher.activities.VoiceSystemDemoActivity"
+              android:label="Voice System Demo"
+              android:parentActivityName="com.sallie.launcher.activities.MainActivity"
+              android:exported="false" />
+              
+    <activity android:name="com.sallie.launcher.activities.MemorySystemDemoActivity"
+              android:label="Memory System Demo"
+              android:parentActivityName="com.sallie.launcher.activities.MainActivity"
+              android:exported="false" />
+              
+    <activity android:name="com.sallie.launcher.activities.CommunicationDemoActivity"
+              android:label="Communication Demo"
+              android:parentActivityName="com.sallie.launcher.activities.MainActivity"
+              android:exported="false" />
+    
+    <!-- Background Services -->
+    <service android:name="com.sallie.launcher.services.ConversationExportWorker"
+             android:enabled="true"
+             android:exported="false" />
+             
+    <service android:name="com.sallie.launcher.services.VisualStateWorker"
+             android:enabled="true"
+             android:exported="false" />
+             
+  </application>
+</manifest>

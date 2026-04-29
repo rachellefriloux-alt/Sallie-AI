@@ -1,6 +1,6 @@
 module.exports = [
   {
-    ignores: ['dist/*', 'node_modules/*', 'android/*', 'ios/*'],
+    ignores: ['dist/*', 'node_modules/*', 'android/*', 'ios/*', 'legacy/**', 'docs/vision/**'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',

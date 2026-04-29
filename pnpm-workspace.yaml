@@ -1,0 +1,19 @@
+# pnpm-workspace.yaml
+#
+# Declares the workspace structure for Sallie. Per ADR 0005 and the
+# Phase 0.6 plan, apps/, services/, and packages/ are real workspace
+# members (not forwarders).
+#
+# This file is declarative: it describes the intended layout. The repo
+# currently still installs via npm at the root for the Expo app. Switching
+# the install tool to pnpm is tracked as a separate follow-up PR (it
+# regenerates the lockfile and changes CI).
+
+packages:
+  - "apps/*"
+  - "services/*"
+  - "packages/*"
+  # Exclude the legacy snapshot — it is read-only history, not a workspace.
+  - "!legacy/**"
+  # Exclude the placeholder/back-up dump that lives under packages/package/.
+  - "!packages/package"

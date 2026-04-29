@@ -34,6 +34,8 @@ config.resolver = {
     /.*\/assets\/server\/.*/,
     /.*\/scripts\/.*/,
     /.*\.mjs$/,
+    /.*\/legacy\/.*/,
+    /.*\/docs\/vision\/.*/,
   ],
 };
 
