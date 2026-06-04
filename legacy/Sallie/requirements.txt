@@ -10,8 +10,8 @@ websockets==12.0
 python-dotenv==1.2.2
 pydantic==2.5.2
 pydantic-settings==2.1.0
-python-multipart==0.0.26
-starlette==0.49.1
+python-multipart==0.0.27
+starlette==1.0.1
 
 # ============================================================================
 # Security & Authentication
@@ -163,7 +163,7 @@ dynaconf==3.2.13
 # Performance Optimization
 # ============================================================================
 cython==3.0.6
-ujson==5.12.0
+ujson==5.12.1
 
 # ============================================================================
 # Platform-Specific Dependencies
